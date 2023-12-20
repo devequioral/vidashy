@@ -1,0 +1,68 @@
+.itemMenu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 30px;
+    cursor: pointer;
+}
+
+/* .itemMenu * {
+    pointer-events: none;
+} */
+
+.itemMenuCnt {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    height: 30px;
+}
+
+.itemMenuCnt * {
+    pointer-events: none;
+}
+
+.icon {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.label {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    font-size: 20px;
+    color: #AC89F8;
+    width: 200px;
+}
+.label.hide{
+    display: none;
+}
+
+.subMenu {
+    padding: 20px 40px;
+}
+
+.list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.subMenu li {
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.collapsable {
+    opacity: 1;
+}
+
+@media only screen and (max-width: 768px) {
+    .label {
+        display: none;
+    }
+}

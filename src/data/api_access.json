@@ -1,0 +1,26 @@
+[
+   {
+        "uid": "6d498a2a94a3",
+        "name": "Artik Bunker",
+        "description": "Organization Description",
+        "apiaccess":[
+            {
+                "apikey": "1087d55eb85413c9414a064ce04a086695a301d6a61a963f",
+                "permissions":[
+                    {
+                        "collection": "quoter",
+                        "object": {
+                            "name":"users",
+                            "methods": [
+                                "GET",
+                                "POST",
+                                "PATCH",
+                                "DELETE"
+                            ]
+                        }                
+                    }
+                ]
+            }
+        ]    
+    }
+]

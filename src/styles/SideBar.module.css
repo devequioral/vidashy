@@ -1,0 +1,71 @@
+.SideBar{
+    background-color: #171717;
+    width: 300px;
+    height: 100%;
+    padding: 20px 5px 20px 60px;
+    
+}
+
+.SideBar.collapse{
+    width: 60px;
+    padding: 20px;
+}
+
+.list{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.itemMenu{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 30px;
+    cursor: pointer;
+}
+
+.itemMenu *{
+    pointer-events: none;
+}
+
+.itemMenuCnt{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    height: 30px;
+}
+
+.icon{
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.label{
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content:space-between;
+    font-size: 20px;
+    color: #AC89F8;
+    width: 200px;
+}
+
+.subMenu{
+    padding: 20px 40px;
+}
+
+.subMenu li{
+    cursor: pointer;
+    pointer-events:all;
+}
+
+@media only screen and (max-width: 768px) {
+    .SideBar{
+        padding: 20px;
+        width: auto;
+    }
+}

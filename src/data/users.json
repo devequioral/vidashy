@@ -1,0 +1,26 @@
+{
+    "name":"Users",
+    "records":[
+        {
+            "id":1,
+            "name":"Carlos Perez",
+            "username":"carlosperez",
+            "email":"user@example.com",
+            "password":"$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa",
+            "userType":"regular",
+            "created_at":"2019-01-01 00:00:00",
+            "updated_at":"2019-01-01 00:00:00"
+        },
+        {
+            "id":2,
+            "name":"Pedro Perez",
+            "username":"pedroperez",
+            "email":"user02@example.com",
+            "password":"$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa",
+            "userType":"admin",
+            "created_at":"2019-01-01 00:00:00",
+            "updated_at":"2019-01-01 00:00:00"
+        }
+    ]
+
+}
