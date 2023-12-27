@@ -68,48 +68,4 @@ async function verifyRequest(request) {
   return true;
 }
 
-//FUNCTION TO FILTER RECORDS
-function filterRecords(records, request) {
-  const filterBy = request.params.filterBy.split(',');
-  const filterValue = request.params.filterValue.split(',');
-  const filterOperator = request.params.filterOperator.split(',');
-  const filter = [];
-  filterBy.map((item, index) => {
-    filter.push({
-      field: item,
-      value: filterValue[index],
-      operator: filterOperator[index],
-    });
-  });
-  const filteredRecords = records.filter((item) => {
-    let result = true;
-    filter.map((filterItem) => {
-      if (filterItem.operator === 'eq') {
-        if (item[filterItem.field] !== filterItem.value) result = false;
-      }
-      if (filterItem.operator === 'ne') {
-        if (item[filterItem.field] === filterItem.value) result = false;
-      }
-      if (filterItem.operator === 'lt') {
-        if (item[filterItem.field] >= filterItem.value) result = false;
-      }
-      if (filterItem.operator === 'gt') {
-        if (item[filterItem.field] <= filterItem.value) result = false;
-      }
-      if (filterItem.operator === 'le') {
-        if (item[filterItem.field] > filterItem.value) result = false;
-      }
-      if (filterItem.operator === 'ge') {
-        if (item[filterItem.field] < filterItem.value) result = false;
-      }
-      if (filterItem.operator === 'like') {
-        if (!item[filterItem.field].includes(filterItem.value)) result = false;
-      }
-    });
-    return result;
-  });
-
-  return { status: 200, response: filteredRecords };
-}
-
-export { formatRequest, verifyRequest, filterRecords };
+export { formatRequest, verifyRequest };

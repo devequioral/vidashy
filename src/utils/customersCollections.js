@@ -28,17 +28,41 @@ async function getSchemaObject(collectionName) {
   return schemaObject;
 }
 
-async function getRecords(organization, collection, object) {
+async function getRecords(request) {
+  const { organization, collection, object, params } = request;
+  const page = params.page ? parseInt(params.page) : 1;
+  const pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
+  const filterBy = params.filterBy ? params.filterBy.split(',') : [];
+  const filterValue = params.filterValue ? params.filterValue.split(',') : [];
+
+  const filter = [];
+  if (filterBy) {
+    filterBy.map((item, index) => {
+      filter.push({
+        field: item,
+        value: filterValue[index],
+      });
+    });
+  }
+
+  let query = {};
+  filter.forEach((item) => {
+    query[item.field] = item.value;
+  });
+
   let collectionName = `COLEC_${organization}_${collection}_${object}`;
+  const skip = (page - 1) * pageSize;
   await db.connect();
   const schemaObject = await getSchemaObject(collectionName);
 
-  let schema = await getDynamicSchema(collectionName, schemaObject, true);
+  let schema = getDynamicSchema(collectionName, schemaObject, true);
 
-  const records = await schema.find({});
+  const total = await schema.find(query).countDocuments();
+
+  const records = await schema.find(query).skip(skip).limit(pageSize);
   await db.disconnect();
 
-  return records;
+  return { records, total, page };
 }
 
 export { getRecords, getSchemaObject };

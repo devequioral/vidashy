@@ -1,4 +1,4 @@
-import { formatRequest, verifyRequest, filterRecords } from '@/utils/API_V1';
+import { formatRequest, verifyRequest } from '@/utils/API_V1';
 import { getRecords } from '@/utils/customersCollections';
 
 export default async function handler(req, res) {
@@ -10,20 +10,12 @@ export default async function handler(req, res) {
   if (verify !== true) return res.status(verify.status).json(verify.response);
 
   //GET THE RECORDS
-  const records = await getRecords(
-    request.organization,
-    request.collection,
-    request.object
-  );
+  const response = await getRecords(request);
 
-  //FILTER THE RECORDS
-  if (request.params.filterBy) {
-    const filterRecordsResponse = filterRecords(records, request);
-    return res
-      .status(filterRecordsResponse.status)
-      .json(filterRecordsResponse.response);
-  }
+  //VERIFY IF THE RECORDS WERE FOUND
+  if (!response.records)
+    return res.status(404).json({ error: 'Records Not Found' });
 
   //RETURN THE RECORDS
-  res.status(200).json(records);
+  res.status(200).json(response);
 }
