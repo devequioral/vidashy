@@ -14,7 +14,7 @@ const handler = async (req, res) => {
 
   if (!token) return res.status(401).send({ message: 'Not authorized' });
 
-  if (token.usertype !== 'admin')
+  if (token.role !== 'admin')
     return res.status(401).send({ message: 'User Not authorized' });
 
   await db.connect();

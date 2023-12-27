@@ -5,7 +5,21 @@ function DashBoardScreen() {
   return (
     <>
       <Metaheader />
-      <Layout></Layout>
+      <Layout>
+        <div className="container mx-auto">
+          <ul>
+            <li>
+              <a
+                href="/api/admin/seed"
+                target="_blank"
+                style={{ color: '#fff', textDecoration: 'underline' }}
+              >
+                Seed
+              </a>
+            </li>
+          </ul>
+        </div>
+      </Layout>
     </>
   );
 }

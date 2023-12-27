@@ -7,7 +7,7 @@
             "username":"carlosperez",
             "email":"user@example.com",
             "password":"$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa",
-            "userType":"regular",
+            "role":"regular",
             "created_at":"2019-01-01 00:00:00",
             "updated_at":"2019-01-01 00:00:00"
         },
@@ -17,7 +17,7 @@
             "username":"pedroperez",
             "email":"user02@example.com",
             "password":"$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa",
-            "userType":"admin",
+            "role":"admin",
             "created_at":"2019-01-01 00:00:00",
             "updated_at":"2019-01-01 00:00:00"
         }

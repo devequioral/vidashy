@@ -41,12 +41,12 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user?._id) token._id = user._id;
-      if (user?.usertype) token.usertype = user.usertype;
+      if (user?.role) token.role = user.role;
       return token;
     },
     async session({ session, token }) {
       if (token?._id) session.user._id = token._id;
-      if (token?.usertype) session.user.usertype = token.usertype;
+      if (token?.role) session.user.role = token.role;
       return session;
     },
   },
@@ -60,7 +60,7 @@ export default NextAuth({
             name: user.name,
             username: user.username,
             email: user.email,
-            usertype: user.usertype,
+            role: user.role,
           };
         }
         throw new Error('Invalid email or password');
