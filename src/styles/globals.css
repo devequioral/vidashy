@@ -5,8 +5,6 @@
 }
 
 body{
-  background: #000;
-  color:#fff;
   font-family: var(--primary-font), serif;
 }
 
@@ -20,3 +18,8 @@ a{
     padding: 0 40px;
   }
 }
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

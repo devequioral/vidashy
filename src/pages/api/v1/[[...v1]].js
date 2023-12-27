@@ -1,22 +1,12 @@
-import api_access from '@/data/api_access.json';
-import users from '@/data/users.json';
+import ApiAccess from '@/models/ApiAccess';
+import db from '@/utils/db';
+import { getRecords } from '@/utils/customersCollections';
+import { formatRequest } from '@/utils/API_V1';
 
-export default function handler(req, res) {
-  const { body, method, query, cookies, headers } = req;
-  const { v1 } = query;
-  //GET "Authorization: Bearer YOUR_SECRET_API_TOKEN"
-  const apikey = headers.authorization;
-  const request = {
-    organization: v1 && v1.length > 0 ? v1[0] : null,
-    collection: v1 && v1.length > 1 ? v1[1] : null,
-    object: v1 && v1.length > 2 ? v1[2] : null,
-    method,
-    params: query,
-    body,
-    apikey,
-  };
+export default async function handler(req, res) {
+  const request = formatRequest(req);
 
-  if (!apikey) return res.status(401).json({ error: 'Unauthorized' });
+  if (!request.apikey) return res.status(401).json({ error: 'Unauthorized' });
 
   const verification = {
     organizationfound: false,
@@ -25,30 +15,32 @@ export default function handler(req, res) {
     objectfound: false,
     methodfound: false,
   };
-  api_access.map((item) => {
-    if (item.uid === request.organization) {
-      verification.organizationfound = true;
-      item.apiaccess.map((apikey_item) => {
-        if (apikey_item.apikey === apikey.replace('Bearer ', '')) {
-          verification.apikeyfound = true;
-          apikey_item.permissions.map((permission) => {
-            if (permission.collection === request.collection) {
-              verification.collectionfound = true;
-              if (permission.object.name === request.object) {
-                verification.objectfound = true;
-                if (permission.object.methods.includes(request.method)) {
-                  verification.methodfound = true;
-                }
-              }
+  await db.connect();
+  const apiaccessDB = await ApiAccess.findOne({
+    uid: request.organization,
+  });
+  await db.disconnect();
+
+  if (!apiaccessDB)
+    return res.status(401).json({ error: 'Organization Not Found' });
+
+  apiaccessDB.apiaccess.map((apikey_item) => {
+    if (apikey_item.apikey === request.apikey.replace('Bearer ', '')) {
+      verification.apikeyfound = true;
+      apikey_item.permissions.map((permission) => {
+        if (permission.collection === request.collection) {
+          verification.collectionfound = true;
+          if (permission.object.name === request.object) {
+            verification.objectfound = true;
+            if (permission.object.methods.includes(request.method)) {
+              verification.methodfound = true;
             }
-          });
+          }
         }
       });
     }
   });
 
-  if (!verification.organizationfound)
-    return res.status(401).json({ error: 'Unauthorized' });
   if (!verification.apikeyfound)
     return res.status(401).json({ error: 'Unauthorized' });
   if (!verification.collectionfound)
@@ -58,12 +50,16 @@ export default function handler(req, res) {
   if (!verification.methodfound)
     return res.status(401).json({ error: 'Action Unauthorized' });
 
-  const { records } = users;
+  const records = await getRecords(
+    request.organization,
+    request.collection,
+    request.object
+  );
 
-  if (query.filterBy) {
-    const filterBy = query.filterBy.split(',');
-    const filterValue = query.filterValue.split(',');
-    const filterOperator = query.filterOperator.split(',');
+  if (request.params.filterBy) {
+    const filterBy = request.params.filterBy.split(',');
+    const filterValue = request.params.filterValue.split(',');
+    const filterOperator = request.params.filterOperator.split(',');
     const filter = [];
     filterBy.map((item, index) => {
       filter.push({

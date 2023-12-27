@@ -1,11 +1,6 @@
-import Layout from '@/components/Layout';
-import Metaheader from '@/components/Metaheader';
-
-export default function Home() {
-  return (
-    <>
-      <Metaheader />
-      <Layout></Layout>
-    </>
-  );
+function HomeScreen() {
+  return <></>;
 }
+
+HomeScreen.auth = true;
+export default HomeScreen;
