@@ -247,7 +247,7 @@ const data = {
         status: { type: String, required: true },
         product: { type: String, required: true },
       },
-      data: generateOrders(20),
+      data: generateOrders(0),
     },
     {
       name: 'COLEC_6d498a2a94a3_quoter_orders_def',

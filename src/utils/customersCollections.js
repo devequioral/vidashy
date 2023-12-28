@@ -67,4 +67,21 @@ async function getRecords(request) {
   return { records, total, page, totalPages };
 }
 
-export { getRecords, getSchemaObject };
+//CREATE RECORD FUNCTION
+async function createRecord(request) {
+  const { organization, collection, object, body } = request;
+  let collectionName = `COLEC_${organization}_${collection}_${object}`;
+
+  await db.connect();
+  const schemaObject = await getSchemaObject(collectionName);
+
+  let schema = getDynamicSchema(collectionName, schemaObject, true);
+
+  const record = new schema(body);
+  await record.save();
+  await db.disconnect();
+
+  return { record };
+}
+
+export { getRecords, getSchemaObject, createRecord };
