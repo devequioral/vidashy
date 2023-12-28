@@ -17,12 +17,21 @@ function generateOrders(numorders) {
   const orders = [];
   for (let i = 0; i < numorders; i++) {
     orders.push({
-      userid: '1',
+      //RANDOM USERID BETWEEN 1 AND 2
+      userid: `${Math.floor(Math.random() * 2) + 1}`,
       id: generateUUID(),
-      status: 'pendiente',
+      //RANDOM STATUS BETWEEN pendientes, procesada, completada, cancelada
+      status: ['pendiente', 'procesada', 'completada', 'cancelada'][
+        Math.floor(Math.random() * 4)
+      ],
       product: JSON.stringify({
         id: '1',
         productName: 'Arctic bunker 01',
+        productImage: {
+          src: '/assets/images/temp/product-01-medium-t.png',
+          width: 158,
+          height: 319,
+        },
         addons: [
           {
             id: 'addon-01',
@@ -30,14 +39,17 @@ function generateOrders(numorders) {
             options: [
               {
                 id: 'option-01',
+                text: 'Autenticador Biométrico',
                 selected: false,
               },
               {
                 id: 'option-02',
+                text: 'Lector de Tarjeta Magnética',
                 selected: false,
               },
               {
                 id: 'option-03',
+                text: 'CCTV 24 horas',
                 selected: false,
               },
             ],
@@ -48,14 +60,17 @@ function generateOrders(numorders) {
             options: [
               {
                 id: 'option-04',
+                text: 'Actualización de energía',
                 selected: false,
               },
               {
                 id: 'option-05',
+                text: 'Protección electromagnética',
                 selected: false,
               },
               {
                 id: 'option-06',
+                text: 'UPS Adicional 8 horas',
                 selected: false,
               },
             ],
@@ -66,14 +81,17 @@ function generateOrders(numorders) {
             options: [
               {
                 id: 'option-07',
+                text: 'Alarma y extinción de incendios',
                 selected: false,
               },
               {
                 id: 'option-08',
+                text: 'Sellos ignífugos para pase de cables',
                 selected: false,
               },
               {
                 id: 'option-09',
+                text: 'Sistema de anti vibración',
                 selected: false,
               },
             ],
@@ -84,14 +102,17 @@ function generateOrders(numorders) {
             options: [
               {
                 id: 'option-10',
+                text: 'Sistema de Enfriamiento Adicional',
                 selected: false,
               },
               {
                 id: 'option-11',
+                text: 'Sistema Automático de Refrigeración',
                 selected: false,
               },
               {
                 id: 'option-12',
+                text: 'Sellos Anti Calentamiento',
                 selected: false,
               },
             ],
@@ -177,6 +198,15 @@ const data = {
           name: 'Pedro Perez',
           username: 'pedroperez',
           email: 'user02@example.com',
+          password:
+            '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
+          role: 'regular',
+        },
+        {
+          id: '3',
+          name: 'Ronald Perez',
+          username: 'ronaldperez',
+          email: 'admin@example.com',
           password:
             '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
           role: 'admin',
