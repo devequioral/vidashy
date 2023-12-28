@@ -59,10 +59,12 @@ async function getRecords(request) {
 
   const total = await schema.find(query).countDocuments();
 
+  const totalPages = Math.ceil(total / pageSize);
+
   const records = await schema.find(query).skip(skip).limit(pageSize);
   await db.disconnect();
 
-  return { records, total, page };
+  return { records, total, page, totalPages };
 }
 
 export { getRecords, getSchemaObject };
