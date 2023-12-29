@@ -24,7 +24,7 @@ function generateOrders(numorders) {
       status: ['pendiente', 'procesada', 'completada', 'cancelada'][
         Math.floor(Math.random() * 4)
       ],
-      product: JSON.stringify({
+      product: {
         id: '1',
         productName: 'Arctic bunker 01',
         productImage: {
@@ -118,7 +118,9 @@ function generateOrders(numorders) {
             ],
           },
         ],
-      }),
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
   }
   return orders;
@@ -133,6 +135,8 @@ const data = {
       email: 'admin@example.com',
       password: bcrypt.hashSync('123456'),
       role: 'admin',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     {
       id: '2',
@@ -141,26 +145,28 @@ const data = {
       email: 'user@example.com',
       password: bcrypt.hashSync('123456'),
       role: 'regular',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
   ],
   apiaccess: [
     {
       uid: '6d498a2a94a3',
-      name: 'Artik Bunker',
+      name: 'Arctic Bunker',
       description: 'Organization Description',
       apiaccess: [
         {
           apikey: '1087d55eb85413c9414a064ce04a086695a301d6a61a963f',
           permissions: [
             {
-              collection: 'quoter',
+              client_collection: 'quoter',
               object: {
                 name: 'users',
                 methods: ['GET', 'POST', 'PATCH', 'DELETE'],
               },
             },
             {
-              collection: 'quoter',
+              client_collection: 'quoter',
               object: {
                 name: 'orders',
                 methods: ['GET', 'POST', 'PATCH', 'DELETE'],
@@ -169,20 +175,14 @@ const data = {
           ],
         },
       ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
   ],
   userCollections: [
     {
       name: 'COLEC_6d498a2a94a3_quoter_users',
       description: 'Users Collection',
-      fields: {
-        id: { type: String, required: true, unique: true },
-        name: { type: String, required: true },
-        username: { type: String, required: true },
-        email: { type: String, required: true },
-        password: { type: String, required: true },
-        role: { type: String, required: true },
-      },
       data: [
         {
           id: '1',
@@ -192,6 +192,8 @@ const data = {
           password:
             '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
           role: 'regular',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
         {
           id: '2',
@@ -201,6 +203,8 @@ const data = {
           password:
             '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
           role: 'regular',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
         {
           id: '3',
@@ -210,65 +214,62 @@ const data = {
           password:
             '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
           role: 'admin',
-        },
-      ],
-    },
-    {
-      name: 'COLEC_6d498a2a94a3_quoter_users_def',
-      description: 'Users Collection Definition',
-      fields: {
-        columns: {
-          type: String,
-          required: true,
-        },
-      },
-      data: [
-        {
-          columns: JSON.stringify([
-            {
-              name: 'id',
-              structure: { type: 'String', required: true, unique: true },
-            },
-            { name: 'name', structure: { type: 'String', required: true } },
-            { name: 'username', structure: { type: 'String', required: true } },
-            { name: 'email', structure: { type: 'String', required: true } },
-            { name: 'password', structure: { type: 'String', required: true } },
-            { name: 'role', structure: { type: 'String', required: true } },
-          ]),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ],
     },
     {
       name: 'COLEC_6d498a2a94a3_quoter_orders',
       description: 'Users Orders',
-      fields: {
-        id: { type: String, required: true, unique: true },
-        userid: { type: String, required: true },
-        status: { type: String, required: true },
-        product: { type: String, required: true },
-      },
-      data: generateOrders(0),
+      data: generateOrders(2),
     },
+  ],
+  userDatabases: [
     {
-      name: 'COLEC_6d498a2a94a3_quoter_orders_def',
-      description: 'Users Orders Definition',
-      fields: {
-        columns: {
-          type: String,
-          required: true,
-        },
-      },
-      data: [
+      name: 'DB_6d498a2a94a3_quoter',
+      userCollections: [
         {
-          columns: JSON.stringify([
+          name: 'users',
+          data: [
             {
-              name: 'id',
-              structure: { type: 'String', required: true, unique: true },
+              id: '1',
+              name: 'Carlos Perez',
+              username: 'carlosperez',
+              email: 'user@example.com',
+              password:
+                '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
+              role: 'regular',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
             },
-            { name: 'userid', structure: { type: 'String', required: true } },
-            { name: 'status', structure: { type: 'String', required: true } },
-            { name: 'product', structure: { type: 'String', required: true } },
-          ]),
+            {
+              id: '2',
+              name: 'Pedro Perez',
+              username: 'pedroperez',
+              email: 'user02@example.com',
+              password:
+                '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
+              role: 'regular',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            {
+              id: '3',
+              name: 'Ronald Perez',
+              username: 'ronaldperez',
+              email: 'admin@example.com',
+              password:
+                '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
+              role: 'admin',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
+        },
+        {
+          name: 'orders',
+          data: generateOrders(2),
         },
       ],
     },

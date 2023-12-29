@@ -1,32 +1,6 @@
 import db from '@/utils/db';
 import { getDynamicSchema } from '@/models/DynamicModel';
-
-async function getSchemaObject(collectionName) {
-  let schemaObject = {};
-  collectionName += `_def`;
-
-  await db.connect();
-  let schema = await getDynamicSchema(
-    collectionName,
-    {
-      columns: { type: String, required: true },
-    },
-    true
-  );
-
-  const value = await schema.find({});
-
-  const columns = JSON.parse(value[0].columns);
-
-  schemaObject = columns.reduce((obj, item) => {
-    obj[item.name] = item.structure;
-    return obj;
-  }, {});
-
-  await db.disconnect();
-
-  return schemaObject;
-}
+import { consoleError } from './error';
 
 async function getRecords(request) {
   const { organization, collection, object, params } = request;
@@ -50,19 +24,23 @@ async function getRecords(request) {
     query[item.field] = item.value;
   });
 
-  let collectionName = `COLEC_${organization}_${collection}_${object}`;
+  let dataBaseName = `DB_${organization}_${collection}`;
   const skip = (page - 1) * pageSize;
-  await db.connect();
-  const schemaObject = await getSchemaObject(collectionName);
+  const { client, database } = db.mongoConnect(dataBaseName);
 
-  let schema = getDynamicSchema(collectionName, schemaObject, true);
+  const collectionDB = database.collection(object);
 
-  const total = await schema.find(query).countDocuments();
+  const total = await collectionDB.countDocuments(query);
 
   const totalPages = Math.ceil(total / pageSize);
 
-  const records = await schema.find(query).skip(skip).limit(pageSize);
-  await db.disconnect();
+  const records = await collectionDB
+    .find(query)
+    .skip(skip)
+    .limit(pageSize)
+    .toArray();
+
+  await client.close();
 
   return { records, total, page, totalPages };
 }
@@ -70,18 +48,21 @@ async function getRecords(request) {
 //CREATE RECORD FUNCTION
 async function createRecord(request) {
   const { organization, collection, object, body } = request;
-  let collectionName = `COLEC_${organization}_${collection}_${object}`;
+  let dataBaseName = `DB_${organization}_${collection}`;
 
-  await db.connect();
-  const schemaObject = await getSchemaObject(collectionName);
+  const { client, database } = db.mongoConnect(dataBaseName);
 
-  let schema = getDynamicSchema(collectionName, schemaObject, true);
+  const collectionDB = database.collection(object);
 
-  const record = new schema(body);
-  await record.save();
-  await db.disconnect();
+  //ADD TO BODY THE CREATEDAT AND UPDATEDAT FIELDS
+  body.createdAt = new Date().toISOString();
+  body.updatedAt = new Date().toISOString();
+
+  const record = await collectionDB.insertOne(body);
+
+  await client.close();
 
   return { record };
 }
 
-export { getRecords, getSchemaObject, createRecord };
+export { getRecords, createRecord };

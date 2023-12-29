@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+const { MongoClient } = require('mongodb');
 
 const connection = {};
 
@@ -37,5 +38,11 @@ function convertDocToObj(doc) {
   return doc;
 }
 
-const db = { connect, disconnect, convertDocToObj };
+function mongoConnect(databaseName) {
+  const client = new MongoClient(process.env.MONGODB_URI);
+  const database = client.db(databaseName);
+  return { client, database };
+}
+
+const db = { connect, disconnect, convertDocToObj, mongoConnect };
 export default db;

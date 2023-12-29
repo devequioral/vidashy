@@ -1,10 +1,24 @@
-import User from '@/models/User';
-import ApiAccess from '@/models/ApiAccess';
-//import Temp from '@/models/Temp';
-import { getDynamicSchema } from '@/models/DynamicModel';
 import data from '@/data/seed_data';
-import db from '@/utils/db';
 import { getToken } from 'next-auth/jwt';
+import { consoleError } from '@/utils/error';
+import db from '@/utils/db';
+
+const seedClientData = async (data) => {
+  await data.userDatabases.map(async (userDatabase) => {
+    try {
+      const { client, database } = db.mongoConnect(userDatabase.name);
+      userDatabase.userCollections.map(async (collection) => {
+        const newCollection = database.collection(collection.name);
+        await newCollection.deleteMany();
+        await newCollection.insertMany(collection.data);
+      });
+
+      await client.close();
+    } catch (err) {
+      consoleError(err);
+    }
+  });
+};
 
 const handler = async (req, res) => {
   if (process.env.NEXT_PUBLIC_SYSTEM_SCOPE !== 'development')
@@ -17,21 +31,24 @@ const handler = async (req, res) => {
   if (token.role !== 'admin')
     return res.status(401).send({ message: 'User Not authorized' });
 
-  await db.connect();
-  await User.deleteMany();
-  await User.insertMany(data.users);
-  await ApiAccess.deleteMany();
-  await ApiAccess.insertMany(data.apiaccess);
+  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
 
-  data.userCollections.map(async (collection) => {
-    // await Temp.deleteMany();
-    // await Temp.insertMany(data.userCollections[0].data);
-    let schema = getDynamicSchema(collection.name, collection.fields, true);
-    await schema.deleteMany();
-    await schema.insertMany(collection.data);
-  });
+  try {
+    const users = database.collection('users');
+    await users.deleteMany({});
+    await users.insertMany(data.users);
 
-  await db.disconnect();
-  res.send({ message: 'seeded successfully', tepm: JSON.stringify(ApiAccess) });
+    const apiaccess = database.collection('apiaccess');
+    await apiaccess.deleteMany({});
+    await apiaccess.insertMany(data.apiaccess);
+
+    await seedClientData(data);
+  } catch (err) {
+    consoleError(err);
+  } finally {
+    await client.close();
+  }
+
+  res.send({ message: 'seeded successfully' });
 };
 export default handler;

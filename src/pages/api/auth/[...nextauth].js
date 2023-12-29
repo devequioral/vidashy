@@ -1,26 +1,22 @@
+import db from '@/utils/db';
 import bcryptjs from 'bcryptjs';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import User from '@/models/User';
-import db from '@/utils/db';
 
 async function getUser(value, filterBy) {
-  let user;
-  if (filterBy === 'email') {
-    await db.connect();
-    user = await User.findOne({
-      email: value,
-    });
-  }
-  if (filterBy === 'username') {
-    await db.connect();
-    user = await User.findOne({
-      username: value,
-    });
-  }
-  return user;
-}
+  try {
+    let user;
+    const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
+    const collectionDB = database.collection('users');
+    const query = filterBy === 'email' ? { email: value } : { username: value };
+    user = await collectionDB.findOne(query);
+    await client.close();
 
+    return user;
+  } catch (err) {
+    console.log(err);
+  }
+}
 async function fetchUser(username) {
   //DETERMINE IF USERNAME IS AN EMAIL WITH REGEX
   const isEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+(\.)[a-zA-Z0-9_-]+$/;

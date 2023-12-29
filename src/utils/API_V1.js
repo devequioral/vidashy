@@ -1,5 +1,5 @@
-import ApiAccess from '@/models/ApiAccess';
 import db from '@/utils/db';
+import { consoleError } from '@/utils/error';
 
 function formatRequest(req) {
   const { body, method, query, cookies, headers } = req;
@@ -30,11 +30,11 @@ async function verifyRequest(request) {
     objectfound: false,
     methodfound: false,
   };
-  await db.connect();
-  const apiaccessDB = await ApiAccess.findOne({
-    uid: request.organization,
-  });
-  await db.disconnect();
+  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
+  const apiaccessDB = await database
+    .collection('apiaccess')
+    .findOne({ uid: request.organization });
+  await client.close();
 
   if (!apiaccessDB)
     return { status: 401, response: { error: 'Organization Not Found' } };
@@ -43,7 +43,7 @@ async function verifyRequest(request) {
     if (apikey_item.apikey === request.apikey.replace('Bearer ', '')) {
       verification.apikeyfound = true;
       apikey_item.permissions.map((permission) => {
-        if (permission.collection === request.collection) {
+        if (permission.client_collection === request.collection) {
           verification.collectionfound = true;
           if (permission.object.name === request.object) {
             verification.objectfound = true;
