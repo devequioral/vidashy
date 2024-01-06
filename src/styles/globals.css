@@ -8,6 +8,19 @@ body{
   font-family: var(--primary-font), serif;
 }
 
+:root {
+  --color-white: #fafbff;
+  --color-black: #141519;
+  --color-primary: #862873;
+  --color-secondary: #1992ce;
+
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 a{
   text-decoration: none;
   color:#fff;

@@ -172,6 +172,13 @@ const data = {
                 methods: ['GET', 'POST', 'PATCH', 'DELETE'],
               },
             },
+            {
+              client_collection: 'quoter',
+              object: {
+                name: 'products',
+                methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+              },
+            },
           ],
         },
       ],
@@ -270,6 +277,663 @@ const data = {
         {
           name: 'orders',
           data: generateOrders(2),
+        },
+        {
+          name: 'products',
+          data: [
+            {
+              id: '1',
+              productName: 'Arctic bunker 01',
+              productSubtitle: 'Personalice su producto',
+              description:
+                'Ocupa muy poco espacio, lo que permite una implementación rápida dentro de un espacio limitado y proporciona 10 tipos de soluciones que requieren capacidades de suministro de energía de 20kVA.',
+              productImage: {
+                src: '/assets/images/temp/product-01-medium-t.png',
+                width: 158,
+                height: 319,
+              },
+              productImageSM: {
+                src: '/assets/images/temp/product-01-t.png',
+                width: 105,
+                height: 213,
+              },
+              addons: [
+                {
+                  id: 'addon-01',
+                  name: 'Seguridad',
+                  description:
+                    'Su sistema esta seguro, pero puede seguir agregando complementos de seguridad para hacerlo más seguro.',
+                  icon: {
+                    src: '/assets/images/icon-security.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#82BB30',
+                  options: [
+                    {
+                      id: 'option-01',
+                      text: 'Autenticador Biométrico',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-02',
+                      text: 'Lector de Tarjeta Magnética',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-03',
+                      text: 'CCTV 24 horas',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-02',
+                  name: 'Energía',
+                  description:
+                    'Su sistema tiene suficiente energía para operar, pero puede seguir agregando complementos de energía para hacerlo más eficiente.',
+                  icon: {
+                    src: '/assets/images/icon-energy.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#303EBB',
+                  options: [
+                    {
+                      id: 'option-04',
+                      text: 'Actualización de energía',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-05',
+                      text: 'Protección electromagnética',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-06',
+                      text: 'UPS Adicional 8 horas',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-03',
+                  name: 'Protección Desastres',
+                  description:
+                    'Su sistema tiene suficiente protección contra desastres, pero puede seguir agregando complementos de energía para protegerlo más.',
+                  icon: {
+                    src: '/assets/images/icon-fire.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#EEA435',
+                  options: [
+                    {
+                      id: 'option-07',
+                      text: 'Alarma y extinción de incendios',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-08',
+                      text: 'Sellos ignífugos para pase de cables',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-09',
+                      text: 'Sistema de anti vibración',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-04',
+                  name: 'Refrigeración',
+                  description:
+                    'Su sistema tiene suficiente protección contra desastres, pero puede seguir agregando complementos de energía para protegerlo más.',
+                  icon: {
+                    src: '/assets/images/icon-cold.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#35B6EE',
+                  options: [
+                    {
+                      id: 'option-10',
+                      text: 'Sistema de Enfriamiento Adicional',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-11',
+                      text: 'Sistema Automático de Refrigeración',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-12',
+                      text: 'Sellos Anti Calentamiento',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: '2',
+              productName: 'Arctic bunker 02',
+              productSubtitle: 'Personalice su producto',
+              description:
+                'Ocupa muy poco espacio, lo que permite una implementación rápida dentro de un espacio limitado y proporciona 10 tipos de soluciones que requieren capacidades de suministro de energía de 20kVA.',
+              productImage: {
+                src: '/assets/images/temp/product-01-medium-t.png',
+                width: 158,
+                height: 319,
+              },
+              productImageSM: {
+                src: '/assets/images/temp/product-01-t.png',
+                width: 105,
+                height: 213,
+              },
+              addons: [
+                {
+                  id: 'addon-01',
+                  name: 'Seguridad',
+                  description:
+                    'Su sistema esta seguro, pero puede seguir agregando complementos de seguridad para hacerlo más seguro.',
+                  icon: {
+                    src: '/assets/images/icon-security.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#82BB30',
+                  options: [
+                    {
+                      id: 'option-01',
+                      text: 'Autenticador Biométrico',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-02',
+                      text: 'Lector de Tarjeta Magnética',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-03',
+                      text: 'CCTV 24 horas',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-02',
+                  name: 'Energía',
+                  description:
+                    'Su sistema tiene suficiente energía para operar, pero puede seguir agregando complementos de energía para hacerlo más eficiente.',
+                  icon: {
+                    src: '/assets/images/icon-energy.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#303EBB',
+                  options: [
+                    {
+                      id: 'option-04',
+                      text: 'Actualización de energía',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-05',
+                      text: 'Protección electromagnética',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-06',
+                      text: 'UPS Adicional 8 horas',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-03',
+                  name: 'Protección Desastres',
+                  description:
+                    'Su sistema tiene suficiente protección contra desastres, pero puede seguir agregando complementos de energía para protegerlo más.',
+                  icon: {
+                    src: '/assets/images/icon-fire.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#EEA435',
+                  options: [
+                    {
+                      id: 'option-07',
+                      text: 'Alarma y extinción de incendios',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-08',
+                      text: 'Sellos ignífugos para pase de cables',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-09',
+                      text: 'Sistema de anti vibración',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-04',
+                  name: 'Refrigeración',
+                  description:
+                    'Su sistema tiene suficiente protección contra desastres, pero puede seguir agregando complementos de energía para protegerlo más.',
+                  icon: {
+                    src: '/assets/images/icon-cold.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#35B6EE',
+                  options: [
+                    {
+                      id: 'option-10',
+                      text: 'Sistema de Enfriamiento Adicional',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-11',
+                      text: 'Sistema Automático de Refrigeración',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-12',
+                      text: 'Sellos Anti Calentamiento',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: '3',
+              productName: 'Arctic bunker 03',
+              productSubtitle: 'Personalice su producto',
+              description:
+                'Ocupa muy poco espacio, lo que permite una implementación rápida dentro de un espacio limitado y proporciona 10 tipos de soluciones que requieren capacidades de suministro de energía de 20kVA.',
+              productImage: {
+                src: '/assets/images/temp/product-01-medium-t.png',
+                width: 158,
+                height: 319,
+              },
+              productImageSM: {
+                src: '/assets/images/temp/product-01-t.png',
+                width: 105,
+                height: 213,
+              },
+              addons: [
+                {
+                  id: 'addon-01',
+                  name: 'Seguridad',
+                  description:
+                    'Su sistema esta seguro, pero puede seguir agregando complementos de seguridad para hacerlo más seguro.',
+                  icon: {
+                    src: '/assets/images/icon-security.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#82BB30',
+                  options: [
+                    {
+                      id: 'option-01',
+                      text: 'Autenticador Biométrico',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-02',
+                      text: 'Lector de Tarjeta Magnética',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-03',
+                      text: 'CCTV 24 horas',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-02',
+                  name: 'Energía',
+                  description:
+                    'Su sistema tiene suficiente energía para operar, pero puede seguir agregando complementos de energía para hacerlo más eficiente.',
+                  icon: {
+                    src: '/assets/images/icon-energy.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#303EBB',
+                  options: [
+                    {
+                      id: 'option-04',
+                      text: 'Actualización de energía',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-05',
+                      text: 'Protección electromagnética',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-06',
+                      text: 'UPS Adicional 8 horas',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-03',
+                  name: 'Protección Desastres',
+                  description:
+                    'Su sistema tiene suficiente protección contra desastres, pero puede seguir agregando complementos de energía para protegerlo más.',
+                  icon: {
+                    src: '/assets/images/icon-fire.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#EEA435',
+                  options: [
+                    {
+                      id: 'option-07',
+                      text: 'Alarma y extinción de incendios',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-08',
+                      text: 'Sellos ignífugos para pase de cables',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-09',
+                      text: 'Sistema de anti vibración',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-04',
+                  name: 'Refrigeración',
+                  description:
+                    'Su sistema tiene suficiente protección contra desastres, pero puede seguir agregando complementos de energía para protegerlo más.',
+                  icon: {
+                    src: '/assets/images/icon-cold.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#35B6EE',
+                  options: [
+                    {
+                      id: 'option-10',
+                      text: 'Sistema de Enfriamiento Adicional',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-11',
+                      text: 'Sistema Automático de Refrigeración',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-12',
+                      text: 'Sellos Anti Calentamiento',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: '4',
+              productName: 'Arctic bunker 04',
+              productSubtitle: 'Personalice su producto',
+              description:
+                'Ocupa muy poco espacio, lo que permite una implementación rápida dentro de un espacio limitado y proporciona 10 tipos de soluciones que requieren capacidades de suministro de energía de 20kVA.',
+              productImage: {
+                src: '/assets/images/temp/product-01-medium-t.png',
+                width: 158,
+                height: 319,
+              },
+              productImageSM: {
+                src: '/assets/images/temp/product-01-t.png',
+                width: 105,
+                height: 213,
+              },
+              addons: [
+                {
+                  id: 'addon-01',
+                  name: 'Seguridad',
+                  description:
+                    'Su sistema esta seguro, pero puede seguir agregando complementos de seguridad para hacerlo más seguro.',
+                  icon: {
+                    src: '/assets/images/icon-security.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#82BB30',
+                  options: [
+                    {
+                      id: 'option-01',
+                      text: 'Autenticador Biométrico',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-02',
+                      text: 'Lector de Tarjeta Magnética',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-03',
+                      text: 'CCTV 24 horas',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-02',
+                  name: 'Energía',
+                  description:
+                    'Su sistema tiene suficiente energía para operar, pero puede seguir agregando complementos de energía para hacerlo más eficiente.',
+                  icon: {
+                    src: '/assets/images/icon-energy.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#303EBB',
+                  options: [
+                    {
+                      id: 'option-04',
+                      text: 'Actualización de energía',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-05',
+                      text: 'Protección electromagnética',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-06',
+                      text: 'UPS Adicional 8 horas',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-03',
+                  name: 'Protección Desastres',
+                  description:
+                    'Su sistema tiene suficiente protección contra desastres, pero puede seguir agregando complementos de energía para protegerlo más.',
+                  icon: {
+                    src: '/assets/images/icon-fire.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#EEA435',
+                  options: [
+                    {
+                      id: 'option-07',
+                      text: 'Alarma y extinción de incendios',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-08',
+                      text: 'Sellos ignífugos para pase de cables',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-09',
+                      text: 'Sistema de anti vibración',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+                {
+                  id: 'addon-04',
+                  name: 'Refrigeración',
+                  description:
+                    'Su sistema tiene suficiente protección contra desastres, pero puede seguir agregando complementos de energía para protegerlo más.',
+                  icon: {
+                    src: '/assets/images/icon-cold.svg',
+                    width: 20,
+                    height: 20,
+                  },
+                  defaultPercent: 60,
+                  color: '#35B6EE',
+                  options: [
+                    {
+                      id: 'option-10',
+                      text: 'Sistema de Enfriamiento Adicional',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 20,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-11',
+                      text: 'Sistema Automático de Refrigeración',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                    {
+                      id: 'option-12',
+                      text: 'Sellos Anti Calentamiento',
+                      help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+                      percent: 10,
+                      selected: false,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       ],
     },

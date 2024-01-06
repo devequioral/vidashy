@@ -23,9 +23,11 @@
     "react-hook-form": "^7.49.2",
     "react-minimal-pie-chart": "^8.4.0",
     "react-toastify": "^9.1.3",
-    "react-tooltip": "^5.25.0"
+    "react-tooltip": "^5.25.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/react": "18.2.47",
     "autoprefixer": "^10.4.16",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
