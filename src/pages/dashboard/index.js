@@ -19,6 +19,20 @@ function DashBoardScreen() {
             </li>
           </ul>
         </div>
+        {/* <form
+          action="/api/v1/media"
+          method="post"
+          enctype="multipart/form-data"
+          style={{ marginTop: '50px' }}
+        >
+          <input type="file" name="file" />
+          <button
+            type="submit"
+            style={{ color: '#fff', background: 'blue', padding: '10px' }}
+          >
+            Submit
+          </button>
+        </form> */}
       </Layout>
     </>
   );

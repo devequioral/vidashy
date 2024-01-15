@@ -352,6 +352,13 @@ const data = {
                 methods: ['GET', 'POST', 'PATCH', 'DELETE'],
               },
             },
+            {
+              client_collection: 'quoter',
+              object: {
+                name: 'media',
+                methods: ['PUT'],
+              },
+            },
           ],
         },
       ],

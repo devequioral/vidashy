@@ -1,5 +1,9 @@
 import { formatRequest, verifyRequest } from '@/utils/API_V1';
-import { getRecords, createRecord } from '@/utils/customersCollections';
+import {
+  getRecords,
+  createRecord,
+  prepareUpload,
+} from '@/utils/customersCollections';
 import { consoleError } from '@/utils/error';
 
 export default async function handler(req, res) {

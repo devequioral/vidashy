@@ -15,6 +15,25 @@ function formatRequest(req) {
     body,
     apikey,
     cookies,
+    headers,
+  };
+}
+
+function formatRequestMedia(req) {
+  const { body, method, query, cookies, headers } = req;
+  const { media } = query;
+  //GET "Authorization: Bearer YOUR_SECRET_API_TOKEN"
+  const apikey = headers.authorization;
+  return {
+    organization: media && media.length > 0 ? media[0] : null,
+    collection: media && media.length > 1 ? media[1] : null,
+    object: 'media',
+    method,
+    params: query,
+    body,
+    apikey,
+    cookies,
+    headers,
   };
 }
 
@@ -68,4 +87,4 @@ async function verifyRequest(request) {
   return true;
 }
 
-export { formatRequest, verifyRequest };
+export { formatRequest, formatRequestMedia, verifyRequest };
