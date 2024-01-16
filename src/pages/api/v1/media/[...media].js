@@ -1,9 +1,5 @@
 import { formatRequestMedia, verifyRequest } from '@/utils/API_V1';
-import {
-  getRecords,
-  createRecord,
-  prepareUpload,
-} from '@/utils/customersCollections';
+import { getRecords, createRecord } from '@/utils/customersCollections';
 import { consoleError } from '@/utils/error';
 
 import { Formidable } from 'formidable';
@@ -28,7 +24,6 @@ export default async function handler(req, res) {
     const form = new Formidable();
     form.parse(req, (err, fields, files) => {
       if (err) {
-        console.log('ERROR', err);
         return reject(err);
       }
       resolve({ fields, files });
@@ -76,7 +71,8 @@ export default async function handler(req, res) {
     );
 
     if (response['$metadata'].httpStatusCode === 200) {
-      return res.status(200).json({ ok: 200, Key });
+      const URL = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${Key}`;
+      return res.status(200).json({ ok: 200, Key, URL });
     }
 
     return res.status(500).json({ error: 'Error Found' });
