@@ -38,6 +38,7 @@ async function getRecords(request) {
 
   const records = await collectionDB
     .find(query)
+    .sort({ createdAt: -1 })
     .skip(skip)
     .limit(pageSize)
     .toArray();
