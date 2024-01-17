@@ -355,6 +355,13 @@ const data = {
             {
               client_collection: 'quoter',
               object: {
+                name: 'addons',
+                methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+              },
+            },
+            {
+              client_collection: 'quoter',
+              object: {
                 name: 'media',
                 methods: ['PUT'],
               },
@@ -366,52 +373,52 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
   ],
-  userCollections: [
-    {
-      name: 'COLEC_6d498a2a94a3_quoter_users',
-      description: 'Users Collection',
-      data: [
-        {
-          id: '1',
-          name: 'Carlos Perez',
-          username: 'carlosperez',
-          email: 'user@example.com',
-          password:
-            '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
-          role: 'regular',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          name: 'Pedro Perez',
-          username: 'pedroperez',
-          email: 'user02@example.com',
-          password:
-            '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
-          role: 'regular',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: '3',
-          name: 'Ronald Perez',
-          username: 'ronaldperez',
-          email: 'admin@example.com',
-          password:
-            '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
-          role: 'admin',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ],
-    },
-    {
-      name: 'COLEC_6d498a2a94a3_quoter_orders',
-      description: 'Users Orders',
-      data: generateOrders(2),
-    },
-  ],
+  // userCollections: [
+  //   {
+  //     name: 'COLEC_6d498a2a94a3_quoter_users',
+  //     description: 'Users Collection',
+  //     data: [
+  //       {
+  //         id: '1',
+  //         name: 'Carlos Perez',
+  //         username: 'carlosperez',
+  //         email: 'user@example.com',
+  //         password:
+  //           '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
+  //         role: 'regular',
+  //         createdAt: new Date().toISOString(),
+  //         updatedAt: new Date().toISOString(),
+  //       },
+  //       {
+  //         id: '2',
+  //         name: 'Pedro Perez',
+  //         username: 'pedroperez',
+  //         email: 'user02@example.com',
+  //         password:
+  //           '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
+  //         role: 'regular',
+  //         createdAt: new Date().toISOString(),
+  //         updatedAt: new Date().toISOString(),
+  //       },
+  //       {
+  //         id: '3',
+  //         name: 'Ronald Perez',
+  //         username: 'ronaldperez',
+  //         email: 'admin@example.com',
+  //         password:
+  //           '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
+  //         role: 'admin',
+  //         createdAt: new Date().toISOString(),
+  //         updatedAt: new Date().toISOString(),
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     name: 'COLEC_6d498a2a94a3_quoter_orders',
+  //     description: 'Users Orders',
+  //     data: generateOrders(2),
+  //   },
+  // ],
   userDatabases: [
     {
       name: 'DB_6d498a2a94a3_quoter',
@@ -461,6 +468,22 @@ const data = {
         {
           name: 'products',
           data: generateProducts(8),
+        },
+        {
+          name: 'addons',
+          data: [
+            {
+              id: generateUUID(),
+              category: 'Seguridad',
+              productID: generateUUID(),
+              productName: 'Artic Bunker 01',
+              text: 'Autenticador Biométrico',
+              help: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, quae.',
+              percent: 20,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
         },
       ],
     },

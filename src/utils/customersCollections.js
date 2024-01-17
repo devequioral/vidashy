@@ -58,10 +58,14 @@ async function createRecord(request) {
   const collectionDB = database.collection(object);
 
   //ADD TO BODY THE CREATEDAT AND UPDATEDAT FIELDS
-  body.createdAt = new Date().toISOString();
-  body.updatedAt = new Date().toISOString();
 
-  const record = await collectionDB.insertOne(body);
+  const new_record = {
+    ...body,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const record = await collectionDB.insertOne(new_record);
 
   await client.close();
 
