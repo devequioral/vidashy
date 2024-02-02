@@ -72,7 +72,33 @@ async function createRecord(request) {
   return { record };
 }
 
-//CREATE RECORD FUNCTION
+//UPDATE RECORD FUNCTION
+async function updateRecord(request) {
+  const { organization, collection, object, body } = request;
+  let dataBaseName = `DB_${organization}_${collection}`;
+
+  const { client, database } = db.mongoConnect(dataBaseName);
+
+  const collectionDB = database.collection(object);
+
+  const { id } = body;
+
+  //ADD TO BODY THE UPDATEDAT FIELDS
+  const update_record = {
+    ...body,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const filter = { id };
+
+  const record = await collectionDB.updateOne(filter, { $set: update_record });
+
+  await client.close();
+
+  return { record };
+}
+
+//PREPARE UPLOAD
 async function prepareUpload(request) {
   const { body } = request;
 
@@ -100,4 +126,4 @@ async function prepareUpload(request) {
   }
 }
 
-export { getRecords, createRecord, prepareUpload };
+export { getRecords, createRecord, updateRecord, prepareUpload };

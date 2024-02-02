@@ -2,6 +2,7 @@ import { formatRequest, verifyRequest } from '@/utils/API_V1';
 import {
   getRecords,
   createRecord,
+  updateRecord,
   prepareUpload,
 } from '@/utils/customersCollections';
 import { consoleError } from '@/utils/error';
@@ -33,6 +34,18 @@ export default async function handler(req, res) {
     //VERIFY IF THE RECORD WAS CREATED
     if (!response.record)
       return res.status(500).json({ error: 'Record Not Created' });
+
+    //RETURN RESPONSE
+    return res.status(200).json(response);
+  }
+
+  if (request.method === 'PATCH') {
+    //CREATE THE RECORD
+    const response = await updateRecord(request);
+
+    //VERIFY IF THE RECORD WAS UPDATED
+    if (!response.record)
+      return res.status(500).json({ error: 'Record Not UPDATED' });
 
     //RETURN RESPONSE
     return res.status(200).json(response);
