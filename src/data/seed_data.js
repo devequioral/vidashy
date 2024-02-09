@@ -301,6 +301,120 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
   ],
+  automations: [
+    {
+      uid: '6d498a2a94a3_quoter_tickets_recordCreated',
+      automations: [
+        {
+          order: 1,
+          action: 'createNotification',
+          actionData: {
+            title: 'Nuevo Ticket Recibido',
+            message: 'Se ha recibido un nuevo ticket de soporte',
+            object: 'tickets',
+            objectid: '',
+            userid: '',
+            role: 'admin',
+            status: 'unread',
+          },
+          mailData: {
+            from: 'Arctic Bunker <clients.devs@sistev.co>',
+            to: 'sistev.contacto@gmail.com',
+            subject: 'Nuevo Ticket Recibido',
+            text: 'Nuevo Ticket Recibido desde el sitio web',
+            html: '<p>Nuevo Ticket Recibido desde el sitio web...</p>',
+          },
+        },
+      ],
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      uid: '6d498a2a94a3_quoter_orders_recordCreated',
+      automations: [
+        {
+          order: 1,
+          action: 'createNotification',
+          actionData: {
+            title: 'Nueva Cotización Recibida',
+            message: 'Se ha recibido una nueva cotización',
+            object: 'orders',
+            objectid: '',
+            userid: '',
+            role: 'admin',
+            status: 'unread',
+          },
+          mailData: {
+            from: 'Arctic Bunker <clients.devs@sistev.co>',
+            to: 'sistev.contacto@gmail.com',
+            subject: 'Nueva Cotización Recibida',
+            text: 'Nueva Cotización Recibida desde el sitio web',
+            html: '<p>Nueva Cotización Recibida desde el sitio web...</p>',
+          },
+        },
+      ],
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      uid: '6d498a2a94a3_quoter_orders_recordUpdated',
+      automations: [
+        {
+          order: 1,
+          action: 'createNotification',
+          actionData: {
+            title: 'Cambios en su cotización',
+            message: `Su cotización ha cambiado de estado`,
+            object: 'orders',
+            objectid: '',
+            userid: '',
+            role: 'regular',
+            status: 'unread',
+          },
+          mailData: {
+            from: 'Arctic Bunker <clients.devs@sistev.co>',
+            to: 'sistev.contacto@gmail.com',
+            subject: 'Cambios en su cotización',
+            text: 'Cambios en su cotización desde el sitio web',
+            html: '<p>Cambios en su cotización desde el sitio web...</p>',
+          },
+        },
+      ],
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      uid: '6d498a2a94a3_quoter_tickets_recordUpdated',
+      automations: [
+        {
+          order: 1,
+          action: 'createNotification',
+          actionData: {
+            title: 'Actualización en su ticket',
+            message: `Su ticket ha cambiado de estado`,
+            object: 'tickets',
+            objectid: '',
+            userid: '',
+            role: 'regular',
+            status: 'unread',
+          },
+          mailData: {
+            from: 'Arctic Bunker <clients.devs@sistev.co>',
+            to: 'sistev.contacto@gmail.com',
+            subject: 'Actualización en su ticket',
+            text: 'Actualización en su ticket desde el sitio web',
+            html: '<p>Actualización en su ticket desde el sitio web...</p>',
+          },
+        },
+      ],
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ],
   userDatabases: [
     {
       name: 'DB_6d498a2a94a3_quoter',

@@ -3,6 +3,7 @@ import { consoleError } from './error';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
+import recordEmitter from '@/utils/Events';
 
 async function getRecords(request) {
   const { organization, collection, object, params } = request;
@@ -65,11 +66,20 @@ async function createRecord(request) {
     updatedAt: new Date().toISOString(),
   };
 
-  const record = await collectionDB.insertOne(new_record);
-
-  await client.close();
-
-  return { record };
+  try {
+    const record = await collectionDB.insertOne(new_record);
+    await client.close();
+    recordEmitter.emit('recordCreated', {
+      dbResponse: record,
+      organization,
+      collection,
+      object,
+      new_record,
+    });
+    return { record };
+  } catch (e) {
+    return { record: {} };
+  }
 }
 
 //UPDATE RECORD FUNCTION
@@ -91,11 +101,25 @@ async function updateRecord(request) {
 
   const filter = { id };
 
-  const record = await collectionDB.updateOne(filter, { $set: update_record });
+  try {
+    const record = await collectionDB.updateOne(filter, {
+      $set: update_record,
+    });
 
-  await client.close();
+    await client.close();
 
-  return { record };
+    recordEmitter.emit('recordUpdated', {
+      dbResponse: record,
+      organization,
+      collection,
+      object,
+      new_record: update_record,
+    });
+
+    return { record };
+  } catch (e) {
+    return { record: {} };
+  }
 }
 
 //PREPARE UPLOAD

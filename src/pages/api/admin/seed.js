@@ -42,6 +42,10 @@ const handler = async (req, res) => {
     await apiaccess.deleteMany({});
     await apiaccess.insertMany(data.apiaccess);
 
+    const automations = database.collection('automations');
+    await automations.deleteMany({});
+    await automations.insertMany(data.automations);
+
     await seedClientData(data);
   } catch (err) {
     consoleError(err);
