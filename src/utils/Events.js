@@ -1,6 +1,44 @@
 import EventEmitter from 'events';
 import db from '@/utils/db';
 
+function getValueFromField(record, field) {
+  let keys = field.split('.');
+  let value = record;
+  for (let key of keys) {
+    if (key === 'last') {
+      key = value.length - 1;
+    }
+    value = value[key];
+  }
+  return value;
+}
+
+function checkConditions(record, conditions) {
+  if (!conditions || conditions.length === 0) return false;
+  let response = false;
+  for (let condition of conditions) {
+    if (record.hasOwnProperty(condition.field)) {
+      let fieldValue = getValueFromField(record, condition.field); //
+      if (condition.operator === 'eq') {
+        response = fieldValue === condition.value;
+      }
+      if (condition.operator === 'isNotEmpty') {
+        response = fieldValue;
+      }
+      if (condition.operator === 'isEmpty') {
+        response = !fieldValue;
+      }
+    } else {
+      for (let key in record) {
+        if (typeof record[key] === 'object' && record[key] !== null) {
+          response = checkConditions(record[key], conditions);
+        }
+      }
+    }
+  }
+  return response;
+}
+
 class RecordEmitter extends EventEmitter {}
 
 const recordEmitter = new RecordEmitter();
@@ -18,6 +56,12 @@ recordEmitter.on('recordCreated', async (record) => {
 
   automationsDB.automations.map(async (automation) => {
     if (automation.action === 'createNotification') {
+      if (
+        automation.conditions &&
+        !checkConditions(record.new_record, automation.conditions)
+      )
+        return;
+
       const createNotifications = await import(
         '@/automations/createNotifications'
       );
@@ -39,6 +83,12 @@ recordEmitter.on('recordUpdated', async (record) => {
 
   automationsDB.automations.map(async (automation) => {
     if (automation.action === 'createNotification') {
+      if (
+        automation.conditions &&
+        !checkConditions(record.new_record, automation.conditions)
+      )
+        return;
+
       const createNotifications = await import(
         '@/automations/createNotifications'
       );

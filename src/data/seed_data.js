@@ -401,6 +401,77 @@ const data = {
             role: 'regular',
             status: 'unread',
           },
+          conditions: [
+            {
+              field: 'status',
+              value: '',
+              operator: 'isNotEmpty',
+            },
+          ],
+          mailData: {
+            from: 'Arctic Bunker <clients.devs@sistev.co>',
+            to: 'sistev.contacto@gmail.com',
+            subject: 'Actualización en su ticket',
+            text: 'Actualización en su ticket desde el sitio web',
+            html: '<p>Actualización en su ticket desde el sitio web...</p>',
+          },
+        },
+        {
+          order: 2,
+          action: 'createNotification',
+          actionData: {
+            title: 'Nueva Respuesta Recibida',
+            message: `Se ha recibido una nueva respuesta en su ticket`,
+            object: 'tickets',
+            objectid: '{{id}}',
+            userid: '{{userOwner.userid}}',
+            role: 'regular',
+            status: 'unread',
+          },
+          conditions: [
+            {
+              field: 'responses',
+              value: '',
+              operator: 'isNotEmpty',
+            },
+            {
+              field: 'role',
+              value: 'admin',
+              operator: 'eq',
+            },
+          ],
+          mailData: {
+            from: 'Arctic Bunker <clients.devs@sistev.co>',
+            to: 'sistev.contacto@gmail.com',
+            subject: 'Actualización en su ticket',
+            text: 'Actualización en su ticket desde el sitio web',
+            html: '<p>Actualización en su ticket desde el sitio web...</p>',
+          },
+        },
+        {
+          order: 3,
+          action: 'createNotification',
+          actionData: {
+            title: 'Nueva Respuesta Recibida',
+            message: `Se ha recibido una nueva respuesta en su ticket`,
+            object: 'tickets',
+            objectid: '{{id}}',
+            userid: '',
+            role: 'admin',
+            status: 'unread',
+          },
+          conditions: [
+            {
+              field: 'responses',
+              value: '',
+              operator: 'isNotEmpty',
+            },
+            {
+              field: 'role',
+              value: 'regular',
+              operator: 'eq',
+            },
+          ],
           mailData: {
             from: 'Arctic Bunker <clients.devs@sistev.co>',
             to: 'sistev.contacto@gmail.com',

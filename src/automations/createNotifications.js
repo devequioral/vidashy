@@ -1,6 +1,31 @@
 import db from '@/utils/db';
 import { v4 as uuidv4 } from 'uuid';
 
+function dynamicData(expr, record) {
+  let result = expr;
+  let keys = Object.keys(record);
+  keys.forEach((key) => {
+    if (Array.isArray(record[key]) && expr.includes('.last.')) {
+      let lastItem = record[key][record[key].length - 1];
+      let itemKeys = Object.keys(lastItem);
+      itemKeys.forEach((itemKey) => {
+        let value = lastItem[itemKey];
+        result = result.replace(`{{${key}.last.${itemKey}}}`, value);
+      });
+    } else if (typeof record[key] === 'object' && record[key] !== null) {
+      let nestedKeys = Object.keys(record[key]);
+      nestedKeys.forEach((nestedKey) => {
+        let value = record[key][nestedKey];
+        result = result.replace(`{{${key}.${nestedKey}}}`, value);
+      });
+    } else {
+      let value = record[key];
+      result = result.replace(`{{${key}}}`, value);
+    }
+  });
+  return result;
+}
+
 async function start(options) {
   const { automation, record } = options;
   const { organization, collection, object } = record;
@@ -15,8 +40,8 @@ async function start(options) {
     title: actionData.title,
     message: actionData.message,
     object: actionData.object,
-    objectid: record.new_record.id,
-    userid: actionData.userid,
+    objectid: dynamicData(actionData.objectid, record.new_record),
+    userid: dynamicData(actionData.userid, record.new_record),
     role: actionData.role,
     status: actionData.status,
     createdAt: new Date().toISOString(),
