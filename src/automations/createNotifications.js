@@ -1,5 +1,78 @@
 import db from '@/utils/db';
 import { v4 as uuidv4 } from 'uuid';
+import qs from 'qs';
+
+async function searchAllDB(obj, record) {
+  const { organization, collection } = record;
+  let dataBaseName = `DB_${organization}_${collection}`;
+  const { client, database } = db.mongoConnect(dataBaseName);
+  const collectionDB = database.collection(obj.searchAll.object);
+  const query = obj.searchAll.conditions;
+  const fields = obj.searchAll.fields.split(',');
+  const projection = { _id: 0 };
+  fields.map((field) => {
+    projection[field] = 1;
+  });
+  //TODO PROJECTION DONT WORK (RETURN EVERY FIELDS)
+  const result = await collectionDB.find(query, projection).toArray();
+  await client.close();
+  return result;
+}
+
+async function dynamicDataV2(expr, record) {
+  let result = expr;
+  let keys = Object.keys(record.new_record);
+  if (!expr) return result;
+  if (expr.search(/{{.*}}/g) === -1) return result;
+
+  if (expr.search(/#.*#/g) !== -1) {
+    keys.forEach((key) => {
+      if (expr.includes(`#${key}#`)) {
+        let value = record.new_record[key];
+        expr = expr.replace(`#${key}#`, value);
+      }
+    });
+  }
+
+  const obj = qs.parse(expr.replace(/{{|}}/g, ''));
+  if (obj.searchAll !== undefined) {
+    const resultDB = await searchAllDB(obj, record);
+    //TODO ONLY WORK FOR EMAILS - NEED TO WORK WITH ANY FIELD
+    let emails = '';
+    if (resultDB) {
+      resultDB.map((item) => {
+        if (emails !== '') emails += ',';
+        emails += item.email;
+      });
+      result = emails;
+    }
+    return result;
+  }
+
+  keys.forEach(async (key) => {
+    if (
+      `{{${key}}}` === expr &&
+      (typeof record[key] === 'string' || typeof record[key] === 'number')
+    ) {
+      let value = record[key];
+      result = result.replace(`{{${key}}}`, value);
+      return result;
+    } else if (typeof record[key] === 'object' && record[key] !== null) {
+      let nestedKeys = Object.keys(record[key]);
+      nestedKeys.forEach((nestedKey) => {
+        if (
+          `{{${nestedKey}}}` === expr &&
+          (typeof record[key] === 'string' || typeof record[key] === 'number')
+        ) {
+          let value = record[key][nestedKey];
+          result = result.replace(`{{${key}.${nestedKey}}}`, value);
+          return result;
+        }
+      });
+    }
+  });
+  return result;
+}
 
 function dynamicData(expr, record) {
   let result = expr;
@@ -31,7 +104,8 @@ async function start(options) {
   const { organization, collection, object } = record;
   let dataBaseName = `DB_${organization}_${collection}`;
   const { client, database } = db.mongoConnect(dataBaseName);
-  const { actionData, mailData } = automation;
+  const { actionData } = automation;
+  const mailData = actionData.mailData;
 
   const collectionDB = database.collection('notifications');
 
@@ -67,7 +141,7 @@ async function start(options) {
 
     const sendMailData = {
       from: mailData.from,
-      to: mailData.to,
+      to: await dynamicDataV2(mailData.to, record),
       subject: mailData.subject,
       text: mailData.text,
       html: mailData.html,

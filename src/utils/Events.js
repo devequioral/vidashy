@@ -6,37 +6,41 @@ function getValueFromField(record, field) {
   let value = record;
   for (let key of keys) {
     if (key === 'last') {
-      key = value.length - 1;
+      value = value[value.length - 1];
+    } else if (key === 'first') {
+      value = value[0];
+    } else {
+      value = value[key];
     }
-    value = value[key];
   }
-  return value;
+  return typeof value === 'null' || typeof value === 'undefined' ? null : value;
 }
 
 function checkConditions(record, conditions) {
   if (!conditions || conditions.length === 0) return false;
-  let response = false;
+  let response = [];
   for (let condition of conditions) {
-    if (record.hasOwnProperty(condition.field)) {
-      let fieldValue = getValueFromField(record, condition.field); //
-      if (condition.operator === 'eq') {
-        response = fieldValue === condition.value;
-      }
-      if (condition.operator === 'isNotEmpty') {
-        response = fieldValue;
-      }
-      if (condition.operator === 'isEmpty') {
-        response = !fieldValue;
-      }
-    } else {
-      for (let key in record) {
-        if (typeof record[key] === 'object' && record[key] !== null) {
-          response = checkConditions(record[key], conditions);
-        }
-      }
+    let fieldValue = getValueFromField(record, condition.field);
+    if (condition.operator === 'eq') {
+      response.push(fieldValue === condition.value);
+    }
+    if (condition.operator === 'isNotEmpty') {
+      //IS NOT EMPTY RETURN TRUE
+      response.push(fieldValue !== null);
+    }
+    if (condition.operator === 'isEmpty') {
+      response.push(fieldValue === null);
     }
   }
-  return response;
+
+  //VERYFY IN ARRAY RESPONSE EVERY VALUES ARE TRUE
+  let count_falses = 0;
+
+  response.map((resp) => {
+    if (!resp) count_falses++;
+  });
+
+  return count_falses === 0;
 }
 
 class RecordEmitter extends EventEmitter {}
