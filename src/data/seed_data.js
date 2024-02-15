@@ -290,6 +290,20 @@ const data = {
             {
               client_collection: 'quoter',
               object: {
+                name: 'mainbanner',
+                methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+              },
+            },
+            {
+              client_collection: 'quoter',
+              object: {
+                name: 'secondarybanner',
+                methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+              },
+            },
+            {
+              client_collection: 'quoter',
+              object: {
                 name: 'media',
                 methods: ['PUT'],
               },
@@ -546,6 +560,44 @@ const data = {
         {
           name: 'products',
           data: products,
+        },
+        {
+          name: 'mainbanner',
+          data: [
+            {
+              id: generateUUID(),
+              title: 'Nuevo Gabinete MDC, con más espacio y nuevas funciones',
+              description:
+                'Se puede aplicar en entornos de menos de 8 metros cuadrados o con una carga informática de menos de 7,0 kW. Es adecuado para aplicaciones de TI en entornos regionales o de pequeñas empresas.',
+              image: {
+                src: '/assets/images/main-image-banner.jpg',
+                width: 721,
+                height: 291,
+              },
+              url: '/dashboard/orders/new/customize/d0e10831f6124f43b3405f7d901f5d52',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
+        },
+        {
+          name: 'secondarybanner',
+          data: [
+            {
+              id: generateUUID(),
+              title: 'MONITOREO INTEGRAL',
+              description:
+                'Nuestro portafolio de soluciones de monitoreo más completo del mercado para la administración, control y analítica de las métricas producidas por la infraestructura física y lógica en su centro de datos.',
+              image: {
+                src: '/assets/images/banner02-bg.png',
+                width: 306,
+                height: 428,
+              },
+              url: '/dashboard/orders/new/customize/d0e10831f6124f43b3405f7d901f5d52',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
         },
         {
           name: 'addons',
