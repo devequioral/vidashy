@@ -15,17 +15,15 @@ import { toast } from 'react-toastify';
 import DetailRecord from '@/components/dashboard/DetailRecord';
 import MediaUpload from '@/components/dashboard/MediaUpload';
 
-async function getProducts(page = 1, pageSize = 5, status = 'all') {
-  //SIMULATE SLOW CONNECTION
-  //await new Promise((resolve) => setTimeout(resolve, 2000));
+async function getRecords(page = 1, pageSize = 5, status = 'all') {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/products/list?page=${page}&pageSize=${pageSize}&status=${status}`
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list?page=${page}&pageSize=${pageSize}&status=${status}`
   );
   return await res.json();
 }
 
 function ListOrganizations() {
-  const [products, setProducts] = React.useState([]);
+  const [listRecords, setListRecords] = React.useState([]);
   const [totalPages, setTotalPages] = React.useState(1);
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(5);
@@ -33,7 +31,7 @@ function ListOrganizations() {
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const { status } = router.query;
-  const [showModalProductDetail, setShowModalProductDetail] = React.useState(0);
+  const [showModalProductDetail, setShowModalRecord] = React.useState(0);
   const [showModalChangeImage, setShowModalChangeImage] = React.useState(0);
 
   const [recordModal, setRecordModal] = React.useState(organizationModel);
@@ -57,75 +55,72 @@ function ListOrganizations() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const fetchOrders = async () => {
+      const fetchRecords = async () => {
         setLoading(true);
-        const productsBD = await getProducts(page, pageSize, status);
+        const recordsBD = await getRecords(page, pageSize, status);
 
         if (
-          productsBD &&
-          productsBD.products &&
-          productsBD.products.records &&
-          productsBD.products.records.length > 0
+          recordsBD &&
+          recordsBD.data &&
+          recordsBD.data.records &&
+          recordsBD.data.records.length > 0
         ) {
-          setProducts(
-            productsBD.products.records.map((product, index) => {
+          setListRecords(
+            recordsBD.data.records.map((record, index) => {
               return {
-                ...product,
+                ...record,
                 key: index,
-                id: product.id,
-                productName: product.productName,
-                date: product.createdAt,
-                status: product.status,
+                date: record.createdAt,
               };
             })
           );
-          setTotalPages(productsBD.products.totalPages);
-          setPage(productsBD.products.page);
+          setTotalPages(recordsBD.data.totalPages);
+          setPage(recordsBD.data.page);
         } else {
-          setProducts([]);
+          setListRecords([]);
           setTotalPages(1);
           setPage(1);
         }
         setLoading(false);
       };
-      fetchOrders(page, pageSize);
+      fetchRecords(page, pageSize);
     }
   }, [page, pageSize, status, refreshTable]);
 
   const { theme, toggleTheme } = useContext(ThemeContext);
 
-  const showProductDetail = (record) => {
+  const showRecordDetail = (record) => {
     setRecordModal(record);
-    setShowModalProductDetail((currCount) => currCount + 1);
+    setShowModalRecord((currCount) => currCount + 1);
   };
 
   const onNewProduct = () => {
-    setRecordModal(productModel);
-    setShowModalProductDetail((currCount) => currCount + 1);
+    setRecordModal(organizationModel);
+    setShowModalRecord((currCount) => currCount + 1);
   };
 
   const showChangeImage = (image) => {
     setShowModalChangeImage((currCount) => currCount + 1);
   };
 
-  const saveProduct = async () => {
+  const saveRecord = async () => {
     if (savingRecord) return;
     setSavingRecord(true);
     const url = recordModal.id
-      ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/products/update`
-      : `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/products/new`;
+      ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/update`
+      : `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/new`;
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ product_request: recordModal }),
+      body: JSON.stringify({ record_request: recordModal }),
     });
 
     if (response.ok) {
-      toast.success('Producto Guardado con éxito');
-      setShowModalProductDetail(0);
+      toast.success('Record saved');
+      setShowModalRecord(0);
       setRefreshTable((currCount) => currCount + 1);
       setSavingRecord(false);
     } else {
@@ -163,13 +158,13 @@ function ListOrganizations() {
       });
 
       if (uploadResponse.ok) {
-        //toast.success('Imágen Guardada con éxito');
+        //toast.success('Image Saved');
         const newRecord = { ...recordModal };
-        newRecord.productImage.src = urlMedia;
+        newRecord.image.src = urlMedia;
         setRecordModal(newRecord);
         setRecordChange(true);
       } else {
-        toast.error('La imágen no se pudo guardar');
+        toast.error('Error saving image');
       }
       setShowModalChangeImage(0);
       setSavingImage(false);
@@ -186,7 +181,7 @@ function ListOrganizations() {
           <div
             className="expand-cell"
             onClick={() => {
-              showProductDetail(record);
+              showRecordDetail(record);
             }}
           >
             <Image
@@ -199,8 +194,8 @@ function ListOrganizations() {
         );
       case 'status':
         const statusColorMap = {
-          disponible: 'success',
-          agotado: 'danger',
+          active: 'success',
+          inactive: 'danger',
         };
         return (
           <>
@@ -231,7 +226,7 @@ function ListOrganizations() {
               cursor: 'pointer',
             }}
             onClick={() => {
-              showProductDetail(record);
+              showRecordDetail(record);
             }}
           >
             {cellValue}
@@ -244,7 +239,7 @@ function ListOrganizations() {
   }, []);
   return (
     <>
-      <Metaheader title="List Organizations | Vidashy" />
+      <Metaheader title="Organizations List | Vidashy" />
       <Layout theme={theme} toogleTheme={toggleTheme}>
         <BreadCrumbs
           theme={theme}
@@ -257,21 +252,21 @@ function ListOrganizations() {
         />
         <TableComponent
           data={{
-            title: 'Listado de Productos',
+            title: 'Organizations List',
             button: {
-              label: 'Nuevo Producto',
+              label: 'New Organization',
               callback: () => {
                 onNewProduct();
               },
             },
             columns: [
               { key: 'expand', label: '' },
-              { key: 'id', label: 'Product ID' },
-              { key: 'productName', label: 'Producto' },
-              { key: 'date', label: 'Fecha' },
+              { key: 'id', label: 'Organization ID' },
+              { key: 'name', label: 'Organization' },
+              { key: 'date', label: 'Date' },
               { key: 'status', label: 'Status' },
             ],
-            rows: products,
+            rows: listRecords,
             pagination: {
               total: totalPages,
               initialPage: page,
@@ -285,8 +280,8 @@ function ListOrganizations() {
         />
         <ModalComponent
           show={showModalProductDetail}
-          onSave={saveProduct}
-          title="Detalle de Producto"
+          onSave={saveRecord}
+          title="Organization Details"
           onCloseModal={() => {
             onRecordChange(false);
           }}
@@ -306,30 +301,18 @@ function ListOrganizations() {
             }}
             validation={validation}
             schema={{
-              title: 'Detalle de Producto',
+              title: 'Organization Detail',
               fields: [
                 {
                   key: 'id',
-                  label: 'Product ID',
+                  label: 'Organization ID',
                   type: 'hidden',
                 },
                 {
-                  key: 'productName',
-                  label: 'Nombre del Producto',
+                  key: 'name',
+                  label: 'Organization Name',
                   type: 'text',
                   isRequired: true,
-                },
-                {
-                  key: 'description',
-                  label: 'Descripción',
-                  type: 'text',
-                  isRequired: true,
-                },
-                {
-                  key: 'productImage',
-                  label: 'Imágen',
-                  type: 'image',
-                  preview: true,
                 },
                 {
                   key: 'status',
@@ -337,8 +320,8 @@ function ListOrganizations() {
                   type: 'select',
                   isRequired: true,
                   items: [
-                    { value: 'disponible', label: 'Disponible' },
-                    { value: 'agotado', label: 'Agotado' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'inactive', label: 'Inactive' },
                   ],
                 },
               ],
