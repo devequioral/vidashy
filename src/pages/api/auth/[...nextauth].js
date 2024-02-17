@@ -29,38 +29,64 @@ async function fetchUser(username) {
   return user;
 }
 
-export default NextAuth({
-  session: {
-    strategy: 'jwt',
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user?._id) token._id = user._id;
-      if (user?.role) token.role = user.role;
-      return token;
+export default async function auth(req, res) {
+  //TODO IMPLEMENT REMEMBER ME
+  const maxAge = req.body.remember ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60;
+  if (req.body.remember === true) {
+    nookies.set({ res }, 'rememberSession', true, {
+      maxAge: 5 * 24 * 60 * 60,
+      path: '/',
+    });
+  } else if (req.body.remember === false) {
+    nookies.set({ res }, 'rememberSession', false, {
+      maxAge: 5 * 24 * 60 * 60,
+      path: '/',
+    });
+  }
+
+  return await NextAuth(req, res, {
+    session: {
+      strategy: 'jwt',
+      maxAge: 1 * 24 * 60 * 60,
     },
-    async session({ session, token }) {
-      if (token?._id) session.user._id = token._id;
-      if (token?.role) session.user.role = token.role;
-      return session;
-    },
-  },
-  providers: [
-    CredentialsProvider({
-      async authorize(credentials) {
-        const user = await fetchUser(credentials.username);
-        if (user && bcryptjs.compareSync(credentials.password, user.password)) {
-          return {
-            _id: user.id,
-            name: user.name,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-          };
-        }
-        throw new Error('Invalid email or password');
+    secret: process.env.NEXTAUTH_SECRET,
+    callbacks: {
+      async jwt({ token, user }) {
+        if (user?.id) token.id = user.id;
+        if (user?.role) token.role = user.role;
+        if (user?.name) token.name = user.name;
+        if (user?.username) token.username = user.username;
+        //if (user?.username) token.maxAge = maxAge;
+        return token;
       },
-    }),
-  ],
-});
+      async session({ session, token }) {
+        if (token?.id) session.user.id = token.id;
+        if (token?.role) session.user.role = token.role;
+        if (token?.name) session.name = token.name;
+        if (token?.username) session.username = token.username;
+        //if (token?.username) session.maxAge = maxAge;
+        return session;
+      },
+    },
+    providers: [
+      CredentialsProvider({
+        async authorize(credentials) {
+          const user = await fetchUser(credentials.username);
+          if (
+            user &&
+            bcryptjs.compareSync(credentials.password, user.password)
+          ) {
+            return {
+              id: user.id,
+              name: user.name,
+              username: user.username,
+              email: user.email,
+              role: user.role,
+            };
+          }
+          throw new Error('Invalid email or password');
+        },
+      }),
+    ],
+  });
+}

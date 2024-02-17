@@ -6,15 +6,15 @@ import GAScript from '@/components/GAScript';
 import { useRouter } from 'next/router';
 
 export default function Metaheader({
-  title = 'Virtel Dashboard | Virtel',
-  description = 'virtel Dashboard',
+  title = 'Vidashy Dashboard | Vidashy',
+  description = 'Vidashy Dashboard',
   keywords = 'nextjs dashboard',
   og_image = '/assets/images/og/og.jpg',
   yoast_head = false,
-  author = 'Virtel',
+  author = 'Vidashy',
   link = '',
-  domain = 'virtel.co',
-  twitter = '@virtel',
+  domain = 'Vidashy.co',
+  twitter = '@Vidashy',
   noindex = false,
 }) {
   const router = useRouter();

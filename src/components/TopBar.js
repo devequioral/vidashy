@@ -1,100 +1,96 @@
 import React from 'react';
 import styles from '@/styles/TopBar.module.css';
 import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+//import Link from 'next/link';
 
-export default function TopBar({ address, onClickEvent }) {
-  const router = useRouter();
-  const [sidebarExpanded, setSidebarExpanded] = React.useState(true);
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Link,
+  NavbarMenuToggle,
+  NavbarMenu,
+  DropdownItem,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  Avatar,
+} from '@nextui-org/react';
+import TopBarNotifications from '@/components/TopBarNotifications';
+import MainNavigation from '@/components/MainNavigation';
 
-  const onClick = (ev) => {
-    onClickEvent(ev);
-    if (ev === 'toggle-sidebar') setSidebarExpanded(!sidebarExpanded);
+export default function TopBar(props) {
+  const { user } = props;
+  const getUserName = () => {
+    if (!user) return 'Invitado';
+    let name = user.name || user.username;
+    if (name.indexOf(' ') > -1) {
+      name = name.split(' ');
+      name = name[0];
+    }
+    return name;
   };
-
-  const searchInput = React.useRef(null);
-  const onSearch = () => {
-    const search = searchInput.current.value;
-    console.log(search);
-  };
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   return (
-    <>
-      <div
-        className={`${styles.TopBar} ${!sidebarExpanded && styles.lessPadding}`}
-      >
-        <div className={`container-full ${styles.container}`}>
-          <div className={`row ${styles.row}`}>
-            <div className={`col-4 ${styles.colLeft}`}>
-              <div
-                className={`${styles.hamburguer}`}
-                onClick={() => onClick('toggle-sidebar')}
-              >
-                <Image
-                  src="/assets/images/hamburguer.png"
-                  width={50}
-                  height={36}
-                  alt="Menu"
-                />
-              </div>
-              <div className={`hide-xs hide-sm ${styles.logo}`}>
-                <Link href="/">
-                  <Image
-                    src="/assets/images/logo.svg"
-                    width={500}
-                    height={500}
-                    alt="Logo"
-                  />
-                </Link>
-              </div>
-            </div>
-            <div className={`col-4 ${styles.colCenter}`}>
-              <input
-                className={`${styles.search}`}
-                type="text"
-                placeholder="Buscar"
-                ref={searchInput}
-                onKeyDown={(ev) => {
-                  //IF KEY ENTER IS PRESSED
-                  if (ev.key === 'Enter') {
-                    onSearch();
-                  }
-                }}
-              />
-              <div className={`hide-xs hide-sm ${styles.cntBtn}`}>
-                <div className={`${styles.icon}`} onClick={onSearch}>
-                  <Image
-                    src="/assets/images/search-icon.svg"
-                    width={24}
-                    height={24}
-                    alt="Search Icon"
-                  />
-                </div>
-                <div className={`hide-xs ${styles.icon}`}>
-                  <div onClick={onSearch}>Buscar</div>
-                </div>
-              </div>
-            </div>
-            <div className={`col-4 ${styles.colRight}`}>
-              <div className={`${styles.cntBtn}`}>
-                <div className={`${styles.icon}`}>
-                  <Link href="/app">
-                    <Image
-                      src="/assets/images/user-icon.svg"
-                      width={24}
-                      height={24}
-                      alt="User Icon"
-                    />
-                  </Link>
-                </div>
-                <div className={`hide-xs ${styles.icon}`}>
-                  <Link href="/app">Invitado</Link>
-                </div>
-              </div>
-            </div>
-          </div>
+    <Navbar
+      isBordered
+      maxWidth="full"
+      onMenuOpenChange={setIsMenuOpen}
+      className={`${styles.Navbar}`}
+    >
+      <NavbarMenuToggle
+        aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+        className="hide-md hide-lg hide-xl"
+      />
+      <NavbarBrand>
+        <Link href="/">
+          <Image
+            src={`/assets/images/theme-light/logo.svg`}
+            width={429}
+            height={79}
+            alt="Logo"
+            className={`${styles.logo}`}
+          />
+        </Link>
+      </NavbarBrand>
+      <NavbarContent as="div" justify="end" className="hide-xss">
+        <NavbarItem className="flex justify-center items-center">
+          <TopBarNotifications user={user} />
+        </NavbarItem>
+        <Dropdown placement="bottom-end">
+          <DropdownTrigger>
+            <Avatar
+              isBordered
+              as="button"
+              className="w-6 h-6 text-tiny avatar-topnav"
+              name={getUserName()}
+              size="sm"
+              src="/assets/images/theme-light/icon-user.svg"
+            />
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Profile Actions" variant="flat">
+            <DropdownItem key="welcome" className="h-14 gap-2">
+              <p className="font-semibold">Bienvenido</p>
+              <p className="font-semibold">{getUserName()}</p>
+            </DropdownItem>
+            <DropdownItem key="profile">
+              <Link href="/dashboard/profile">Perfil</Link>
+            </DropdownItem>
+            <DropdownItem key="orders">
+              <Link href="/dashboard/orders">Mis Cotizaciones</Link>
+            </DropdownItem>
+            <DropdownItem key="logout" color="danger">
+              <Link href="/close-session">Cerrar Sesión</Link>
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </NavbarContent>
+      <NavbarMenu className={`${styles.NavbarMenu}`}>
+        <div className={`${styles.MainNavigationCNT}`}>
+          <MainNavigation />
         </div>
-      </div>
-    </>
+      </NavbarMenu>
+    </Navbar>
   );
 }

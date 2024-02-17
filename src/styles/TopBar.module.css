@@ -1,100 +1,12 @@
-.TopBar{
-    width: 100%;
-    height: 70px;
-    display: flex;
-    padding: 10px 40px;
-    background-color: #171717;
-}
-.TopBar.lessPadding{
-    padding: 10px;
-}
-.container{
-    height: 100%;
-}
-.row{
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-}
-.colLeft{
-    height: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: row;
-    gap:20px;
+.Navbar{
+    background: #fff;
 }
 
-.hamburguer{
-    cursor: pointer;
-}
+.logo{width:150px; height: auto;}
 
-.logo{
-    height: 50px;
+.NavbarMenu{
+    background: #fff;
 }
-
-.logo img{
-    height: 100%;
-    width: auto;
-}   
-
-.colCenter{
-    height: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: row;
-    gap:10px;
-}
-
-.search{
-    background-color: #e1e1e1;
-    border-radius: 10px;
-    width: 100%;
-    height: 25px;
-    padding: 0 10px;
-    color:#222;
-    border: none;
-    outline: none;
-}
-
-.search::placeholder{
-    color:#3a3939;
-}
-.colRight{
-    height: 100%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    flex-direction: row;
-    gap:20px;
-}
-
-.cntBtn{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap:10px
-}
-
-.icon{
-    cursor: pointer;
-}
-
-@media only screen and (max-width: 300px) {
-    .TopBar{
-        padding: 10px;
-    }
-    .colLeft{
-        width: 100%;
-    }
-    .colRight{
-        display: none;
-    }
-}
-
-@media only screen and (max-width: 768px) {
-    .TopBar{
-        padding: 10px;
-    }
+.MainNavigationCNT{
+    max-width: 350px;
 }

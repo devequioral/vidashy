@@ -200,11 +200,11 @@ function LoginForm(props) {
           términos y condiciones
         </a>
       </p>
-      <div className="remember-me-group">
+      {/* <div className="remember-me-group">
         <Checkbox size="sm" radius="none">
           Recordar mis datos
         </Checkbox>
-      </div>
+      </div> */}
       <style jsx>{`
         .main-container {
           align-items: center;
