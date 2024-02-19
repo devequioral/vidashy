@@ -3,24 +3,24 @@ import Metaheader from '@/components/Metaheader';
 import { ThemeContext } from '@/contexts/ThemeContext';
 import React, { useContext, useEffect } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
-import organizationModel from '@/models/organizationModel';
+import collectionsModel from '@/models/collectionsModel';
 import MainScreenObject from '@/components/dashboard/MainScreenObject';
 
-function ListOrganizations() {
+function ListCollections() {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list`;
-  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/new`;
-  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/update`;
+  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/list`;
+  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/new`;
+  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/update`;
   return (
     <>
-      <Metaheader title="Organizations List | Vidashy" />
+      <Metaheader title="Collections List | Vidashy" />
       <Layout theme={theme} toogleTheme={toggleTheme}>
         <BreadCrumbs
           theme={theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },
-              { href: false, title: 'Organizations' },
+              { href: false, title: 'Collections' },
             ],
           }}
         />
@@ -29,33 +29,33 @@ function ListOrganizations() {
           urlNewRecord={urlNewRecord}
           urlUpdateRecord={urlUpdateRecord}
           tablePageSize={5}
-          model={organizationModel}
+          model={collectionsModel}
           tableComponentData={{
-            title: 'Organizations List',
+            title: 'Collections List',
             button: {
-              label: 'New Organization',
+              label: 'New Collection',
             },
             columns: [
               { key: 'expand', label: '' },
-              { key: 'id', label: 'Organization ID' },
-              { key: 'name', label: 'Organization' },
+              { key: 'id', label: 'Collection ID' },
+              { key: 'name', label: 'Collection' },
               { key: 'date', label: 'Date' },
               { key: 'status', label: 'Status' },
             ],
           }}
           modalComponentData={{
-            title: 'Organization Details',
+            title: 'Collection Details',
           }}
           schema={{
             fields: [
               {
                 key: 'id',
-                label: 'Organization ID',
+                label: 'Collection ID',
                 type: 'hidden',
               },
               {
                 key: 'name',
-                label: 'Organization Name',
+                label: 'Collection Name',
                 type: 'text',
                 isRequired: true,
               },
@@ -69,6 +69,14 @@ function ListOrganizations() {
                   { value: 'inactive', label: 'Inactive' },
                 ],
               },
+              {
+                key: 'organization_id',
+                label: 'Organization',
+                type: 'autocomplete',
+                isRequired: true,
+                placeholder: 'Choose an organization',
+                items: '{{listRecords}}',
+              },
             ],
           }}
         />
@@ -77,5 +85,5 @@ function ListOrganizations() {
   );
 }
 
-ListOrganizations.auth = { adminOnly: true };
-export default ListOrganizations;
+ListCollections.auth = { adminOnly: true };
+export default ListCollections;

@@ -3,24 +3,24 @@ import Metaheader from '@/components/Metaheader';
 import { ThemeContext } from '@/contexts/ThemeContext';
 import React, { useContext, useEffect } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
-import organizationModel from '@/models/organizationModel';
+import userModel from '@/models/userModel';
 import MainScreenObject from '@/components/dashboard/MainScreenObject';
 
-function ListOrganizations() {
+function ListUsers() {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list`;
-  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/new`;
-  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/update`;
+  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/list`;
+  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/new`;
+  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/update`;
   return (
     <>
-      <Metaheader title="Organizations List | Vidashy" />
+      <Metaheader title="Users List | Vidashy" />
       <Layout theme={theme} toogleTheme={toggleTheme}>
         <BreadCrumbs
           theme={theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },
-              { href: false, title: 'Organizations' },
+              { href: false, title: 'Users' },
             ],
           }}
         />
@@ -29,44 +29,62 @@ function ListOrganizations() {
           urlNewRecord={urlNewRecord}
           urlUpdateRecord={urlUpdateRecord}
           tablePageSize={5}
-          model={organizationModel}
+          model={userModel}
           tableComponentData={{
-            title: 'Organizations List',
+            title: 'Users List',
             button: {
-              label: 'New Organization',
+              label: 'New User',
             },
             columns: [
               { key: 'expand', label: '' },
-              { key: 'id', label: 'Organization ID' },
-              { key: 'name', label: 'Organization' },
+              { key: 'id', label: 'User ID' },
+              { key: 'name', label: 'Name' },
+              { key: 'role', label: 'Role' },
               { key: 'date', label: 'Date' },
-              { key: 'status', label: 'Status' },
             ],
           }}
           modalComponentData={{
-            title: 'Organization Details',
+            title: 'User Details',
           }}
           schema={{
             fields: [
               {
                 key: 'id',
-                label: 'Organization ID',
+                label: 'User ID',
                 type: 'hidden',
               },
               {
                 key: 'name',
-                label: 'Organization Name',
+                label: 'Name',
                 type: 'text',
                 isRequired: true,
               },
               {
-                key: 'status',
-                label: 'Status',
+                key: 'username',
+                label: 'Username',
+                type: 'text',
+                isRequired: true,
+              },
+              {
+                key: 'email',
+                label: 'Email',
+                type: 'text',
+                isRequired: true,
+              },
+              {
+                key: 'password',
+                label: 'Password',
+                type: 'password',
+                isRequired: true,
+              },
+              {
+                key: 'role',
+                label: 'Role',
                 type: 'select',
                 isRequired: true,
                 items: [
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: 'Inactive' },
+                  { value: 'admin', label: 'Admin' },
+                  { value: 'regular', label: 'Regular' },
                 ],
               },
             ],
@@ -77,5 +95,5 @@ function ListOrganizations() {
   );
 }
 
-ListOrganizations.auth = { adminOnly: true };
-export default ListOrganizations;
+ListUsers.auth = { adminOnly: true };
+export default ListUsers;

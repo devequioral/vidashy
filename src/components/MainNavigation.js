@@ -41,11 +41,9 @@ export default function MainNavigation() {
 
   const onSelectOption = (option) => {
     setSelectedOption(option);
-    if (option.has('new-order')) return onClickMenu('/dashboard/orders/new');
-    if (option.has('list-orders')) return onClickMenu('/dashboard/orders');
-    if (option.has('list-products')) return onClickMenu('/dashboard/products');
-    if (option.has('list-addons'))
-      return onClickMenu('/dashboard/products/addons');
+    if (option.has('collections')) return onClickMenu('/dashboard/collections');
+    if (option.has('apiaccess')) return onClickMenu('/dashboard/apiaccess');
+    if (option.has('automations')) return onClickMenu('/dashboard/automations');
   };
 
   return (
@@ -85,6 +83,31 @@ export default function MainNavigation() {
           >
             Organizations
           </Button>
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Button isIconOnly variant="light">
+                <ChevronDownIcon />
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              disallowEmptySelection
+              aria-label="Sub Menu Organizations"
+              selectedKeys={selectedOption}
+              selectionMode="single"
+              onSelectionChange={onSelectOption}
+              className="max-w-[300px]"
+            >
+              <DropdownItem key="collections" description={`Collections`}>
+                Collections
+              </DropdownItem>
+              <DropdownItem key="apiaccess" description={`Api Access`}>
+                Api Access
+              </DropdownItem>
+              <DropdownItem key="automations" description={`Automations`}>
+                Automations
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </ButtonGroup>
       )}
       {user && user?.role === 'admin' && (

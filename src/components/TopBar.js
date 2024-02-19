@@ -71,17 +71,17 @@ export default function TopBar(props) {
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="welcome" className="h-14 gap-2">
-              <p className="font-semibold">Bienvenido</p>
+              <p className="font-semibold">Welcome</p>
               <p className="font-semibold">{getUserName()}</p>
             </DropdownItem>
             <DropdownItem key="profile">
-              <Link href="/dashboard/profile">Perfil</Link>
+              <Link href="/dashboard/profile">Profile</Link>
             </DropdownItem>
             <DropdownItem key="orders">
-              <Link href="/dashboard/orders">Mis Cotizaciones</Link>
+              <Link href="/dashboard/organizations">My Organizations</Link>
             </DropdownItem>
             <DropdownItem key="logout" color="danger">
-              <Link href="/close-session">Cerrar Sesión</Link>
+              <Link href="/close-session">Close Session</Link>
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
