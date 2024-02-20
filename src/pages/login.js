@@ -20,9 +20,9 @@ export default function LoginScreen() {
         <LoginComponent
           options={{
             logo: {
-              src: '/assets/images/logo-h.svg',
-              width: 180,
-              height: 50,
+              src: '/assets/images/theme-light/logo.svg',
+              width: 429,
+              height: 79,
               alt: 'Logo',
             },
           }}
