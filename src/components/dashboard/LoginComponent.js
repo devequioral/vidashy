@@ -125,7 +125,7 @@ function LoginForm(props) {
           id="username"
           isRequired
           type="text"
-          label="Usuario"
+          label="Username"
           ariaLabel="Username"
           variant="bordered"
           placeholder="Username / Email"
