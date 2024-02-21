@@ -511,7 +511,7 @@ const data = {
               id: '1',
               name: 'Carlos Perez',
               username: 'carlosperez',
-              email: 'angel.silva3812@gmail.com',
+              email: 'user@example.com',
               password:
                 '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
               role: 'regular',
@@ -533,7 +533,7 @@ const data = {
               id: '3',
               name: 'Ronald Perez',
               username: 'admin',
-              email: 'virtelsas@gmail.com',
+              email: 'admin@example.com',
               password:
                 '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
               role: 'admin',
@@ -544,7 +544,7 @@ const data = {
               id: '4',
               name: 'Admin02',
               username: 'admin02',
-              email: 'angel.silva3500@gmail.com',
+              email: 'admin02@example.com',
               password:
                 '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
               role: 'admin',

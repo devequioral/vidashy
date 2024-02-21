@@ -31,6 +31,7 @@ async function createRecord(record_request) {
     const hash = bcryptjs.hashSync(record_request.password, salt);
     new_record.password = hash;
   }
+
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
   const collectionDB = database.collection('users');
   try {
@@ -38,9 +39,25 @@ async function createRecord(record_request) {
     await client.close();
     return { record };
   } catch (e) {
-    console.error('Error creating record:', e);
+    //console.error('Error creating record:', e);
     return { record: {} };
   }
+}
+
+async function verifyUsername(username) {
+  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
+  const collectionDB = database.collection('users');
+  const user = await collectionDB.find({ username: username }).toArray();
+  await client.close();
+  return user;
+}
+
+async function verifyEmail(email) {
+  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
+  const collectionDB = database.collection('users');
+  const user = await collectionDB.find({ email: email }).toArray();
+  await client.close();
+  return user;
 }
 
 export default async function handler(req, res) {
@@ -71,6 +88,22 @@ export default async function handler(req, res) {
 
     if (!record_request.password || record_request.password === '') {
       validation.password = 'Field Required';
+    }
+
+    //VERIFY IF USERNAME EXISTS
+    if (record_request.email && record_request.email !== '') {
+      const user = await verifyUsername(record_request.username);
+      if (user.length > 0) {
+        validation.username = 'Username already exists';
+      }
+    }
+
+    //VERIFY IF EMAIL EXISTS
+    if (record_request.email && record_request.email !== '') {
+      const user = await verifyEmail(record_request.email);
+      if (user.length > 0) {
+        validation.email = 'Email already exists';
+      }
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY
