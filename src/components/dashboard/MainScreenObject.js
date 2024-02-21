@@ -315,6 +315,7 @@ export default function MainScreenObject(props) {
         title={modalComponentData.title}
         onCloseModal={() => {
           onRecordChange(false);
+          setValidation({});
         }}
         allowSave={recordChange}
         savingRecord={savingRecord}

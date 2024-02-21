@@ -44,6 +44,26 @@ async function updateRecord(record_request) {
   }
 }
 
+async function verifyUsername(id, username) {
+  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
+  const collectionDB = database.collection('users');
+  const user = await collectionDB
+    .find({ username: username, id: { $ne: id } })
+    .toArray();
+  await client.close();
+  return user;
+}
+
+async function verifyEmail(id, email) {
+  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
+  const collectionDB = database.collection('users');
+  const user = await collectionDB
+    .find({ email: email, id: { $ne: id } })
+    .toArray();
+  await client.close();
+  return user;
+}
+
 export default async function handler(req, res) {
   try {
     const token = await getToken({ req });
@@ -68,6 +88,25 @@ export default async function handler(req, res) {
     }
     if (!record_request.role || record_request.role === '') {
       validation.role = 'Field Required';
+    }
+
+    //VERIFY IF USERNAME EXISTS
+    if (record_request.email && record_request.email !== '') {
+      const user = await verifyUsername(
+        record_request.id,
+        record_request.username
+      );
+      if (user.length > 0) {
+        validation.username = 'Username already exists';
+      }
+    }
+
+    //VERIFY IF EMAIL EXISTS
+    if (record_request.email && record_request.email !== '') {
+      const user = await verifyEmail(record_request.id, record_request.email);
+      if (user.length > 0) {
+        validation.email = 'Email already exists';
+      }
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY
