@@ -11,6 +11,9 @@ async function getRecords(request) {
   const pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
   const filterBy = params.filterBy ? params.filterBy.split(',') : [];
   const filterValue = params.filterValue ? params.filterValue.split(',') : [];
+  const filterComparison = params.filterComparison
+    ? params.filterComparison.split(',')
+    : [];
 
   const filter = [];
   if (filterBy) {
@@ -18,13 +21,25 @@ async function getRecords(request) {
       filter.push({
         field: item,
         value: filterValue[index],
+        comparison: filterComparison[index] ? filterComparison[index] : 'eq',
       });
     });
   }
 
   let query = {};
   filter.forEach((item) => {
-    query[item.field] = item.value;
+    if (item.comparison === 'eq') query[item.field] = item.value;
+    if (item.comparison === 'gt') query[item.field] = { $gt: item.value };
+    if (item.comparison === 'lt') query[item.field] = { $lt: item.value };
+    if (item.comparison === 'gte') query[item.field] = { $gte: item.value };
+    if (item.comparison === 'lte') query[item.field] = { $lte: item.value };
+    if (item.comparison === 'ne') query[item.field] = { $ne: item.value };
+    if (item.comparison === 'in')
+      query[item.field] = { $in: item.value.split('|') };
+    if (item.comparison === 'nin')
+      query[item.field] = { $nin: item.value.split('|') };
+    if (item.comparison === 'regex')
+      query[item.field] = { $regex: item.value, $options: 'i' };
   });
 
   let dataBaseName = `DB_${organization}_${collection}`;

@@ -45,6 +45,7 @@ function formatSchema(schema, listRecords) {
       isRequired: field.isRequired,
       placeholder: field.placeholder,
       items: fieldItems,
+      selectionMode: field.selectionMode,
     });
   });
   return newSchema;

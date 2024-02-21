@@ -181,6 +181,9 @@ export default function DetailRecord(props) {
                   items={field.items}
                   label={field.label}
                   className="max-w-xs"
+                  selectionMode={
+                    field.selectionMode ? field.selectionMode : 'single'
+                  }
                   defaultSelectedKeys={
                     record && record[field.key] ? [record[field.key]] : null
                   }
