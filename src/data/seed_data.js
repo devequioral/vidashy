@@ -238,7 +238,7 @@ const data = {
   ],
   apiaccess: [
     {
-      uid: generateUUID(),
+      id: generateUUID(),
       name: 'Arctic Bunker',
       description: 'Organization Description',
       organization_id: '6d498a2a94a3',
@@ -319,7 +319,11 @@ const data = {
   ],
   automations: [
     {
-      uid: '6d498a2a94a3_quoter_tickets_recordCreated',
+      id: '6d498a2a94a3_quoter_tickets_recordCreated',
+      organization_id: '6d498a2a94a3',
+      collection: 'quoter',
+      object: 'tickets',
+      trigger: 'recordCreated',
       automations: [
         {
           order: 1,
@@ -347,7 +351,11 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
     {
-      uid: '6d498a2a94a3_quoter_orders_recordCreated',
+      id: '6d498a2a94a3_quoter_orders_recordCreated',
+      organization_id: '6d498a2a94a3',
+      collection: 'quoter',
+      object: 'orders',
+      trigger: 'recordCreated',
       automations: [
         {
           order: 1,
@@ -375,7 +383,11 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
     {
-      uid: '6d498a2a94a3_quoter_orders_recordUpdated',
+      id: '6d498a2a94a3_quoter_orders_recordUpdated',
+      organization_id: '6d498a2a94a3',
+      collection: 'quoter',
+      object: 'orders',
+      trigger: 'recordUpdated',
       automations: [
         {
           order: 1,
@@ -403,7 +415,11 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
     {
-      uid: '6d498a2a94a3_quoter_tickets_recordUpdated',
+      id: '6d498a2a94a3_quoter_tickets_recordUpdated',
+      organization_id: '6d498a2a94a3',
+      collection: 'quoter',
+      object: 'tickets',
+      trigger: 'recordUpdated',
       automations: [
         {
           order: 1,

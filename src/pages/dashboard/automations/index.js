@@ -3,7 +3,7 @@ import Metaheader from '@/components/Metaheader';
 import { ThemeContext } from '@/contexts/ThemeContext';
 import React, { useContext } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
-import apiAccessModel from '@/models/apiAccessModel';
+import automationsModel from '@/models/automationsModel';
 import MainScreenObject from '@/components/dashboard/MainScreenObject';
 import { Chip } from '@nextui-org/react';
 import Image from 'next/image';
@@ -15,11 +15,11 @@ async function getOrganizations() {
   return await res.json();
 }
 
-function ListApiAccess() {
+function ListAutomations() {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/list`;
-  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/new`;
-  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/update`;
+  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/list`;
+  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/new`;
+  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/update`;
   const [organizations, setOrganizations] = React.useState([]);
   const flag = React.useRef(false);
   React.useEffect(() => {
@@ -109,14 +109,14 @@ function ListApiAccess() {
   };
   return (
     <>
-      <Metaheader title="ApiAccess List | Vidashy" />
+      <Metaheader title="Automations List | Vidashy" />
       <Layout theme={theme} toogleTheme={toggleTheme}>
         <BreadCrumbs
           theme={theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },
-              { href: false, title: 'ApiAccess' },
+              { href: false, title: 'Automations' },
             ],
           }}
         />
@@ -125,23 +125,23 @@ function ListApiAccess() {
           urlNewRecord={urlNewRecord}
           urlUpdateRecord={urlUpdateRecord}
           tablePageSize={5}
-          model={apiAccessModel}
+          model={automationsModel}
           tableComponentData={{
-            title: 'Apiaccess List',
+            title: 'Automations List',
             button: {
-              label: 'New Api Access',
+              label: 'New Automation',
             },
             columns: [
               { key: 'expand', label: '' },
-              { key: 'id', label: 'Api Access ID' },
-              { key: 'name', label: 'Name' },
+              { key: 'id', label: 'Automation ID' },
+              { key: 'trigger', label: 'Trigger' },
               { key: 'date', label: 'Date' },
               { key: 'status', label: 'Status' },
             ],
             renderCell,
           }}
           modalComponentData={{
-            title: 'Api Access Details',
+            title: 'Automations Details',
           }}
           schema={{
             fields: [
@@ -155,20 +155,30 @@ function ListApiAccess() {
               },
               {
                 key: 'id',
-                label: 'Api Access ID',
+                label: 'Automation ID',
                 type: 'hidden',
               },
               {
-                key: 'name',
-                label: 'Name',
+                key: 'collection',
+                label: 'Collection',
                 type: 'text',
                 isRequired: true,
               },
               {
-                key: 'description',
-                label: 'Description',
+                key: 'object',
+                label: 'Object',
                 type: 'text',
                 isRequired: true,
+              },
+              {
+                key: 'trigger',
+                label: 'Trigger',
+                type: 'select',
+                isRequired: true,
+                items: [
+                  { value: 'recordCreated', label: 'Record Created' },
+                  { value: 'recordUpdated', label: 'Record Updated' },
+                ],
               },
               {
                 key: 'status',
@@ -181,8 +191,8 @@ function ListApiAccess() {
                 ],
               },
               {
-                key: 'apiaccess',
-                label: 'Permissions',
+                key: 'automations',
+                label: 'Automations',
                 type: 'json',
                 isRequired: true,
               },
@@ -194,5 +204,5 @@ function ListApiAccess() {
   );
 }
 
-ListApiAccess.auth = { adminOnly: true };
-export default ListApiAccess;
+ListAutomations.auth = { adminOnly: true };
+export default ListAutomations;

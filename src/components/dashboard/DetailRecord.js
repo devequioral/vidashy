@@ -144,7 +144,12 @@ export default function DetailRecord(props) {
                   isInvalid={validation[field.key] ? true : false}
                   errorMessage={validation[field.key]}
                   onChange={(e) => {
-                    onFieldChange(field.key, e.target.value);
+                    try {
+                      const value = JSON.parse(e.target.value);
+                      onFieldChange(field.key, value);
+                    } catch (e) {
+                      console.log(e);
+                    }
                   }}
                   defaultValue={formatValue(field.key, field.type)}
                 />

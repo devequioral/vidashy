@@ -51,7 +51,7 @@ recordEmitter.on('recordCreated', async (record) => {
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
   const collectionDB = database.collection('automations');
   const query = {
-    uid: `${record.organization}_${record.collection}_${record.object}_recordCreated`,
+    id: `${record.organization}_${record.collection}_${record.object}_recordCreated`,
   };
   const automationsDB = await collectionDB.findOne(query);
   await client.close();
@@ -78,7 +78,7 @@ recordEmitter.on('recordUpdated', async (record) => {
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
   const collectionDB = database.collection('automations');
   const query = {
-    uid: `${record.organization}_${record.collection}_${record.object}_recordUpdated`,
+    id: `${record.organization}_${record.collection}_${record.object}_recordUpdated`,
   };
   const automationsDB = await collectionDB.findOne(query);
   await client.close();

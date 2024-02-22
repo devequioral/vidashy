@@ -15,9 +15,8 @@ function generateUUID() {
   return uuid;
 }
 
-async function createRecord(record_request) {
-  const new_record = sanitizeOBJ({
-    id: generateUUID(),
+async function updateRecord(record_request) {
+  const update_record = sanitizeOBJ({
     name: record_request.name,
     description: record_request.description,
     status: record_request.status,
@@ -25,13 +24,17 @@ async function createRecord(record_request) {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
-  new_record.apiaccess = record_request.apiaccess;
 
+  update_record.apiaccess = record_request.apiaccess;
+
+  const filter = { id: record_request.id };
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
   const collectionDB = database.collection('apiaccess');
 
   try {
-    const record = await collectionDB.insertOne(new_record);
+    const record = await collectionDB.updateOne(filter, {
+      $set: update_record,
+    });
     await client.close();
     return { record };
   } catch (e) {
@@ -51,6 +54,13 @@ export default async function handler(req, res) {
     const { record_request } = req.body;
 
     const validation = {};
+
+    if (
+      !record_request.organization_id ||
+      record_request.organization_id === ''
+    ) {
+      validation.organization_id = 'Field Required';
+    }
 
     if (!record_request.name || record_request.name === '') {
       validation.name = 'Field Required';
@@ -79,7 +89,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const record = await createRecord(record_request);
+    const record = await updateRecord(record_request);
 
     if (!record)
       return res
