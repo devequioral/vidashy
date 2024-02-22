@@ -238,9 +238,10 @@ const data = {
   ],
   apiaccess: [
     {
-      uid: '6d498a2a94a3',
+      uid: generateUUID(),
       name: 'Arctic Bunker',
       description: 'Organization Description',
+      organization_id: '6d498a2a94a3',
       apiaccess: [
         {
           apikey: '1087d55eb85413c9414a064ce04a086695a301d6a61a963f',
@@ -311,6 +312,7 @@ const data = {
           ],
         },
       ],
+      status: 'active',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
@@ -495,6 +497,15 @@ const data = {
           ],
         },
       ],
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ],
+  organizations: [
+    {
+      id: '6d498a2a94a3',
+      name: 'Arctic Bunker',
       status: 'active',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

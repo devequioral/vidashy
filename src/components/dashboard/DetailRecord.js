@@ -2,6 +2,7 @@ import React from 'react';
 
 import {
   Input,
+  Textarea,
   Image,
   Select,
   SelectItem,
@@ -83,6 +84,9 @@ export default function DetailRecord(props) {
     const value = record[key];
     if (type == 'date') {
       return formatDateToISOSM(value);
+    }
+    if (type == 'json') {
+      return JSON.stringify(value, null, 2);
     } else {
       return value;
     }
@@ -110,6 +114,32 @@ export default function DetailRecord(props) {
                   isReadOnly={field.readOnly ? true : false}
                   isRequired={field.isRequired ? true : false}
                   type={field.type}
+                  label={field.label}
+                  isInvalid={validation[field.key] ? true : false}
+                  errorMessage={validation[field.key]}
+                  onChange={(e) => {
+                    onFieldChange(field.key, e.target.value);
+                  }}
+                  defaultValue={formatValue(field.key, field.type)}
+                />
+              )}
+              {field.type === 'textarea' && (
+                <Textarea
+                  isReadOnly={field.readOnly ? true : false}
+                  isRequired={field.isRequired ? true : false}
+                  label={field.label}
+                  isInvalid={validation[field.key] ? true : false}
+                  errorMessage={validation[field.key]}
+                  onChange={(e) => {
+                    onFieldChange(field.key, e.target.value);
+                  }}
+                  defaultValue={formatValue(field.key, field.type)}
+                />
+              )}
+              {field.type === 'json' && (
+                <Textarea
+                  isReadOnly={field.readOnly ? true : false}
+                  isRequired={field.isRequired ? true : false}
                   label={field.label}
                   isInvalid={validation[field.key] ? true : false}
                   errorMessage={validation[field.key]}

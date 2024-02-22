@@ -1,6 +1,8 @@
 const apiAccessModel = {
+  uid: '',
   name: '',
   description: '',
+  organization_id: '',
   apiaccess: [
     {
       apikey: '',
@@ -18,7 +20,6 @@ const apiAccessModel = {
   createdAt: '',
   updatedAt: '',
   status: '',
-  organization_id: '',
 };
 
 export default apiAccessModel;

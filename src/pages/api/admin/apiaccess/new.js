@@ -17,13 +17,17 @@ function generateUUID() {
 
 async function createRecord(record_request) {
   const new_record = sanitizeOBJ({
-    ...record_request,
-    id: generateUUID(),
+    uid: generateUUID(),
+    name: record_request.name,
+    description: record_request.description,
+    status: record_request.status,
+    organization_id: record_request.organization_id,
+    apiaccess: JSON.parse(record_request.apiaccess),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
-  const collectionDB = database.collection('collections');
+  const collectionDB = database.collection('apiaccess');
 
   try {
     const record = await collectionDB.insertOne(new_record);
@@ -50,6 +54,9 @@ export default async function handler(req, res) {
     if (!record_request.name || record_request.name === '') {
       validation.name = 'Field Required';
     }
+    if (!record_request.description || record_request.description === '') {
+      validation.description = 'Field Required';
+    }
     if (!record_request.status || record_request.status === '') {
       validation.status = 'Field Required';
     }
@@ -58,6 +65,9 @@ export default async function handler(req, res) {
       record_request.organization_id === ''
     ) {
       validation.organization_id = 'Field Required';
+    }
+    if (!record_request.apiaccess || record_request.apiaccess === '') {
+      validation.apiaccess = 'Field Required';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY

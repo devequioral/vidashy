@@ -5,6 +5,9 @@ import React, { useContext } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
 import apiAccessModel from '@/models/apiAccessModel';
 import MainScreenObject from '@/components/dashboard/MainScreenObject';
+import { Chip } from '@nextui-org/react';
+import Image from 'next/image';
+import { formatDate, capitalizeFirstLetter, shortUUID } from '@/utils/utils';
 
 async function getOrganizations() {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list?pageSize=1000`;
@@ -18,7 +21,10 @@ function ListApiAccess() {
   const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/new`;
   const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/update`;
   const [organizations, setOrganizations] = React.useState([]);
+  const flag = React.useRef(false);
   React.useEffect(() => {
+    if (flag.current) return;
+    flag.current = true;
     async function fetchOrganizations() {
       const organizationsDB = await getOrganizations();
       if (
@@ -37,6 +43,70 @@ function ListApiAccess() {
     }
     fetchOrganizations();
   }, []);
+  const renderCell = (record, columnKey, showRecordDetail) => {
+    const cellValue = record[columnKey];
+    switch (columnKey) {
+      case 'expand':
+        return (
+          <div
+            className="expand-cell"
+            onClick={() => {
+              showRecordDetail(record);
+            }}
+          >
+            <Image
+              src="/assets/images/icon-expand.svg"
+              width={12}
+              height={12}
+              alt=""
+            />
+          </div>
+        );
+      case 'status':
+        const statusColorMap = {
+          active: 'success',
+          inactive: 'danger',
+        };
+        return (
+          <>
+            {cellValue ? (
+              <Chip
+                className="capitalize"
+                color={statusColorMap[record.status]}
+                size="sm"
+                variant="flat"
+              >
+                {capitalizeFirstLetter(cellValue)}
+              </Chip>
+            ) : (
+              <div></div>
+            )}
+          </>
+        );
+
+      case 'date':
+        return <div>{formatDate(cellValue)}</div>;
+
+      case 'uid':
+        return (
+          <div
+            style={{
+              textDecoration: 'none',
+              color: '#0070f0',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              showRecordDetail(record);
+            }}
+          >
+            {shortUUID(cellValue)}
+          </div>
+        );
+
+      default:
+        return cellValue;
+    }
+  };
   return (
     <>
       <Metaheader title="ApiAccess List | Vidashy" />
@@ -63,11 +133,12 @@ function ListApiAccess() {
             },
             columns: [
               { key: 'expand', label: '' },
-              { key: 'id', label: 'Api Access ID' },
-              { key: 'name', label: 'Api Access' },
+              { key: 'uid', label: 'Api Access ID' },
+              { key: 'name', label: 'Name' },
               { key: 'date', label: 'Date' },
               { key: 'status', label: 'Status' },
             ],
+            renderCell,
           }}
           modalComponentData={{
             title: 'Api Access Details',
@@ -75,13 +146,21 @@ function ListApiAccess() {
           schema={{
             fields: [
               {
-                key: 'id',
+                key: 'organization_id',
+                label: 'Organization',
+                type: 'autocomplete',
+                isRequired: true,
+                placeholder: 'Choose an organization',
+                items: organizations,
+              },
+              {
+                key: 'uid',
                 label: 'Api Access ID',
                 type: 'hidden',
               },
               {
                 key: 'name',
-                label: 'Api Access Name',
+                label: 'Name',
                 type: 'text',
                 isRequired: true,
               },
@@ -90,34 +169,6 @@ function ListApiAccess() {
                 label: 'Description',
                 type: 'text',
                 isRequired: true,
-              },
-              {
-                key: 'client_collection',
-                label: 'Collection',
-                type: 'autocomplete',
-                isRequired: true,
-                placeholder: 'Choose a Collection',
-                items: [],
-              },
-              {
-                key: 'object',
-                label: 'Object',
-                type: 'text',
-                isRequired: true,
-              },
-              {
-                key: 'methods',
-                label: 'Methods',
-                type: 'select',
-                isRequired: true,
-                selectionMode: 'multiple',
-                items: [
-                  { value: 'GET', label: 'GET' },
-                  { value: 'POST', label: 'POST' },
-                  { value: 'PATCH', label: 'PATCH' },
-                  { value: 'DELETE', label: 'DELETE' },
-                  { value: 'PUT', label: 'PUT' },
-                ],
               },
               {
                 key: 'status',
@@ -130,12 +181,10 @@ function ListApiAccess() {
                 ],
               },
               {
-                key: 'organization_id',
-                label: 'Organization',
-                type: 'autocomplete',
+                key: 'apiaccess',
+                label: 'Permissions',
+                type: 'json',
                 isRequired: true,
-                placeholder: 'Choose an organization',
-                items: organizations,
               },
             ],
           }}
