@@ -39,13 +39,8 @@ function formatSchema(schema, listRecords) {
       }
     })(field);
     newSchema.fields.push({
-      key: field.key,
-      label: field.label,
-      type: field.type,
-      isRequired: field.isRequired,
-      placeholder: field.placeholder,
+      ...field,
       items: fieldItems,
-      selectionMode: field.selectionMode,
     });
   });
   return newSchema;

@@ -17,7 +17,8 @@ function generateUUID() {
 
 async function updateRecord(record_request) {
   const update_record = sanitizeOBJ({
-    ...record_request,
+    name: record_request.name,
+    status: record_request.status,
     updatedAt: new Date().toISOString(),
   });
 

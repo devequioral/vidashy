@@ -2,23 +2,23 @@ import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 import { sanitizeOBJ } from '@/utils/utils';
 
-function generateUUID() {
+function generateUUID(length) {
   let d = new Date().getTime();
-  const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    // eslint-disable-next-line no-bitwise
-    const r = (d + Math.random() * 16) % 16 | 0;
-    // eslint-disable-next-line no-bitwise
-    d = Math.floor(d / 16);
-    // eslint-disable-next-line no-bitwise
-    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-  });
-  return uuid;
+  const uuid = Array(length + 1)
+    .join('x')
+    .replace(/[x]/g, (c) => {
+      const r = (d + Math.random() * 16) % 16 | 0;
+      d = Math.floor(d / 16);
+      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  return uuid.slice(0, length);
 }
 
 async function createRecord(record_request) {
   const new_record = sanitizeOBJ({
-    ...record_request,
-    id: generateUUID(),
+    id: generateUUID(12),
+    name: record_request.name,
+    status: record_request.status,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
