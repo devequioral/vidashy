@@ -13,6 +13,7 @@ export default async function handler(req, res) {
 
   //VERIFY IF THE REQUEST IS AUTHORIZED
   const verify = await verifyRequest(request);
+
   if (verify !== true) return res.status(verify.status).json(verify.response);
 
   if (request.method === 'GET') {
