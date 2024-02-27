@@ -2,28 +2,33 @@ import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 import { sanitizeOBJ } from '@/utils/utils';
 
-function generateUUID(length) {
+function generateUUID() {
   let d = new Date().getTime();
-  const uuid = Array(length + 1)
-    .join('x')
-    .replace(/[x]/g, (c) => {
-      const r = (d + Math.random() * 16) % 16 | 0;
-      d = Math.floor(d / 16);
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-    });
-  return uuid.slice(0, length);
+  const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    // eslint-disable-next-line no-bitwise
+    const r = (d + Math.random() * 16) % 16 | 0;
+    // eslint-disable-next-line no-bitwise
+    d = Math.floor(d / 16);
+    // eslint-disable-next-line no-bitwise
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
+  return uuid;
 }
 
 async function createRecord(record_request) {
   const new_record = sanitizeOBJ({
-    id: generateUUID(12),
+    id: generateUUID(),
     name: record_request.name,
+    description: record_request.description,
     status: record_request.status,
+    organization_id: record_request.organization_id,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
+  new_record.apiaccess = record_request.apiaccess;
+
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
-  const collectionDB = database.collection('organizations');
+  const collectionDB = database.collection('apiaccess');
 
   try {
     const record = await collectionDB.insertOne(new_record);
@@ -50,8 +55,20 @@ export default async function handler(req, res) {
     if (!record_request.name || record_request.name === '') {
       validation.name = 'Field Required';
     }
+    if (!record_request.description || record_request.description === '') {
+      validation.description = 'Field Required';
+    }
     if (!record_request.status || record_request.status === '') {
       validation.status = 'Field Required';
+    }
+    if (
+      !record_request.organization_id ||
+      record_request.organization_id === ''
+    ) {
+      validation.organization_id = 'Field Required';
+    }
+    if (!record_request.apiaccess || record_request.apiaccess === '') {
+      validation.apiaccess = 'Field Required';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY

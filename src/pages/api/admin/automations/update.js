@@ -17,14 +17,19 @@ function generateUUID() {
 
 async function updateRecord(record_request) {
   const update_record = sanitizeOBJ({
-    name: record_request.name,
+    organization_id: record_request.organization_id,
+    collection: record_request.collection,
+    object: record_request.object,
+    trigger: record_request.trigger,
     status: record_request.status,
     updatedAt: new Date().toISOString(),
   });
 
+  update_record.automations = record_request.automations;
+
   const filter = { id: record_request.id };
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
-  const collectionDB = database.collection('organizations');
+  const collectionDB = database.collection('automations');
 
   try {
     const record = await collectionDB.updateOne(filter, {
@@ -50,11 +55,28 @@ export default async function handler(req, res) {
 
     const validation = {};
 
-    if (!record_request.name || record_request.name === '') {
-      validation.name = 'Field Required';
+    if (
+      !record_request.organization_id ||
+      record_request.organization_id === ''
+    ) {
+      validation.organization_id = 'Field Required';
+    }
+
+    if (!record_request.collection || record_request.collection === '') {
+      validation.collection = 'Field Required';
+    }
+    if (!record_request.object || record_request.object === '') {
+      validation.object = 'Field Required';
+    }
+    if (!record_request.trigger || record_request.trigger === '') {
+      validation.trigger = 'Field Required';
     }
     if (!record_request.status || record_request.status === '') {
       validation.status = 'Field Required';
+    }
+
+    if (!record_request.automations || record_request.automations === '') {
+      validation.automations = 'Field Required';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY

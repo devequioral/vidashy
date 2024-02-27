@@ -60,8 +60,6 @@ export default async function handler(req, res) {
       validation.organization_id = 'Field Required';
     }
 
-    console.log(record_request);
-
     //EVALUATE IF VALIDATION IS NOT EMPTY
     if (Object.keys(validation).length > 0) {
       return res.status(500).send({

@@ -1,19 +1,48 @@
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
 import { ThemeContext } from '@/contexts/ThemeContext';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
-import organizationModel from '@/models/organizationModel';
+import automationsModel from '@/models/automationsModel';
 import MainScreenObject from '@/components/dashboard/MainScreenObject';
 import { Chip } from '@nextui-org/react';
 import Image from 'next/image';
 import { formatDate, capitalizeFirstLetter, shortUUID } from '@/utils/utils';
 
-function ListOrganizations() {
+async function getOrganizations() {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list?pageSize=1000`;
+  const res = await fetch(url);
+  return await res.json();
+}
+
+function ListAutomations() {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list`;
-  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/new`;
-  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/update`;
+  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/list`;
+  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/new`;
+  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/update`;
+  const [organizations, setOrganizations] = React.useState([]);
+  const flag = React.useRef(false);
+  React.useEffect(() => {
+    if (flag.current) return;
+    flag.current = true;
+    async function fetchOrganizations() {
+      const organizationsDB = await getOrganizations();
+      if (
+        organizationsDB &&
+        organizationsDB.data &&
+        organizationsDB.data.records
+      ) {
+        organizationsDB.data.records.map((organization) => {
+          const newOrganization = {
+            label: organization.name,
+            value: organization.id,
+          };
+          setOrganizations((prev) => [...prev, newOrganization]);
+        });
+      }
+    }
+    fetchOrganizations();
+  }, []);
   const renderCell = (record, columnKey, showRecordDetail) => {
     const cellValue = record[columnKey];
     switch (columnKey) {
@@ -80,14 +109,14 @@ function ListOrganizations() {
   };
   return (
     <>
-      <Metaheader title="Organizations List | Vidashy" />
+      <Metaheader title="Automations List | Vidashy" />
       <Layout theme={theme} toogleTheme={toggleTheme}>
         <BreadCrumbs
           theme={theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },
-              { href: false, title: 'Organizations' },
+              { href: false, title: 'Automations' },
             ],
           }}
         />
@@ -96,36 +125,60 @@ function ListOrganizations() {
           urlNewRecord={urlNewRecord}
           urlUpdateRecord={urlUpdateRecord}
           tablePageSize={5}
-          model={organizationModel}
+          model={automationsModel}
           tableComponentData={{
-            title: 'Organizations List',
+            title: 'Automations List',
             button: {
-              label: 'New Organization',
+              label: 'New Automation',
             },
             columns: [
               { key: 'expand', label: '' },
-              { key: 'id', label: 'Organization ID' },
-              { key: 'name', label: 'Organization' },
+              { key: 'id', label: 'Automation ID' },
+              { key: 'trigger', label: 'Trigger' },
               { key: 'date', label: 'Date' },
               { key: 'status', label: 'Status' },
             ],
             renderCell,
           }}
           modalComponentData={{
-            title: 'Organization Details',
+            title: 'Automations Details',
           }}
           schema={{
             fields: [
               {
+                key: 'organization_id',
+                label: 'Organization',
+                type: 'autocomplete',
+                isRequired: true,
+                placeholder: 'Choose an organization',
+                items: organizations,
+              },
+              {
                 key: 'id',
-                label: 'Organization ID',
+                label: 'Automation ID',
                 type: 'hidden',
               },
               {
-                key: 'name',
-                label: 'Organization Name',
+                key: 'collection',
+                label: 'Collection',
                 type: 'text',
                 isRequired: true,
+              },
+              {
+                key: 'object',
+                label: 'Object',
+                type: 'text',
+                isRequired: true,
+              },
+              {
+                key: 'trigger',
+                label: 'Trigger',
+                type: 'select',
+                isRequired: true,
+                items: [
+                  { value: 'recordCreated', label: 'Record Created' },
+                  { value: 'recordUpdated', label: 'Record Updated' },
+                ],
               },
               {
                 key: 'status',
@@ -137,6 +190,12 @@ function ListOrganizations() {
                   { value: 'inactive', label: 'Inactive' },
                 ],
               },
+              {
+                key: 'automations',
+                label: 'Automations',
+                type: 'json',
+                isRequired: true,
+              },
             ],
           }}
         />
@@ -145,5 +204,5 @@ function ListOrganizations() {
   );
 }
 
-ListOrganizations.auth = { adminOnly: true };
-export default ListOrganizations;
+ListAutomations.auth = { adminOnly: true };
+export default ListAutomations;

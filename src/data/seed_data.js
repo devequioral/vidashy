@@ -238,9 +238,10 @@ const data = {
   ],
   apiaccess: [
     {
-      uid: '6d498a2a94a3',
+      id: generateUUID(),
       name: 'Arctic Bunker',
       description: 'Organization Description',
+      organization_id: '6d498a2a94a3',
       apiaccess: [
         {
           apikey: '1087d55eb85413c9414a064ce04a086695a301d6a61a963f',
@@ -311,13 +312,18 @@ const data = {
           ],
         },
       ],
+      status: 'active',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
   ],
   automations: [
     {
-      uid: '6d498a2a94a3_quoter_tickets_recordCreated',
+      id: '6d498a2a94a3_quoter_tickets_recordCreated',
+      organization_id: '6d498a2a94a3',
+      collection: 'quoter',
+      object: 'tickets',
+      trigger: 'recordCreated',
       automations: [
         {
           order: 1,
@@ -345,7 +351,11 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
     {
-      uid: '6d498a2a94a3_quoter_orders_recordCreated',
+      id: '6d498a2a94a3_quoter_orders_recordCreated',
+      organization_id: '6d498a2a94a3',
+      collection: 'quoter',
+      object: 'orders',
+      trigger: 'recordCreated',
       automations: [
         {
           order: 1,
@@ -373,7 +383,11 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
     {
-      uid: '6d498a2a94a3_quoter_orders_recordUpdated',
+      id: '6d498a2a94a3_quoter_orders_recordUpdated',
+      organization_id: '6d498a2a94a3',
+      collection: 'quoter',
+      object: 'orders',
+      trigger: 'recordUpdated',
       automations: [
         {
           order: 1,
@@ -401,7 +415,11 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
     {
-      uid: '6d498a2a94a3_quoter_tickets_recordUpdated',
+      id: '6d498a2a94a3_quoter_tickets_recordUpdated',
+      organization_id: '6d498a2a94a3',
+      collection: 'quoter',
+      object: 'tickets',
+      trigger: 'recordUpdated',
       automations: [
         {
           order: 1,
@@ -500,6 +518,15 @@ const data = {
       updatedAt: new Date().toISOString(),
     },
   ],
+  organizations: [
+    {
+      id: '6d498a2a94a3',
+      name: 'Arctic Bunker',
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ],
   userDatabases: [
     {
       name: 'DB_6d498a2a94a3_quoter',
@@ -511,7 +538,7 @@ const data = {
               id: '1',
               name: 'Carlos Perez',
               username: 'carlosperez',
-              email: 'angel.silva3812@gmail.com',
+              email: 'user@example.com',
               password:
                 '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
               role: 'regular',
@@ -533,7 +560,7 @@ const data = {
               id: '3',
               name: 'Ronald Perez',
               username: 'admin',
-              email: 'virtelsas@gmail.com',
+              email: 'admin@example.com',
               password:
                 '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
               role: 'admin',
@@ -544,7 +571,7 @@ const data = {
               id: '4',
               name: 'Admin02',
               username: 'admin02',
-              email: 'angel.silva3500@gmail.com',
+              email: 'admin02@example.com',
               password:
                 '$2a$10$oUHu.0WvRWyrbtNv8auTR.3sI83y/RuLs2p6ZWt0DqLx1eJI7FvJa',
               role: 'admin',

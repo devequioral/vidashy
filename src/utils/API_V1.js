@@ -52,7 +52,7 @@ async function verifyRequest(request) {
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
   const apiaccessDB = await database
     .collection('apiaccess')
-    .findOne({ uid: request.organization });
+    .findOne({ organization_id: request.organization });
   await client.close();
 
   if (!apiaccessDB)

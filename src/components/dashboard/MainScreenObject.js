@@ -39,11 +39,7 @@ function formatSchema(schema, listRecords) {
       }
     })(field);
     newSchema.fields.push({
-      key: field.key,
-      label: field.label,
-      type: field.type,
-      isRequired: field.isRequired,
-      placeholder: field.placeholder,
+      ...field,
       items: fieldItems,
     });
   });
@@ -221,70 +217,71 @@ export default function MainScreenObject(props) {
     }
   };
 
-  const renderCell = React.useCallback((record, columnKey) => {
-    const cellValue = record[columnKey];
-    switch (columnKey) {
-      case 'expand':
-        return (
-          <div
-            className="expand-cell"
-            onClick={() => {
-              showRecordDetail(record);
-            }}
-          >
-            <Image
-              src="/assets/images/icon-expand.svg"
-              width={12}
-              height={12}
-              alt=""
-            />
-          </div>
-        );
-      case 'status':
-        const statusColorMap = {
-          active: 'success',
-          inactive: 'danger',
-        };
-        return (
-          <>
-            {cellValue ? (
-              <Chip
-                className="capitalize"
-                color={statusColorMap[record.status]}
-                size="sm"
-                variant="flat"
-              >
-                {capitalizeFirstLetter(cellValue)}
-              </Chip>
-            ) : (
-              <div></div>
-            )}
-          </>
-        );
+  // const renderCell = React.useCallback((record, columnKey) => {
+  //   const cellValue = record[columnKey];
+  //   console.log(record);
+  //   switch (columnKey) {
+  //     case 'expand':
+  //       return (
+  //         <div
+  //           className="expand-cell"
+  //           onClick={() => {
+  //             showRecordDetail(record);
+  //           }}
+  //         >
+  //           <Image
+  //             src="/assets/images/icon-expand.svg"
+  //             width={12}
+  //             height={12}
+  //             alt=""
+  //           />
+  //         </div>
+  //       );
+  //     case 'status':
+  //       const statusColorMap = {
+  //         active: 'success',
+  //         inactive: 'danger',
+  //       };
+  //       return (
+  //         <>
+  //           {cellValue ? (
+  //             <Chip
+  //               className="capitalize"
+  //               color={statusColorMap[record.status]}
+  //               size="sm"
+  //               variant="flat"
+  //             >
+  //               {capitalizeFirstLetter(cellValue)}
+  //             </Chip>
+  //           ) : (
+  //             <div></div>
+  //           )}
+  //         </>
+  //       );
 
-      case 'date':
-        return <div>{formatDate(cellValue)}</div>;
+  //     case 'date':
+  //       return <div>{formatDate(cellValue)}</div>;
 
-      case 'id':
-        return (
-          <div
-            style={{
-              textDecoration: 'none',
-              color: '#0070f0',
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              showRecordDetail(record);
-            }}
-          >
-            {shortUUID(cellValue)}
-          </div>
-        );
+  //     case 'id':
+  //       return (
+  //         <div
+  //           style={{
+  //             textDecoration: 'none',
+  //             color: '#0070f0',
+  //             cursor: 'pointer',
+  //           }}
+  //           onClick={() => {
+  //             showRecordDetail(record);
+  //           }}
+  //         >
+  //           {shortUUID(cellValue)}
+  //         </div>
+  //       );
 
-      default:
-        return cellValue;
-    }
-  }, []);
+  //     default:
+  //       return cellValue;
+  //   }
+  // }, []);
   return (
     <>
       <TableComponent
@@ -306,7 +303,8 @@ export default function MainScreenObject(props) {
               setPage(page);
             },
           },
-          renderCell,
+          renderCell: tableComponentData.renderCell,
+          showRecordDetail: showRecordDetail,
         }}
       />
       <ModalComponent
@@ -315,6 +313,7 @@ export default function MainScreenObject(props) {
         title={modalComponentData.title}
         onCloseModal={() => {
           onRecordChange(false);
+          setValidation({});
         }}
         allowSave={recordChange}
         savingRecord={savingRecord}

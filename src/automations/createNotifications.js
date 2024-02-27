@@ -139,9 +139,11 @@ async function start(options) {
       },
     });
 
+    const mail_to = await dynamicDataV2(mailData.to, record);
+
     const sendMailData = {
       from: mailData.from,
-      to: await dynamicDataV2(mailData.to, record),
+      to: mail_to,
       subject: mailData.subject,
       text: mailData.text,
       html: mailData.html,
@@ -150,10 +152,10 @@ async function start(options) {
     transporter.sendMail(sendMailData, function (err, info) {
       if (err) {
         //TODO LOG ERROR
-        //console.log('SEND EMAIL ERROR', err);
+        console.log('SEND EMAIL ERROR', err);
       } else {
         // TODO LOG SUCCESS
-        //console.log('SEND EMAIL SUCCESS');
+        console.log('SEND EMAIL SUCCESS');
       }
     });
   } catch (e) {
