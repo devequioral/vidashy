@@ -15,6 +15,9 @@ async function getRecords(request) {
     ? params.filterComparison.split(',')
     : [];
 
+  const sortBy = params.sortBy ? params.sortBy.split(',') : [];
+  const sortValue = params.sortValue ? params.sortValue.split(',') : [];
+
   const filter = [];
   if (filterBy) {
     filterBy.map((item, index) => {
@@ -26,20 +29,41 @@ async function getRecords(request) {
     });
   }
 
+  const sort = [];
+  if (sortBy) {
+    sortBy.map((item, index) => {
+      sort.push({
+        field: item,
+        value: sortValue[index],
+      });
+    });
+  }
+  if (sort.length === 0) sort.push({ field: 'createdAt', value: -1 });
+
   let query = {};
   filter.forEach((item) => {
     if (item.comparison === 'eq') query[item.field] = item.value;
-    if (item.comparison === 'gt') query[item.field] = { $gt: item.value };
-    if (item.comparison === 'lt') query[item.field] = { $lt: item.value };
-    if (item.comparison === 'gte') query[item.field] = { $gte: item.value };
-    if (item.comparison === 'lte') query[item.field] = { $lte: item.value };
-    if (item.comparison === 'ne') query[item.field] = { $ne: item.value };
-    if (item.comparison === 'in')
+    else if (item.comparison === 'gt') query[item.field] = { $gt: item.value };
+    else if (item.comparison === 'lt') query[item.field] = { $lt: item.value };
+    else if (item.comparison === 'gte')
+      query[item.field] = { $gte: item.value };
+    else if (item.comparison === 'lte')
+      query[item.field] = { $lte: item.value };
+    else if (item.comparison === 'ne') query[item.field] = { $ne: item.value };
+    else if (item.comparison === 'in')
       query[item.field] = { $in: item.value.split('|') };
-    if (item.comparison === 'nin')
+    else if (item.comparison === 'nin')
       query[item.field] = { $nin: item.value.split('|') };
-    if (item.comparison === 'regex')
+    else if (item.comparison === 'regex')
       query[item.field] = { $regex: item.value, $options: 'i' };
+    else if (item.comparison === 'exists')
+      query[item.field] = { $exists: item.value === 'true' };
+    else query[item.field] = item.value;
+  });
+
+  let sortDB = {};
+  sort.forEach((item) => {
+    sortDB[item.field] = item.value;
   });
 
   let dataBaseName = `DB_${organization}_${collection}`;
@@ -54,7 +78,7 @@ async function getRecords(request) {
 
   const records = await collectionDB
     .find(query)
-    .sort({ createdAt: -1 })
+    .sort(sortDB)
     .skip(skip)
     .limit(pageSize)
     .toArray();
