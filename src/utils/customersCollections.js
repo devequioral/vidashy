@@ -98,7 +98,6 @@ async function createRecord(request) {
   const collectionDB = database.collection(object);
 
   //ADD TO BODY THE CREATEDAT AND UPDATEDAT FIELDS
-
   const new_record = {
     ...body,
     createdAt: new Date().toISOString(),
