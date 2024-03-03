@@ -1,12 +1,16 @@
 import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 
-async function getRecords(page = 1, pageSize = 5, status = 'all') {
+async function getRecords(page = 1, pageSize = 5, status = 'all', search = '') {
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
 
-  const query = {};
+  let query = {};
   if (status !== 'all') {
     query.status = status;
+  }
+
+  if (search) {
+    query.name = { $regex: `.*${search}.*`, $options: 'i' };
   }
 
   const collectionDB = database.collection('apiaccess');
@@ -38,9 +42,9 @@ export default async function handler(req, res) {
     if (token.role !== 'admin')
       return res.status(401).send({ message: 'User Not authorized' });
 
-    const { page, pageSize, status } = req.query;
+    const { page, pageSize, status, search } = req.query;
 
-    const data = await getRecords(page, pageSize, status);
+    const data = await getRecords(page, pageSize, status, search);
 
     if (!data || !data.records || data.records.length === 0)
       return res.status(404).send({ data, message: 'Records Not found' });

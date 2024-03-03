@@ -140,6 +140,7 @@ function ListAutomations() {
             ],
             renderCell,
           }}
+          showSearch={true}
           modalComponentData={{
             title: 'Automations Details',
           }}

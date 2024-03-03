@@ -7,27 +7,97 @@ import recordEmitter from '@/utils/Events';
 
 async function getRecords(request) {
   const { organization, collection, object, params } = request;
+
   const page = params.page ? parseInt(params.page) : 1;
   const pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
-  const filterBy = params.filterBy ? params.filterBy.split(',') : [];
-  const filterValue = params.filterValue ? params.filterValue.split(',') : [];
-  const filterComparison = params.filterComparison
-    ? params.filterComparison.split(',')
-    : [];
+
+  let query = {};
+
+  let options = params.options;
+
+  if (options) {
+    options = options.replaceAll('"and":', '"$and":');
+    options = options.replaceAll('"or":', '"$or":');
+    options = options.replaceAll('"regex":', '"$regex":');
+    options = options.replaceAll('"optionsRegex":', '"$options":');
+
+    options = JSON.parse(options);
+  }
+
+  if (options && options.filter) {
+    query = options.filter;
+  } else {
+    const filterBy = params.filterBy ? params.filterBy.split(',') : [];
+    const filterValue = params.filterValue ? params.filterValue.split(',') : [];
+    const filterComparison = params.filterComparison
+      ? params.filterComparison.split(',')
+      : [];
+    const filterCondition =
+      params.filterCondition && params.filterCondition !== 'undefined'
+        ? params.filterCondition
+        : 'and';
+
+    const filter = [];
+    if (filterBy) {
+      filterBy.map((item, index) => {
+        filter.push({
+          field: item,
+          value: filterValue[index],
+          comparison: filterComparison[index] ? filterComparison[index] : 'eq',
+        });
+      });
+    }
+    if (filterCondition === 'or') query = { $or: [] };
+    else query = { $and: [] };
+
+    filter.forEach((item) => {
+      if (item.comparison === 'eq')
+        query[`$${filterCondition}`].push({ [item.field]: item.value });
+      else if (item.comparison === 'gt')
+        query[`$${filterCondition}`].push({
+          [item.field]: { $gt: item.value },
+        });
+      else if (item.comparison === 'lt')
+        query[`$${filterCondition}`].push({
+          [item.field]: { $lt: item.value },
+        });
+      else if (item.comparison === 'gte')
+        query[`$${filterCondition}`].push({
+          [item.field]: { $gte: item.value },
+        });
+      else if (item.comparison === 'lte')
+        query[`$${filterCondition}`].push({
+          [item.field]: { $lte: item.value },
+        });
+      else if (item.comparison === 'ne')
+        query[`$${filterCondition}`].push({
+          [item.field]: { $ne: item.value },
+        });
+      else if (item.comparison === 'in')
+        query[`$${filterCondition}`].push({
+          [item.field]: { $in: item.value.split('|') },
+        });
+      else if (item.comparison === 'nin')
+        query[`$${filterCondition}`].push({
+          [item.field]: { $nin: item.value.split('|') },
+        });
+      else if (item.comparison === 'regex') {
+        query[`$${filterCondition}`].push({
+          [item.field]: { $regex: item.value, $options: 'i' },
+        });
+      } else if (item.comparison === 'exists')
+        query[`$${filterCondition}`].push({
+          [item.field]: { $exists: item.value === 'true' },
+        });
+      else query[`$${filterCondition}`].push({ [item.field]: item.value });
+    });
+
+    if (query[`$${filterCondition}`].length === 0)
+      delete query[`$${filterCondition}`];
+  }
 
   const sortBy = params.sortBy ? params.sortBy.split(',') : [];
   const sortValue = params.sortValue ? params.sortValue.split(',') : [];
-
-  const filter = [];
-  if (filterBy) {
-    filterBy.map((item, index) => {
-      filter.push({
-        field: item,
-        value: filterValue[index],
-        comparison: filterComparison[index] ? filterComparison[index] : 'eq',
-      });
-    });
-  }
 
   const sort = [];
   if (sortBy) {
@@ -39,27 +109,6 @@ async function getRecords(request) {
     });
   }
   if (sort.length === 0) sort.push({ field: 'createdAt', value: -1 });
-
-  let query = {};
-  filter.forEach((item) => {
-    if (item.comparison === 'eq') query[item.field] = item.value;
-    else if (item.comparison === 'gt') query[item.field] = { $gt: item.value };
-    else if (item.comparison === 'lt') query[item.field] = { $lt: item.value };
-    else if (item.comparison === 'gte')
-      query[item.field] = { $gte: item.value };
-    else if (item.comparison === 'lte')
-      query[item.field] = { $lte: item.value };
-    else if (item.comparison === 'ne') query[item.field] = { $ne: item.value };
-    else if (item.comparison === 'in')
-      query[item.field] = { $in: item.value.split('|') };
-    else if (item.comparison === 'nin')
-      query[item.field] = { $nin: item.value.split('|') };
-    else if (item.comparison === 'regex')
-      query[item.field] = { $regex: item.value, $options: 'i' };
-    else if (item.comparison === 'exists')
-      query[item.field] = { $exists: item.value === 'true' };
-    else query[item.field] = item.value;
-  });
 
   let sortDB = {};
   sort.forEach((item) => {
@@ -98,7 +147,6 @@ async function createRecord(request) {
   const collectionDB = database.collection(object);
 
   //ADD TO BODY THE CREATEDAT AND UPDATEDAT FIELDS
-
   const new_record = {
     ...body,
     createdAt: new Date().toISOString(),

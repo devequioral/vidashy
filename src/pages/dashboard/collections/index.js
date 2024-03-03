@@ -43,6 +43,7 @@ function ListCollections() {
               { key: 'status', label: 'Status' },
             ],
           }}
+          showSearch={true}
           modalComponentData={{
             title: 'Collection Details',
           }}

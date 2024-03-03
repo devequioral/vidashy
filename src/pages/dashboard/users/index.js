@@ -111,6 +111,7 @@ function ListUsers() {
             ],
             renderCell,
           }}
+          showSearch={true}
           modalComponentData={{
             title: 'User Details',
           }}

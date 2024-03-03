@@ -140,6 +140,7 @@ function ListApiAccess() {
             ],
             renderCell,
           }}
+          showSearch={true}
           modalComponentData={{
             title: 'Api Access Details',
           }}

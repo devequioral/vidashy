@@ -111,6 +111,7 @@ function ListOrganizations() {
             ],
             renderCell,
           }}
+          showSearch={true}
           modalComponentData={{
             title: 'Organization Details',
           }}
