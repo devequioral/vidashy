@@ -169,6 +169,37 @@ async function createRecord(request) {
   }
 }
 
+//DELETE RECORD FUNCTION
+async function deleteRecord(request) {
+  const { organization, collection, object, body } = request;
+  let dataBaseName = `DB_${organization}_${collection}`;
+
+  const { client, database } = db.mongoConnect(dataBaseName);
+
+  const collectionDB = database.collection(object);
+
+  if (!body || !body.id) return false;
+
+  const id = body.id;
+
+  try {
+    try {
+      // Delete the record
+      const result = await collectionDB.deleteOne({ id });
+      await client.close();
+      if (result.deletedCount === 1) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('Error occurred while trying to delete document:', e);
+      return { result: {} };
+    }
+  } catch (e) {
+    return { record: {} };
+  }
+}
+
 //UPDATE RECORD FUNCTION
 async function updateRecord(request) {
   const { organization, collection, object, body } = request;
@@ -237,4 +268,4 @@ async function prepareUpload(request) {
   }
 }
 
-export { getRecords, createRecord, updateRecord, prepareUpload };
+export { getRecords, createRecord, deleteRecord, updateRecord, prepareUpload };
