@@ -124,7 +124,6 @@ async function getRecords(request) {
   const total = await collectionDB.countDocuments(query);
 
   const totalPages = Math.ceil(total / pageSize);
-
   const records = await collectionDB
     .find(query)
     .sort(sortDB)

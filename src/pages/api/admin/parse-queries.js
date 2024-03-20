@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   //searchAll(users,{role:admin},email)
   const obj = qs.parse('id');
 
-  console.log(obj);
+  //console.log(obj);
 
   res.status(200).json({ obj });
 

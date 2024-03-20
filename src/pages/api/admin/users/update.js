@@ -1,4 +1,5 @@
 import { getToken } from 'next-auth/jwt';
+import bcryptjs from 'bcryptjs';
 import db from '@/utils/db';
 import { sanitizeOBJ } from '@/utils/utils';
 
