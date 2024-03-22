@@ -8,8 +8,10 @@ import recordEmitter from '@/utils/Events';
 async function getRecords(request) {
   const { organization, collection, object, params } = request;
 
-  const page = params.page ? parseInt(params.page) : 1;
-  const pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
+  // const page = params.page ? parseInt(params.page) : 1;
+  // const pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
+  let page = 1;
+  let pageSize = 10;
 
   let query = {};
 
@@ -26,7 +28,11 @@ async function getRecords(request) {
 
   if (options && options.filter) {
     query = options.filter;
+    page = options.page ? parseInt(options.page) : page;
+    pageSize = options.pageSize ? parseInt(options.pageSize) : pageSize;
   } else {
+    page = params.page ? parseInt(params.page) : 1;
+    pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
     const filterBy = params.filterBy ? params.filterBy.split(',') : [];
     const filterValue = params.filterValue ? params.filterValue.split(',') : [];
     const filterComparison = params.filterComparison
