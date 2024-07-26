@@ -102,18 +102,31 @@ async function getRecords(request) {
       delete query[`$${filterCondition}`];
   }
 
-  const sortBy = params.sortBy ? params.sortBy.split(',') : [];
-  const sortValue = params.sortValue ? params.sortValue.split(',') : [];
+  let sortBy = [];
+  let sortValue = [];
+
+  if (options && options.sortBy) {
+    sortBy = options.sortBy.split(',');
+  } else if (params.sortBy) {
+    sortBy = params.sortBy.split(',');
+  }
+
+  if (options && options.sortValue) {
+    sortValue = options.sortValue.split(',');
+  } else if (params.sortValue) {
+    sortValue = params.sortValue.split(',');
+  }
 
   const sort = [];
   if (sortBy) {
     sortBy.map((item, index) => {
       sort.push({
         field: item,
-        value: sortValue[index],
+        value: sortValue.length >= index ? sortValue[index] : -1,
       });
     });
   }
+
   if (sort.length === 0) sort.push({ field: 'createdAt', value: -1 });
 
   let sortDB = {};
@@ -128,7 +141,6 @@ async function getRecords(request) {
   const collectionDB = database.collection(object);
 
   const total = await collectionDB.countDocuments(query);
-
   const totalPages = Math.ceil(total / pageSize);
   const records = await collectionDB
     .find(query)
