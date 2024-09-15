@@ -10,41 +10,36 @@ import { formatDate, capitalizeFirstLetter, shortUUID } from '@/utils/utils';
 import Image from 'next/image';
 import { Chip } from '@nextui-org/react';
 
-const listOrganizations = async () => {
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list`;
+const getOrganization = async (id) => {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/get?id=${id}`;
   return await fetch(url);
 };
 
 function ListCollections() {
   const router = useRouter();
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/list`;
-  const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/new`;
-  const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/update`;
-  const [organizations, setOrganizations] = useState([]);
-  const [currentOrganization, setCurrentOrganization] = useState('');
-  const idOrganization = router.query.id;
+  const [urlRecords, setUrlRecords] = useState();
+  const [organization, setCurrentOrganization] = useState({ name: '' });
+
   useEffect(() => {
     const fetchOrganizations = async () => {
-      const response = await listOrganizations();
+      if (!router.query.id) return;
+      const idOrganization = router.query.id;
+      const response = await getOrganization(idOrganization);
       if (response.ok) {
         const resp_json = await response.json();
-        const _organizations = [];
-        if (!resp_json.data.records) return;
-        resp_json.data.records.map((record, i) => {
-          _organizations.push({
-            label: record.name,
-            value: record.id,
-          });
-          if (record.id === idOrganization) {
-            setCurrentOrganization(record.name);
-          }
+        const _organization = resp_json.data.records[0];
+
+        setUrlRecords({
+          get: `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/list?organization_id=${_organization.id}`,
+          new: `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/new?organization_id=${_organization.id}`,
+          update: `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/update?organization_id=${_organization.id}`,
         });
-        setOrganizations(_organizations);
+        setCurrentOrganization(_organization);
       }
     };
     fetchOrganizations();
-  }, []);
+  }, [router.query.id]);
   const renderCell = (record, columnKey, showRecordDetail) => {
     const cellValue = record[columnKey];
     switch (columnKey) {
@@ -122,70 +117,70 @@ function ListCollections() {
             links: [
               { href: '/dashboard', title: 'Home' },
               { href: '/dashboard/organizations', title: 'Collections' },
-              { href: false, title: currentOrganization || idOrganization },
+              { href: false, title: organization.name },
             ],
           }}
         />
-        <MainScreenObject
-          urlGetRecords={urlGetRecords}
-          urlNewRecord={urlNewRecord}
-          urlUpdateRecord={urlUpdateRecord}
-          tablePageSize={5}
-          model={collectionsModel}
-          tableComponentData={{
-            title: `Collections List of ${
-              currentOrganization || idOrganization
-            }`,
-            button: {
-              label: 'New Collection',
-            },
-            columns: [
-              { key: 'expand', label: '' },
-              { key: 'id', label: 'Collection ID' },
-              { key: 'name', label: 'Name' },
-              { key: 'date', label: 'Date' },
-              { key: 'status', label: 'Status' },
-            ],
-            renderCell,
-          }}
-          showSearch={true}
-          modalComponentData={{
-            title: 'Collection Details',
-          }}
-          schema={{
-            fields: [
-              {
-                key: 'id',
-                label: 'Collection ID',
-                type: 'hidden',
+        {organization.id && urlRecords && (
+          <MainScreenObject
+            urlGetRecords={urlRecords.get}
+            urlNewRecord={urlRecords.new}
+            urlUpdateRecord={urlRecords.update}
+            tablePageSize={5}
+            model={collectionsModel}
+            tableComponentData={{
+              title: `Collections List of ${organization.name}`,
+              button: {
+                label: 'New Collection',
               },
-              {
-                key: 'name',
-                label: 'Collection Name',
-                type: 'text',
-                isRequired: true,
-              },
-              {
-                key: 'status',
-                label: 'Status',
-                type: 'select',
-                isRequired: true,
-                items: [
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: 'Inactive' },
-                ],
-              },
-              {
-                key: 'organization_id',
-                label: 'Organization',
-                type: 'autocomplete',
-                isRequired: true,
-                placeholder: 'Choose an organization',
-                items: organizations,
-              },
-            ],
-          }}
-        />
+              columns: [
+                { key: 'expand', label: '' },
+                { key: 'id', label: 'Collection ID' },
+                { key: 'name', label: 'Name' },
+                { key: 'date', label: 'Date' },
+                { key: 'status', label: 'Status' },
+              ],
+              renderCell,
+            }}
+            showSearch={true}
+            modalComponentData={{
+              title: 'Collection Details',
+            }}
+            schema={{
+              fields: [
+                {
+                  key: 'id',
+                  label: 'Collection ID',
+                  type: 'hidden',
+                },
+                {
+                  key: 'name',
+                  label: 'Collection Name',
+                  type: 'text',
+                  isRequired: true,
+                },
+                {
+                  key: 'status',
+                  label: 'Status',
+                  type: 'select',
+                  isRequired: true,
+                  items: [
+                    { value: 'active', label: 'Active' },
+                    { value: 'inactive', label: 'Inactive' },
+                  ],
+                },
+                {
+                  key: 'organization_id',
+                  label: 'Organization',
+                  type: 'hidden',
+                  isRequired: true,
+                  placeholder: 'Choose an organization',
+                  value: organization.id,
+                },
+              ],
+            }}
+          />
+        )}
       </Layout>
     </>
   );

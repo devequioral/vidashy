@@ -17,6 +17,8 @@ import {
   useDisclosure,
   Listbox,
   ListboxItem,
+  Divider,
+  Spinner,
 } from '@nextui-org/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './CollectionObject.module.css';
@@ -314,6 +316,204 @@ async function addColumn(collectionId, organizationId, objectId, column) {
   });
 }
 
+async function getApiAccess(organizationId) {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/get_from_organization?organization_id=${organizationId}`;
+  return await fetch(url);
+}
+
+async function createApiAccess(
+  organization_id,
+  objectName,
+  collectionName,
+  name,
+  description,
+  permissions
+) {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/create`;
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      record_request: {
+        organization_id,
+        objectName,
+        collectionName,
+        name,
+        description,
+        permissions,
+      },
+    }),
+  });
+}
+
+function ApiAccessModal({ show, organizationId, collectionName, objectName }) {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const [loading, setLoading] = useState(true);
+  const [apiFound, setApiFound] = useState(true);
+  const [apiRecord, setApiRecord] = useState();
+  const [showFormCreation, setShowFormCreation] = useState(false);
+  const [nameApi, setNameApi] = useState('');
+  const [descriptionApi, setDescriptionApi] = useState('');
+  const [selectedPermissions, setSelectedPermissions] = useState(new Set([]));
+  useEffect(() => {
+    const fetchApiAccess = async () => {
+      const resp = await getApiAccess(organizationId);
+      if (resp.ok) {
+        const resp_json = await resp.json();
+        setApiRecord(resp_json.data.records[0]);
+        setLoading(false);
+        setApiFound(true);
+      } else {
+        setLoading(false);
+        setApiFound(false);
+      }
+    };
+    if (show > 0) {
+      onOpen();
+      fetchApiAccess();
+    }
+  }, [show]);
+
+  const onChangeName = (e) => {
+    setNameApi(e.target.value);
+  };
+  const onChangeDescription = (e) => {
+    setDescriptionApi(e.target.value);
+  };
+  const createAPI = async () => {
+    if (!nameApi) {
+      alert('Name is Required');
+      return;
+    }
+    if (!descriptionApi) {
+      alert('Description is Required');
+      return;
+    }
+    if (selectedPermissions.size === 0) {
+      alert('Select at least one permission');
+      return;
+    }
+    const resp = await createApiAccess(
+      organizationId,
+      objectName,
+      collectionName,
+      nameApi,
+      descriptionApi,
+      Array.from(selectedPermissions)
+    );
+    if (resp.ok) {
+      const resp_json = await resp.json();
+      setApiFound(true);
+      setApiRecord(resp_json.data.records[0]);
+    } else {
+      alert('Failed');
+    }
+  };
+
+  return (
+    <>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Api Access
+              </ModalHeader>
+              <ModalBody>
+                {loading && (
+                  <>
+                    <p>Loading...</p>
+                    <Spinner size="md" />
+                  </>
+                )}
+                {!loading && !apiFound && !showFormCreation && (
+                  <>
+                    <Button
+                      color={'primary'}
+                      onPress={() => setShowFormCreation(true)}
+                    >
+                      Create an api key for <b>{objectName}</b>
+                    </Button>
+                  </>
+                )}
+                {!loading && apiFound && apiRecord && (
+                  <>
+                    {apiRecord.apiaccess.map((api, i) => (
+                      <div key={i}>
+                        <p>{api.apikey}</p>
+                        {api.permissions.map((permission, ii) => (
+                          <div key={ii}>
+                            <p>{permission.collectionName}</p>
+                            <p>{permission.object.name}</p>
+                            {permission.object.methods.map((method, iv) => (
+                              <div key={iv}>
+                                <p>{method}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </>
+                )}
+                {!loading && !apiFound && showFormCreation && (
+                  <>
+                    <div className={styles.ApiFormCreate}>
+                      <Input
+                        type="text"
+                        name="Name"
+                        label="Name"
+                        isRequired
+                        onChange={onChangeName}
+                      />
+                      <Input
+                        type="text"
+                        name="Description"
+                        label="Description"
+                        isRequired
+                        onChange={onChangeDescription}
+                      />
+                      <div className={styles.ApiFormCreatePermissions}>
+                        <h3>Permissions</h3>
+                        <Listbox
+                          aria-label="Permissions"
+                          variant="flat"
+                          disallowEmptySelection
+                          selectionMode="multiple"
+                          selectedKeys={selectedPermissions}
+                          onSelectionChange={setSelectedPermissions}
+                        >
+                          <ListboxItem key="GET">GET</ListboxItem>
+                          <ListboxItem key="POST">POST</ListboxItem>
+                          <ListboxItem key="PUT">PUT</ListboxItem>
+                          <ListboxItem key="PATCH">PATCH</ListboxItem>
+                          <ListboxItem key="DELETE">DELETE</ListboxItem>
+                        </Listbox>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="flat" onPress={onClose}>
+                  Close
+                </Button>
+                {!loading && showFormCreation && (
+                  <Button color="primary" onPress={createAPI}>
+                    createAPI
+                  </Button>
+                )}
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
 export default function CollectionObject({
   collectionId,
   collectionName,
@@ -321,6 +521,7 @@ export default function CollectionObject({
   object,
 }) {
   const [showSideBarViews, setShowSideBarViews] = useState(true);
+  const [showApiAccessModal, setShowApiAccessModal] = useState(0);
   const [columns, setColumns] = useState();
 
   const [data, setData] = useState([]);
@@ -442,6 +643,10 @@ export default function CollectionObject({
         >
           Views
         </Button>
+        <Divider orientation="vertical" />
+        <Button size={'sm'} onClick={() => setShowApiAccessModal((c) => c + 1)}>
+          Api Access
+        </Button>
       </div>
       <div className={styles.TabBody}>
         {showSideBarViews && <div className={styles.SideBarViews}></div>}
@@ -456,6 +661,12 @@ export default function CollectionObject({
           />
         </div>
       </div>
+      <ApiAccessModal
+        show={showApiAccessModal}
+        organizationId={organizationId}
+        collectionName={collectionName}
+        objectName={object.name}
+      />
     </>
   );
 }

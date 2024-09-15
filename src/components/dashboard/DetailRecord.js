@@ -106,7 +106,7 @@ export default function DetailRecord(props) {
                 <input
                   type="hidden"
                   name={field.key}
-                  value={record[field.key]}
+                  value={field.value || record[field.key]}
                 />
               )}
               {(field.type === 'text' || field.type === 'date') && (
