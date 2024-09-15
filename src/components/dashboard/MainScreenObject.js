@@ -1,11 +1,13 @@
 import ModalComponent from '@/components/dashboard/ModalComponent';
 import TableComponent from '@/components/dashboard/TableComponent';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import DetailRecord from '@/components/dashboard/DetailRecord';
 import MediaUpload from '@/components/dashboard/MediaUpload';
 import { toast } from 'react-toastify';
+import { Button } from '@nextui-org/react';
+import GridComponent from './GridComponent/GridComponent';
 
 async function getRecords(
   urlGetRecords,
@@ -232,35 +234,66 @@ export default function MainScreenObject(props) {
     }
   };
 
+  const [viewMode, setViewMode] = useState('table');
+
   return (
     <>
-      <TableComponent
-        data={{
-          title: tableComponentData.title,
-          button: {
-            label: tableComponentData.button.label,
-            callback: () => {
-              onNewRecord();
+      <div className="header">
+        <div className="left">
+          <h1>{tableComponentData.title}</h1>
+          {tableComponentData.button && (
+            <Button
+              color="primary"
+              onClick={() => {
+                onNewRecord();
+              }}
+            >
+              {tableComponentData.button.label}
+            </Button>
+          )}
+        </div>
+        <div className="right">
+          <Button
+            size={'sm'}
+            onClick={() => {
+              setViewMode('table');
+            }}
+          >
+            Table
+          </Button>
+          <Button
+            size={'sm'}
+            onClick={() => {
+              setViewMode('grid');
+            }}
+          >
+            Grid
+          </Button>
+        </div>
+      </div>
+      {viewMode === 'table' && (
+        <TableComponent
+          data={{
+            columns: tableComponentData.columns,
+            rows: listRecords,
+            pagination: {
+              total: totalPages,
+              initialPage: page,
+              isDisabled: loading,
+              onChange: (page) => {
+                setPage(page);
+              },
             },
-          },
-          columns: tableComponentData.columns,
-          rows: listRecords,
-          pagination: {
-            total: totalPages,
-            initialPage: page,
-            isDisabled: loading,
-            onChange: (page) => {
-              setPage(page);
-            },
-          },
-          renderCell: tableComponentData.renderCell,
-          showRecordDetail: showRecordDetail,
-        }}
-        showSearch={showSearch}
-        onSearchChange={(value) => {
-          setSearchQuery(value);
-        }}
-      />
+            renderCell: tableComponentData.renderCell,
+            showRecordDetail: showRecordDetail,
+          }}
+          showSearch={showSearch}
+          onSearchChange={(value) => {
+            setSearchQuery(value);
+          }}
+        />
+      )}
+      {viewMode === 'grid' && <GridComponent records={listRecords} />}
       <ModalComponent
         show={showModalProductDetail}
         onSave={saveRecord}
@@ -304,6 +337,33 @@ export default function MainScreenObject(props) {
           }}
         />
       </ModalComponent>
+      <style jsx>{`
+        .header {
+          width: 100%;
+          display: flex;
+        }
+        .header .left {
+          width: 100%;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          padding: 20px 10px;
+          gap: 20px;
+        }
+        .header .right {
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          padding: 20px 10px;
+          gap: 20px;
+        }
+        .header h1 {
+          font-size: 1.5em;
+          line-height: 100%;
+          font-weight: 400;
+        }
+      `}</style>
     </>
   );
 }

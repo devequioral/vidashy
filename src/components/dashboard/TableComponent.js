@@ -62,19 +62,21 @@ export default function TableComponent(props) {
 
   return (
     <>
-      <div className="header">
-        <h1 className="text-2xl font-bold">{data.title}</h1>
-        {data.button && (
-          <Button
-            color="primary"
-            onClick={() => {
-              onNewRecord(data.button);
-            }}
-          >
-            {data.button.label}
-          </Button>
-        )}
-      </div>
+      {data.title && (
+        <div className="header">
+          <h1 className="text-2xl font-bold">{data.title}</h1>
+          {data.button && (
+            <Button
+              color="primary"
+              onClick={() => {
+                onNewRecord(data.button);
+              }}
+            >
+              {data.button.label}
+            </Button>
+          )}
+        </div>
+      )}
       {showSearch && (
         <div className="search">
           <Input

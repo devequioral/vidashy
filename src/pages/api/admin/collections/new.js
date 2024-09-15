@@ -15,15 +15,33 @@ function generateUUID() {
   return uuid;
 }
 
-async function createRecord(record_request) {
+async function createRecord(record_request, default_object) {
   const new_record = sanitizeOBJ({
     ...record_request,
     id: generateUUID(),
+    objects: [default_object],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
   const collectionDB = database.collection('collections');
+
+  try {
+    const record = await collectionDB.insertOne(new_record);
+    await client.close();
+    return { record };
+  } catch (e) {
+    return { record: {} };
+  }
+}
+
+async function createDB(record_request, default_object) {
+  const new_record = {};
+  new_record[default_object.columns[0].name] = generateUUID();
+  new_record[default_object.columns[1].name] = '';
+  const nameNewDB = `DB_${record_request.organization_id}_${record_request.name}`;
+  const { client, database } = db.mongoConnect(nameNewDB);
+  const collectionDB = database.collection(default_object.name);
 
   try {
     const record = await collectionDB.insertOne(new_record);
@@ -67,10 +85,18 @@ export default async function handler(req, res) {
         validation,
       });
     }
+    const default_object = {
+      id: generateUUID(),
+      name: 'Table01',
+      columns: [
+        { label: 'UID', name: '_uid', type: 'hidden', id: generateUUID() },
+        { label: 'Name', name: 'name', type: 'text', id: generateUUID() },
+      ],
+    };
+    const record = await createRecord(record_request, default_object);
+    const dbCreated = await createDB(record_request, default_object);
 
-    const record = await createRecord(record_request);
-
-    if (!record)
+    if (!record || !dbCreated)
       return res
         .status(500)
         .send({ message: 'Record could not be processed ' });

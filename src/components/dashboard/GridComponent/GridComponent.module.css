@@ -1,0 +1,44 @@
+.GridComponent{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap:20px;
+    margin-top: 40px;
+}
+
+.CardHeader{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 20px 30px;
+}
+
+.CardIcon{
+    background-color: rgb(138, 152, 255);
+    color: #fff;
+    font-size: 16px;
+    line-height: 100%;
+    font-weight: 600;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.CardInfo{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;;
+}
+
+.CardName{
+    font-size: 14px;
+    line-height: 100%;
+    font-weight: 600;
+    color: #000;
+}
+
+.CardType{
+    font-size: 12px;
+    line-height: 100%;
+    font-weight: 400;
+    color: #3a3838;
+}
