@@ -1,11 +1,9 @@
-import { generateUUID } from '@/utils/utils';
-
 const objectModel = {
-  id: generateUUID(),
+  id: '',
   name: 'Table01',
   columns: [
-    { label: 'UID', name: '_uid', type: 'hidden', id: generateUUID() },
-    { label: 'Name', name: 'Name', type: 'text', id: generateUUID() },
+    { label: 'UID', name: '_uid', type: 'hidden', id: '' },
+    { label: 'Name', name: 'Name', type: 'text', id: '' },
   ],
 };
 

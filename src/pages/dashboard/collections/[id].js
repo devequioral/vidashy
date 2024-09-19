@@ -13,6 +13,7 @@ async function getCollection(id) {
 function CollectionsScreen() {
   const router = useRouter();
   const [collection, setCollection] = useState();
+  const [refresh, setRefresh] = useState(0);
   useEffect(() => {
     const fetchCollection = async () => {
       if (!router.query.id) return;
@@ -25,12 +26,16 @@ function CollectionsScreen() {
       }
     };
     fetchCollection();
-  }, [router.query.id]);
+  }, [router.query.id, refresh]);
+
+  const onNewTable = () => {
+    setRefresh((c) => c + 1);
+  };
   return (
     <>
       <Metaheader title="Collections List | Vidashy" />
       <LayoutCollections collection={collection}>
-        <CollectionObjects collection={collection} />
+        <CollectionObjects collection={collection} onNewTable={onNewTable} />
       </LayoutCollections>
     </>
   );

@@ -50,6 +50,7 @@ async function createObject(id, collectionName, organizationId, objectName) {
     return 'Object Already Exists';
   }
 
+  objectModel.id = generateUUID();
   objectModel.name = objectName;
 
   collection.objects.push(objectModel);

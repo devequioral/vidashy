@@ -86,16 +86,16 @@ async function createNewTable(name, collection) {
   });
 }
 
-export default function CollectionObjects({ collection }) {
+export default function CollectionObjects({ collection, onNewTable }) {
   const [tabs, setTabs] = useState([]);
   const [selected, setSelected] = useState('');
-  const [refresh, setRefresh] = useState(0);
   const [showNewTabModal, setShowNewTabModal] = useState(0);
   const [nameNewTable, setNameNewTable] = useState('');
   const [savingRecord, setSavingRecord] = useState(false);
   const [allowSave, setAllowSave] = useState(false);
   useEffect(() => {
     if (!collection) return;
+    setTabs([]);
     let _tabs = [];
     const objects = collection['objects'];
     objects.map((object, i) => {
@@ -114,11 +114,12 @@ export default function CollectionObjects({ collection }) {
       label: 'Add New',
     });
     setTabs(_tabs);
-  }, [collection, refresh]);
+  }, [collection]);
 
   const onSelectTab = (key) => {
-    if (key !== 'addnew') setSelected(key);
-    else {
+    if (key !== 'addnew') {
+      setSelected(key);
+    } else {
       setShowNewTabModal((c) => c + 1);
     }
   };
@@ -127,42 +128,43 @@ export default function CollectionObjects({ collection }) {
     setSavingRecord(true);
     const resp = await createNewTable(nameNewTable, collection);
     if (resp.ok) {
-      setRefresh((c) => c + 1);
+      onNewTable();
       setShowNewTabModal(0);
     }
   };
 
   return (
     <div className={styles.CollectionObjects}>
-      <Tabs
-        aria-label="Sheet Tabs"
-        items={tabs}
-        variant={'underlined'}
-        className={styles.Tabs}
-        selectedKey={selected}
-        onSelectionChange={onSelectTab}
-      >
-        {(item) => (
-          <Tab
-            key={item.id}
-            title={
-              <TabDropDown item={item} selected={selected} styles={styles} />
-            }
-            className={`${styles.Tab} ${
-              selected === item.id ? styles.selected : ''
-            }`}
-          >
-            {item.object && (
-              <CollectionObject
-                collectionId={item.collectionId}
-                collectionName={item.collectionName}
-                organizationId={item.organizationId}
-                object={item.object}
-              />
-            )}
-          </Tab>
-        )}
-      </Tabs>
+      {tabs && tabs.length > 0 && (
+        <Tabs
+          aria-label="Sheet Tabs"
+          variant={'underlined'}
+          className={styles.Tabs}
+          selectedKey={selected}
+          onSelectionChange={onSelectTab}
+        >
+          {tabs.map((item) => (
+            <Tab
+              key={item.id}
+              title={
+                <TabDropDown item={item} selected={selected} styles={styles} />
+              }
+              className={`${styles.Tab} ${
+                selected === item.id ? styles.selected : ''
+              }`}
+            >
+              {item.object && (
+                <CollectionObject
+                  collectionId={item.collectionId}
+                  collectionName={item.collectionName}
+                  organizationId={item.organizationId}
+                  object={item.object}
+                />
+              )}
+            </Tab>
+          ))}
+        </Tabs>
+      )}
       <ModalComponent
         show={showNewTabModal}
         onSave={createNewTab}

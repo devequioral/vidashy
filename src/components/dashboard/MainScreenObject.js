@@ -182,7 +182,7 @@ export default function MainScreenObject(props) {
 
     if (response.ok) {
       const resp_json = await response.json();
-      if (hooks.afterSafe) {
+      if (hooks && hooks.afterSafe) {
         hooks.afterSafe(resp_json);
       }
       toast.success('Record saved');
