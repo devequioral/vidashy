@@ -32,6 +32,13 @@
     align-items: center;
     justify-content: center;
     padding: 10px;
+    color:#fff;
+    font-weight: 600;
+}
+
+.Tab.selected .TabTitle{
+    color:#222;
+    font-weight: 400;
 }
 
 

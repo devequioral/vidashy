@@ -1,14 +1,13 @@
 import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
+import { sanitizeOBJ } from '@/utils/utils';
 
 async function getRecord(id) {
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
 
-  let query = { id };
+  let query = sanitizeOBJ({ id });
 
   const collectionDB = database.collection('collections');
-
-  const total = await collectionDB.countDocuments(query);
 
   const records = await collectionDB
     .find(query)

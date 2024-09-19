@@ -1,8 +1,9 @@
 import ContextualMenu from '@/components/ContextualMenu/ContextualMenu';
-import { Tab, Tabs } from '@nextui-org/react';
+import { Input, Tab, Tabs } from '@nextui-org/react';
 import React, { useEffect, useRef, useState } from 'react';
 import CollectionObject from './CollectionObject';
 import styles from './CollectionObject.module.css';
+import ModalComponent from '@/components/dashboard/ModalComponent';
 
 const ChevronDownIcon = () => (
   <svg
@@ -69,9 +70,30 @@ function TabDropDown({ item, selected, styles }) {
   );
 }
 
+async function createNewTable(name, collection) {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/objects/new`;
+  return await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      collectionId: collection.id,
+      collectionName: collection.name,
+      organizationId: collection.organization_id,
+      objectName: name,
+    }),
+  });
+}
+
 export default function CollectionObjects({ collection }) {
   const [tabs, setTabs] = useState([]);
   const [selected, setSelected] = useState('');
+  const [refresh, setRefresh] = useState(0);
+  const [showNewTabModal, setShowNewTabModal] = useState(0);
+  const [nameNewTable, setNameNewTable] = useState('');
+  const [savingRecord, setSavingRecord] = useState(false);
+  const [allowSave, setAllowSave] = useState(false);
   useEffect(() => {
     if (!collection) return;
     let _tabs = [];
@@ -87,8 +109,28 @@ export default function CollectionObjects({ collection }) {
       });
       if (i == 0) setSelected(object.id);
     });
+    _tabs.push({
+      id: 'addnew',
+      label: 'Add New',
+    });
     setTabs(_tabs);
-  }, [collection]);
+  }, [collection, refresh]);
+
+  const onSelectTab = (key) => {
+    if (key !== 'addnew') setSelected(key);
+    else {
+      setShowNewTabModal((c) => c + 1);
+    }
+  };
+
+  const createNewTab = async () => {
+    setSavingRecord(true);
+    const resp = await createNewTable(nameNewTable, collection);
+    if (resp.ok) {
+      setRefresh((c) => c + 1);
+      setShowNewTabModal(0);
+    }
+  };
 
   return (
     <div className={styles.CollectionObjects}>
@@ -98,7 +140,7 @@ export default function CollectionObjects({ collection }) {
         variant={'underlined'}
         className={styles.Tabs}
         selectedKey={selected}
-        onSelectionChange={setSelected}
+        onSelectionChange={onSelectTab}
       >
         {(item) => (
           <Tab
@@ -110,15 +152,40 @@ export default function CollectionObjects({ collection }) {
               selected === item.id ? styles.selected : ''
             }`}
           >
-            <CollectionObject
-              collectionId={item.collectionId}
-              collectionName={item.collectionName}
-              organizationId={item.organizationId}
-              object={item.object}
-            />
+            {item.object && (
+              <CollectionObject
+                collectionId={item.collectionId}
+                collectionName={item.collectionName}
+                organizationId={item.organizationId}
+                object={item.object}
+              />
+            )}
           </Tab>
         )}
       </Tabs>
+      <ModalComponent
+        show={showNewTabModal}
+        onSave={createNewTab}
+        title={'Create New Table'}
+        onCloseModal={() => {
+          setNameNewTable('');
+          setAllowSave(false);
+          setSavingRecord(false);
+        }}
+        allowSave={allowSave}
+        savingRecord={savingRecord}
+        size={'xl'}
+      >
+        <Input
+          type="text"
+          label="Name"
+          placehodlder="Enter the name of new Table"
+          onChange={(e) => {
+            setNameNewTable(e.target.value);
+            setAllowSave(true);
+          }}
+        />
+      </ModalComponent>
     </div>
   );
 }
