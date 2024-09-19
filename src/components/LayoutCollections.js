@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import styles from '@/styles/LayoutCollections.module.css';
 import {
@@ -14,11 +14,12 @@ import {
   Dropdown,
   DropdownMenu,
   Avatar,
+  Button,
 } from '@nextui-org/react';
 import { useSession } from 'next-auth/react';
 
 export default function LayoutCollections({ collection, children }) {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session } = useSession();
   const user = session?.user;
   const getUserName = () => {
@@ -58,7 +59,6 @@ export default function LayoutCollections({ collection, children }) {
           )}
         </NavbarBrand>
         <NavbarContent as="div" justify="end" className="hide-xss">
-          <NavbarItem className="flex justify-center items-center"></NavbarItem>
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar

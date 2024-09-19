@@ -154,3 +154,30 @@
     font-weight: 600;
     font-size: 14px;
 }
+
+.ApiDetail{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+}
+
+.ApiKeyGroup{
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.ApiKeyGroupSubtitle{
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ApiContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    align-items: center;
+}
+

@@ -2,6 +2,7 @@ import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 import { sanitizeOBJ } from '@/utils/utils';
 import generateApiKey from 'generate-api-key';
+import bcryptjs from 'bcryptjs';
 
 function generateUUID() {
   let d = new Date().getTime();
@@ -22,14 +23,15 @@ async function createRecord(record_request) {
     id: generateUUID(),
     name: record_request.name,
     description: record_request.description,
+    scope: record_request.scope,
+    access: record_request.access,
     status: 'active',
-    organization_id: record_request.organization_id,
-    apikey,
-    collection_id: record_request.collectionId,
-    methods: record_request.permissions,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
+  const salt = `$2a$10$${process.env.BCRIPT_SALT}`;
+  const hash = bcryptjs.hashSync(apikey, salt);
+  new_record.apikey = hash;
 
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
   const collectionDB = database.collection('apiaccessv2');
@@ -37,9 +39,9 @@ async function createRecord(record_request) {
   try {
     const record = await collectionDB.insertOne(new_record);
     await client.close();
-    return { data: { records: [{ ...new_record }] } };
+    return apikey;
   } catch (e) {
-    return { record: {} };
+    return false;
   }
 }
 
@@ -62,25 +64,11 @@ export default async function handler(req, res) {
     if (!record_request.description || record_request.description === '') {
       validation.description = 'Field Required';
     }
-    if (
-      !record_request.organization_id ||
-      record_request.organization_id === ''
-    ) {
-      validation.organization_id = 'Field Required';
+    if (!record_request.scope || record_request.scope === '') {
+      validation.scope = 'Field Required';
     }
-    if (!record_request.permissions || record_request.permissions === '') {
-      validation.permissions = 'Field Required';
-    }
-
-    if (!record_request.objectName || record_request.objectName === '') {
-      validation.objectName = 'Field Required';
-    }
-
-    if (
-      !record_request.collectionName ||
-      record_request.collectionName === ''
-    ) {
-      validation.collectionName = 'Field Required';
+    if (!record_request.access || record_request.access.length === 0) {
+      validation.access = 'Field Required';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY
@@ -91,14 +79,14 @@ export default async function handler(req, res) {
       });
     }
 
-    const records = await createRecord(record_request);
+    const apikey = await createRecord(record_request);
 
-    if (!records)
+    if (!apikey)
       return res
         .status(500)
         .send({ message: 'Record could not be processed ' });
 
-    res.status(200).json({ ...records });
+    res.status(200).json({ apikey });
   } catch (error) {
     console.error('Error getting token or session:', error);
   }

@@ -218,6 +218,24 @@ export default function MainNavigation() {
           color="default"
           variant="light"
           className={`btn-menu ${styles.button}`}
+          onClick={() => onClickMenu('/dashboard/apiaccessv2')}
+          startContent={
+            <Image
+              src={`/assets/images/theme-light/icon-api.svg`}
+              width={24}
+              height={24}
+              alt="Api Access"
+            />
+          }
+        >
+          Api Access
+        </Button>
+      )}
+      {user && user?.role === 'admin' && (
+        <Button
+          color="default"
+          variant="light"
+          className={`btn-menu ${styles.button}`}
           onClick={() => onClickMenu('/dashboard/users')}
           startContent={
             <Image

@@ -28,3 +28,28 @@
     color: blue;
     cursor: pointer;
 }
+.SelectItem{
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+}
+
+.SelectItemLabel{
+    font-size: 14px;
+}
+
+.SelectItemDescription{
+    font-size: 12px;
+}
+
+.Group{
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+    margin: 10px 0;
+}
+
+.Group label{
+    font-size: 14px;
+    font-weight: 600;
+}

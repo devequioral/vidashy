@@ -10,7 +10,7 @@ async function getCollection(id) {
   return await fetch(url);
 }
 
-export default function CollectionsScreen() {
+function CollectionsScreen() {
   const router = useRouter();
   const [collection, setCollection] = useState();
   useEffect(() => {
@@ -35,3 +35,6 @@ export default function CollectionsScreen() {
     </>
   );
 }
+
+CollectionsScreen.auth = { adminOnly: true };
+export default CollectionsScreen;

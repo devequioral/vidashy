@@ -1,17 +1,10 @@
 import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 
-async function getRecords(
-  organization_id,
-  page = 1,
-  pageSize = 5,
-  status = 'all',
-  search = ''
-) {
+async function getRecords(page = 1, pageSize = 5, status = 'all', search = '') {
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
 
   let query = {};
-  if (organization_id) query.organization_id = organization_id;
   if (status !== 'all') {
     query.status = status;
   }
@@ -20,7 +13,7 @@ async function getRecords(
     query.name = { $regex: `.*${search}.*`, $options: 'i' };
   }
 
-  const collectionDB = database.collection('collections');
+  const collectionDB = database.collection('apiaccessv2');
 
   const total = await collectionDB.countDocuments(query);
 
@@ -49,15 +42,9 @@ export default async function handler(req, res) {
     if (token.role !== 'admin')
       return res.status(401).send({ message: 'User Not authorized' });
 
-    const { organization_id, page, pageSize, status, search } = req.query;
+    const { page, pageSize, status, search } = req.query;
 
-    const data = await getRecords(
-      organization_id,
-      page,
-      pageSize,
-      status,
-      search
-    );
+    const data = await getRecords(page, pageSize, status, search);
 
     if (!data || !data.records || data.records.length === 0)
       return res.status(404).send({ data, message: 'Records Not found' });
@@ -65,6 +52,7 @@ export default async function handler(req, res) {
     //REMOVE SENSIBLE DATA OF RECORDS
     data.records.map((_record) => {
       delete _record._id;
+      delete _record.apikey;
       delete _record.updatedAt;
     });
 
