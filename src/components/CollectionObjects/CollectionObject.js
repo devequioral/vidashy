@@ -184,6 +184,12 @@ function MainTable({
     onChangeItemRecord(record._uid, columnKey, new_value);
   };
 
+  useEffect(() => {
+    if (!data || data.length === 0) {
+      setShowAddNewFieldModal(0);
+    }
+  }, [data]);
+
   return (
     <>
       <div className={styles.TableContainer}>

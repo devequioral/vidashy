@@ -64,15 +64,15 @@ export default async function handler(req, res) {
     return res.status(200).json(response);
   }
 
-  if (request.method === 'PUT') {
-    //CREATE THE RECORD
-    const response = await prepareUpload(request);
+  // if (request.method === 'PUT') {
+  //   //CREATE THE RECORD
+  //   const response = await prepareUpload(request);
 
-    //VERIFY IF THE RECORD WAS CREATED
-    if (!response.url)
-      return res.status(500).json({ error: 'Resource Not Ready' });
+  //   //VERIFY IF THE RECORD WAS CREATED
+  //   if (!response.url)
+  //     return res.status(500).json({ error: 'Resource Not Ready' });
 
-    //RETURN RESPONSE
-    return res.status(200).json(response);
-  }
+  //   //RETURN RESPONSE
+  //   return res.status(200).json(response);
+  // }
 }

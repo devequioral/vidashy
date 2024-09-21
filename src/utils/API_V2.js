@@ -73,10 +73,6 @@ async function verifyRequest(request) {
     return { response: { error: 'Bad Method Request' } };
   }
 
-  if (method === 'PUT' && scope !== 'MANAGE_RECORDS') {
-    return { response: { error: 'Bad Method Request' } };
-  }
-
   if (method === 'DELETE' && scope !== 'MANAGE_RECORDS') {
     return { response: { error: 'Bad Method Request' } };
   }
@@ -86,6 +82,7 @@ async function verifyRequest(request) {
   }
 
   let allow_access = false;
+
   if (access.indexOf('ALL_ORGANIZATIONS') >= 0) allow_access = true;
   if (access.indexOf(`ALL_COLLECTIONS:${organization}`) >= 0)
     allow_access = true;

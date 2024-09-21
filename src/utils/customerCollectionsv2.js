@@ -5,6 +5,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import recordEmitter from '@/utils/Events';
 import { sanitizeOBJ, sanitize, generateUUID } from '@/utils/utils';
+import { Formidable } from 'formidable';
 
 async function _getMetadataCollection(request) {
   const { organization, collection, object } = request;
@@ -302,32 +303,38 @@ async function updateRecord(request) {
   }
 }
 
-//PREPARE UPLOAD
-async function prepareUpload(request) {
-  const { body } = request;
+//SAVE MEDIA IN DB
+async function saveMediaInDB(request, private_url, key) {
+  const { organization, collectionName, object, body } = request;
+  let dataBaseName = `DB_${organization}_${collectionName}`;
 
-  const { filename, contentType } = body;
+  const { client, database } = db.mongoConnect(sanitize(dataBaseName));
+
+  const collectionDB = database.collection(sanitize('media'));
+
+  //ADD TO BODY THE CREATEDAT AND UPDATEDAT FIELDS
+  const new_record = {};
+  new_record._uid = generateUUID();
+  new_record.private_url = URL;
+  new_record.key = key;
+  new_record.url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/media/`;
+  new_record.createdAt = new Date().toISOString();
+  new_record.updatedAt = new Date().toISOString();
 
   try {
-    const client = new S3Client({ region: process.env.AWS_REGION });
-    const { url, fields } = await createPresignedPost(client, {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: uuidv4(),
-      Conditions: [
-        ['content-length-range', 0, 10485760], // up to 10 MB
-        ['starts-with', '$Content-Type', contentType],
-      ],
-      Fields: {
-        acl: 'public-read',
-        'Content-Type': contentType,
-      },
-      Expires: 600, // Seconds before the presigned post expires. 3600 by default.
+    const record = await collectionDB.insertOne(new_record);
+    await client.close();
+    recordEmitter.emit('recordCreated', {
+      dbResponse: record,
+      organization,
+      collectionName,
+      object,
+      new_record,
     });
-
-    return { url, fields };
-  } catch (error) {
-    return {};
+    return { record };
+  } catch (e) {
+    return { record: {} };
   }
 }
 
-export { getRecords, createRecord, deleteRecord, updateRecord, prepareUpload };
+export { getRecords, createRecord, deleteRecord, updateRecord, saveMediaInDB };
