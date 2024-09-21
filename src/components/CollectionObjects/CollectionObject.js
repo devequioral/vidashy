@@ -133,6 +133,19 @@ function MainTable({
               />
             </div>
           );
+        case 'gallery':
+          let value = '';
+          if (typeof cellValue === 'object') {
+            cellValue.map((v, i) => {
+              if (i !== 0) value += ', ';
+              value += v.url;
+            });
+          }
+          return (
+            <div className={`${styles.MainTableCell} ${styles[cellType]}`}>
+              <Input size="sm" type="text" defaultValue={value} />
+            </div>
+          );
         case 'email':
           return (
             <div className={`${styles.MainTableCell} ${styles[cellType]}`}>

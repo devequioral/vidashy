@@ -11,9 +11,15 @@ import {
 } from '@/utils/customerCollectionsv2';
 import { consoleError } from '@/utils/error';
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export default async function handler(req, res) {
   //FORMAT THE REQUEST
-  const request = formatRequest(req);
+  const request = await formatRequest(req);
 
   //VERIFY IF THE REQUEST IS AUTHORIZED
   const verify = await verifyRequest(request);

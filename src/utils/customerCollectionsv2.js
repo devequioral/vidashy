@@ -1,11 +1,10 @@
 import db from '@/utils/db';
 import { consoleError } from './error';
-import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
-import { S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import recordEmitter from '@/utils/Events';
 import { sanitizeOBJ, sanitize, generateUUID } from '@/utils/utils';
-import { Formidable } from 'formidable';
+import buckets from '@/data/buckets.json';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 async function _getMetadataCollection(request) {
   const { organization, collection, object } = request;
@@ -190,7 +189,8 @@ async function createRecord(request) {
 
   if (metadata === false) return { record: {} };
 
-  const { organization, collectionName, object, body } = request;
+  const { organization, collection, collectionName, object, body, files } =
+    request;
   let dataBaseName = `DB_${organization}_${collectionName}`;
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
@@ -199,10 +199,17 @@ async function createRecord(request) {
 
   //ADD TO BODY THE CREATEDAT AND UPDATEDAT FIELDS
   const new_record = {};
-
-  metadata.columns.map((column) => {
-    new_record[column.name] = sanitize(body[column.name]);
-  });
+  for (var i = 0; i < metadata.columns.length; i++) {
+    const column = metadata.columns[i];
+    if (column.type === 'text') {
+      new_record[column.name] = sanitize(body[column.name]);
+    } else if (column.type === 'gallery') {
+      new_record[column.name] = await processGallery(
+        request,
+        body[column.name]
+      );
+    }
+  }
 
   new_record._uid = generateUUID();
   new_record.createdAt = new Date().toISOString();
@@ -303,9 +310,110 @@ async function updateRecord(request) {
   }
 }
 
+async function uploadToAWS(bucket, file) {
+  try {
+    const client = new S3Client({
+      region: process.env[`AWS_REGION_${bucket.id}`],
+      credentials: {
+        accessKeyId: process.env[`AWS_ACCESS_KEY_ID_${bucket.id}`],
+        secretAccessKey: process.env[`AWS_SECRET_ACCESS_KEY_${bucket.id}`],
+      },
+    });
+
+    const { Body, ContentType, FileSize, Key } = ((file) => {
+      if (!file || !file.filepath) {
+        return { Body: null, ContentType: null, FileSize: null, Key: null };
+      }
+      const fs = require('fs');
+      return {
+        Body: fs.createReadStream(file.filepath),
+        ContentType: file.mimetype,
+        FileSize: file.size,
+        Key: uuidv4(),
+      };
+    })(file);
+
+    if (Body === null) {
+      return res.status(500).json({ error: 'File Not Found' });
+    }
+
+    if (FileSize / (1024 * 1024) > 5) {
+      return res.status(500).json({ error: 'File size too large. 5MB max.' });
+    }
+
+    const response = await client.send(
+      new PutObjectCommand({
+        Bucket: process.env[`AWS_BUCKET_NAME_${bucket.id}`],
+        Key,
+        Body,
+        ACL: 'public-read',
+        ContentType,
+      })
+    );
+
+    if (response['$metadata'].httpStatusCode === 200) {
+      const URL = `https://${
+        process.env[`AWS_BUCKET_NAME_${bucket.id}`]
+      }.s3.amazonaws.com/${Key}`;
+      return { ok: 200, Key, URL, ContentType, FileSize };
+    }
+
+    return false;
+  } catch (error) {
+    //console.log(error.message);
+    return false;
+  }
+}
+
+async function processGallery(request, field) {
+  const { organization, collection, body, files } = request;
+  const value = [];
+  const bucket = buckets.find((b) => {
+    return b.organization === organization;
+  });
+
+  if (!bucket) return '';
+
+  const field_metadata = field[0].split('|');
+  const suffix_photos = field_metadata[0];
+  const number_photos = Number.parseInt(field_metadata[1]);
+
+  if (bucket.type === 'AWS') {
+    for (var i = 0; i < number_photos; i++) {
+      const file = files[`${suffix_photos}-${i + 1}`][0];
+      const original_name = body[`${suffix_photos}-${i + 1}-name`][0];
+      const mimetype = body[`${suffix_photos}-${i + 1}-mimetype`][0];
+      const id = generateUUID(6);
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/public/media/${organization}/${collection}/${id}/${original_name}`;
+      const respAWS = await uploadToAWS(bucket, file);
+      if (
+        respAWS !== false &&
+        saveMediaInDB(request, respAWS.URL, mimetype, original_name, id, url)
+      ) {
+        value.push({
+          key: respAWS.Key,
+          private_url: respAWS.URL,
+          mimetype,
+          original_name,
+          id,
+          url,
+        });
+      }
+    }
+  }
+  return value;
+}
+
 //SAVE MEDIA IN DB
-async function saveMediaInDB(request, private_url, key) {
-  const { organization, collectionName, object, body } = request;
+async function saveMediaInDB(
+  request,
+  private_url,
+  mimetype,
+  original_name,
+  id,
+  url
+) {
+  const { organization, collectionName } = request;
   let dataBaseName = `DB_${organization}_${collectionName}`;
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
@@ -313,28 +421,23 @@ async function saveMediaInDB(request, private_url, key) {
   const collectionDB = database.collection(sanitize('media'));
 
   //ADD TO BODY THE CREATEDAT AND UPDATEDAT FIELDS
-  const new_record = {};
-  new_record._uid = generateUUID();
-  new_record.private_url = URL;
-  new_record.key = key;
-  new_record.url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/media/`;
-  new_record.createdAt = new Date().toISOString();
-  new_record.updatedAt = new Date().toISOString();
+  const new_record = sanitizeOBJ({
+    private_url,
+    id,
+    url,
+    mimetype,
+    original_name,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
 
   try {
     const record = await collectionDB.insertOne(new_record);
     await client.close();
-    recordEmitter.emit('recordCreated', {
-      dbResponse: record,
-      organization,
-      collectionName,
-      object,
-      new_record,
-    });
-    return { record };
+    return true;
   } catch (e) {
-    return { record: {} };
+    return false;
   }
 }
 
-export { getRecords, createRecord, deleteRecord, updateRecord, saveMediaInDB };
+export { getRecords, createRecord, deleteRecord, updateRecord };

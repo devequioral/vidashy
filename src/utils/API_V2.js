@@ -2,19 +2,23 @@ import db from '@/utils/db';
 import { consoleError } from '@/utils/error';
 import bcryptjs from 'bcryptjs';
 import { sanitizeOBJ } from '@/utils/utils';
+import { Formidable } from 'formidable';
 
-function formatRequest(req) {
+async function formatRequest(req) {
   const { body, method, query, cookies, headers } = req;
   const { v2 } = query;
   //GET "Authorization: Bearer YOUR_SECRET_API_TOKEN"
   const apikey = headers.authorization;
+  const form = new Formidable();
+  const [fields, files] = await form.parse(req);
   return {
     organization: v2 && v2.length > 0 ? v2[0] : null,
     collection: v2 && v2.length > 1 ? v2[1] : null,
     object: v2 && v2.length > 2 ? v2[2] : null,
     method,
     params: query,
-    body,
+    body: fields,
+    files,
     apikey,
     cookies,
     headers,
