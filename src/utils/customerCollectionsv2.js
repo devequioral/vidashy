@@ -197,10 +197,12 @@ async function createRecord(request) {
 
   const collectionDB = database.collection(sanitize(object));
 
-  //ADD TO BODY THE CREATEDAT AND UPDATEDAT FIELDS
   const new_record = {};
   for (var i = 0; i < metadata.columns.length; i++) {
     const column = metadata.columns[i];
+    if (column.name === '_uid') continue;
+    if (column.createdAt === 'createdAt') continue;
+    if (column.updatedAt === 'updatedAt') continue;
     if (column.type === 'text') {
       new_record[column.name] = sanitize(body[column.name]);
     } else if (column.type === 'gallery') {
@@ -231,59 +233,35 @@ async function createRecord(request) {
   }
 }
 
-//DELETE RECORD FUNCTION
-async function deleteRecord(request) {
-  const { organization, collectionName, object, body } = request;
-  let dataBaseName = `DB_${organization}_${collectionName}`;
-
-  const { client, database } = db.mongoConnect(sanitize(dataBaseName));
-
-  const collectionDB = database.collection(sanitize(object));
-
-  const _uid = sanitize(body._uid);
-
-  if (!_uid) return false;
-
-  try {
-    try {
-      // Delete the record
-      const result = await collectionDB.deleteOne({ _uid });
-      await client.close();
-      if (result.deletedCount === 1) {
-        return true;
-      }
-      return false;
-    } catch (e) {
-      console.error('Error occurred while trying to delete document:', e);
-      return { result: {} };
-    }
-  } catch (e) {
-    return { record: {} };
-  }
-}
-
 //UPDATE RECORD FUNCTION
 async function updateRecord(request) {
   const metadata = await _getMetadataCollection(request);
 
   if (metadata === false) return { record: {} };
-  const { organization, collectionName, object, body } = request;
+  const { organization, collection, collectionName, object, body, files } =
+    request;
   let dataBaseName = `DB_${organization}_${collectionName}`;
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
 
   const collectionDB = database.collection(sanitize(object));
 
-  const { _uid } = body;
+  const _uid = sanitize(body._uid[0]);
 
   if (!_uid) return { record: {} };
 
   //ADD TO BODY THE UPDATEDAT FIELDS
   const update_record = {};
 
-  metadata.columns.map((column) => {
-    update_record[column.name] = sanitize(body[column.name]);
-  });
+  for (var i = 0; i < metadata.columns.length; i++) {
+    const column = metadata.columns[i];
+    if (column.name === '_uid') continue;
+    if (column.createdAt === 'createdAt') continue;
+    if (column.updatedAt === 'updatedAt') continue;
+    if (column.type === 'text') {
+      update_record[column.name] = sanitize(body[column.name]);
+    }
+  }
 
   update_record.updatedAt = new Date().toISOString();
 
@@ -305,6 +283,37 @@ async function updateRecord(request) {
     });
 
     return { record };
+  } catch (e) {
+    return { record: {} };
+  }
+}
+
+//DELETE RECORD FUNCTION
+async function deleteRecord(request) {
+  const { params, organization, collectionName, object } = request;
+  let dataBaseName = `DB_${organization}_${collectionName}`;
+
+  const { client, database } = db.mongoConnect(sanitize(dataBaseName));
+
+  const collectionDB = database.collection(sanitize(object));
+
+  const _uid = sanitize(params.uid);
+
+  if (!_uid) return false;
+
+  try {
+    try {
+      // Delete the record
+      const result = await collectionDB.deleteOne({ _uid });
+      await client.close();
+      if (result.deletedCount === 1) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('Error occurred while trying to delete document:', e);
+      return { result: {} };
+    }
   } catch (e) {
     return { record: {} };
   }
@@ -380,11 +389,13 @@ async function processGallery(request, field) {
 
   if (bucket.type === 'AWS') {
     for (var i = 0; i < number_photos; i++) {
-      const file = files[`${suffix_photos}-${i + 1}`][0];
-      const original_name = body[`${suffix_photos}-${i + 1}-name`][0];
-      const mimetype = body[`${suffix_photos}-${i + 1}-mimetype`][0];
-      const id = generateUUID(6);
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/public/media/${organization}/${collection}/${id}/${original_name}`;
+      const file = sanitize(files[`${suffix_photos}-${i + 1}`][0]);
+      const original_name = sanitize(body[`${suffix_photos}-${i + 1}-name`][0]);
+      const mimetype = sanitize(body[`${suffix_photos}-${i + 1}-mimetype`][0]);
+      const id = sanitize(body[`${suffix_photos}-${i + 1}-id`][0]);
+      const url = sanitize(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/public/media/${organization}/${collection}/${id}/${original_name}`
+      );
       const respAWS = await uploadToAWS(bucket, file);
       if (
         respAWS !== false &&

@@ -3,7 +3,7 @@ import { sanitizeOBJ, sanitize } from '@/utils/utils';
 import { getCollectionName } from '@/utils/API_V2';
 
 export default async function handler(req, res) {
-  const [organization, collection, id] = [...req.query.media];
+  const [media, organization, collection, id] = [...req.query.media];
 
   const collectionName = await getCollectionName({ organization, collection });
 

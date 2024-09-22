@@ -55,6 +55,18 @@ export default async function handler(req, res) {
     return res.status(200).json(response);
   }
 
+  if (request.method === 'PATCH') {
+    //UPDATE THE RECORD
+    const response = await updateRecord(request);
+
+    //VERIFY IF THE RECORD WAS UPDATED
+    if (!response.record)
+      return res.status(500).json({ error: 'Record Not UPDATED' });
+
+    //RETURN RESPONSE
+    return res.status(200).json(response);
+  }
+
   if (request.method === 'DELETE') {
     //DELETE THE RECORD
     const response = await deleteRecord(request);
@@ -64,17 +76,5 @@ export default async function handler(req, res) {
 
     //RETURN RESPONSE
     return res.status(200).json({ message: 'Record Deleted' });
-  }
-
-  if (request.method === 'PATCH') {
-    //CREATE THE RECORD
-    const response = await updateRecord(request);
-
-    //VERIFY IF THE RECORD WAS UPDATED
-    if (!response.record)
-      return res.status(500).json({ error: 'Record Not UPDATED' });
-
-    //RETURN RESPONSE
-    return res.status(200).json(response);
   }
 }
