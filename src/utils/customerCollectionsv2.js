@@ -200,6 +200,7 @@ async function createRecord(request) {
   const new_record = {};
   for (var i = 0; i < metadata.columns.length; i++) {
     const column = metadata.columns[i];
+    if (body[column.name] === undefined) continue;
     if (column.name === '_uid') continue;
     if (column.createdAt === 'createdAt') continue;
     if (column.updatedAt === 'updatedAt') continue;
@@ -255,6 +256,7 @@ async function updateRecord(request) {
 
   for (var i = 0; i < metadata.columns.length; i++) {
     const column = metadata.columns[i];
+    if (body[column.name] === undefined) continue;
     if (column.name === '_uid') continue;
     if (column.createdAt === 'createdAt') continue;
     if (column.updatedAt === 'updatedAt') continue;
