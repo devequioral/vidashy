@@ -345,11 +345,11 @@ async function uploadToAWS(bucket, file) {
     })(file);
 
     if (Body === null) {
-      return res.status(500).json({ error: 'File Not Found' });
+      throw new Error('File Not Found');
     }
 
     if (FileSize / (1024 * 1024) > 5) {
-      return res.status(500).json({ error: 'File size too large. 5MB max.' });
+      throw new Error('File size too large. 5MB max.');
     }
 
     const response = await client.send(
@@ -371,7 +371,7 @@ async function uploadToAWS(bucket, file) {
 
     return false;
   } catch (error) {
-    //console.log(error.message);
+    console.log('ERROR AWS', error.message);
     return false;
   }
 }
@@ -388,10 +388,9 @@ async function processGallery(request, field) {
   const field_metadata = field[0].split('|');
   const suffix_photos = field_metadata[0];
   const number_photos = Number.parseInt(field_metadata[1]);
-
   if (bucket.type === 'AWS') {
     for (var i = 0; i < number_photos; i++) {
-      const file = sanitize(files[`${suffix_photos}-${i + 1}`][0]);
+      const file = files[`${suffix_photos}-${i + 1}`][0];
       const original_name = sanitize(body[`${suffix_photos}-${i + 1}-name`][0]);
       const mimetype = sanitize(body[`${suffix_photos}-${i + 1}-mimetype`][0]);
       const id = sanitize(body[`${suffix_photos}-${i + 1}-id`][0]);
