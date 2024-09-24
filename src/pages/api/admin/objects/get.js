@@ -1,26 +1,20 @@
 import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 
-async function getRecords(
-  organization_id,
+async function getRecord(
+  collectionName,
+  organizationId,
+  objectName,
   page = 1,
-  pageSize = 5,
-  status = 'all',
-  search = ''
+  pageSize = 20
 ) {
-  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
+  const dbName = `DB_${organizationId}_${collectionName}`;
+
+  const { client, database } = db.mongoConnect(dbName);
 
   let query = {};
-  if (organization_id) query.organization_id = organization_id;
-  if (status !== 'all') {
-    query.status = status;
-  }
 
-  if (search) {
-    query.name = { $regex: `.*${search}.*`, $options: 'i' };
-  }
-
-  const collectionDB = database.collection('collections');
+  const collectionDB = database.collection(objectName);
 
   const total = await collectionDB.countDocuments(query);
 
@@ -49,14 +43,15 @@ export default async function handler(req, res) {
     if (token.role !== 'admin')
       return res.status(401).send({ message: 'User Not authorized' });
 
-    const { organization_id, page, pageSize, status, search } = req.query;
+    const { collectionName, organizationId, objectName, page, pageSize } =
+      req.body;
 
-    const data = await getRecords(
-      organization_id,
+    const data = await getRecord(
+      collectionName,
+      organizationId,
+      objectName,
       page,
-      pageSize,
-      status,
-      search
+      pageSize
     );
 
     if (!data || !data.records || data.records.length === 0)

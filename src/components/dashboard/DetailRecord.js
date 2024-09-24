@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   Input,
@@ -10,6 +10,7 @@ import {
   Autocomplete,
   AutocompleteItem,
   user,
+  AutocompleteSection,
 } from '@nextui-org/react';
 
 import styles from '@/styles/dashboard/DetailRecord.module.css';
@@ -106,79 +107,108 @@ export default function DetailRecord(props) {
                 <input
                   type="hidden"
                   name={field.key}
-                  value={record[field.key]}
+                  value={field.value || record[field.key]}
                 />
               )}
               {(field.type === 'text' || field.type === 'date') && (
-                <Input
-                  isReadOnly={field.readOnly ? true : false}
-                  isRequired={field.isRequired ? true : false}
-                  type={field.type}
-                  label={field.label}
-                  isInvalid={validation[field.key] ? true : false}
-                  errorMessage={validation[field.key]}
-                  onChange={(e) => {
-                    onFieldChange(field.key, e.target.value);
-                  }}
-                  defaultValue={formatValue(field.key, field.type)}
-                />
+                <div className={styles.Group}>
+                  {field.label && field.labelPlacement === 'outside' && (
+                    <label>{field.label}</label>
+                  )}
+                  <Input
+                    isReadOnly={field.readOnly ? true : false}
+                    isRequired={field.isRequired ? true : false}
+                    type={field.type}
+                    label={
+                      field.labelPlacement === 'outside' ? '' : field.label
+                    }
+                    isInvalid={validation[field.key] ? true : false}
+                    errorMessage={validation[field.key]}
+                    onChange={(e) => {
+                      onFieldChange(field.key, e.target.value);
+                    }}
+                    defaultValue={formatValue(field.key, field.type)}
+                    description={field.description || ''}
+                  />
+                </div>
               )}
               {field.type === 'textarea' && (
-                <Textarea
-                  isReadOnly={field.readOnly ? true : false}
-                  isRequired={field.isRequired ? true : false}
-                  label={field.label}
-                  isInvalid={validation[field.key] ? true : false}
-                  errorMessage={validation[field.key]}
-                  onChange={(e) => {
-                    onFieldChange(field.key, e.target.value);
-                  }}
-                  defaultValue={formatValue(field.key, field.type)}
-                />
+                <div className={styles.Group}>
+                  {field.label && field.labelPlacement === 'outside' && (
+                    <label>{field.label}</label>
+                  )}
+                  <Textarea
+                    isReadOnly={field.readOnly ? true : false}
+                    isRequired={field.isRequired ? true : false}
+                    label={
+                      field.labelPlacement === 'outside' ? '' : field.label
+                    }
+                    isInvalid={validation[field.key] ? true : false}
+                    errorMessage={validation[field.key]}
+                    onChange={(e) => {
+                      onFieldChange(field.key, e.target.value);
+                    }}
+                    defaultValue={formatValue(field.key, field.type)}
+                  />
+                </div>
               )}
               {field.type === 'json' && (
-                <Textarea
-                  isReadOnly={field.readOnly ? true : false}
-                  isRequired={field.isRequired ? true : false}
-                  label={field.label}
-                  isInvalid={validation[field.key] ? true : false}
-                  errorMessage={validation[field.key]}
-                  onChange={(e) => {
-                    try {
-                      const value = JSON.parse(e.target.value);
-                      onFieldChange(field.key, value);
-                    } catch (e) {
-                      console.log(e);
+                <div className={styles.Group}>
+                  {field.label && field.labelPlacement === 'outside' && (
+                    <label>{field.label}</label>
+                  )}
+                  <Textarea
+                    isReadOnly={field.readOnly ? true : false}
+                    isRequired={field.isRequired ? true : false}
+                    label={
+                      field.labelPlacement === 'outside' ? '' : field.label
                     }
-                  }}
-                  defaultValue={formatValue(field.key, field.type)}
-                />
+                    isInvalid={validation[field.key] ? true : false}
+                    errorMessage={validation[field.key]}
+                    onChange={(e) => {
+                      try {
+                        const value = JSON.parse(e.target.value);
+                        onFieldChange(field.key, value);
+                      } catch (e) {
+                        console.log(e);
+                      }
+                    }}
+                    defaultValue={formatValue(field.key, field.type)}
+                  />
+                </div>
               )}
               {field.type === 'password' && (
-                <Input
-                  label={field.label}
-                  isRequired={field.isRequired ? true : false}
-                  isInvalid={validation[field.key] ? true : false}
-                  errorMessage={validation[field.key]}
-                  onChange={(e) => {
-                    onFieldChange(field.key, e.target.value);
-                  }}
-                  endContent={
-                    <button
-                      className="focus:outline-none"
-                      type="button"
-                      onClick={toggleVisibility}
-                    >
-                      {passwordVisible ? (
-                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                      ) : (
-                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                      )}
-                    </button>
-                  }
-                  type={passwordVisible ? 'text' : 'password'}
-                  className="max-w-xs"
-                />
+                <div className={styles.Group}>
+                  {field.label && field.labelPlacement === 'outside' && (
+                    <label>{field.label}</label>
+                  )}
+                  <Input
+                    label={
+                      field.labelPlacement === 'outside' ? '' : field.label
+                    }
+                    isRequired={field.isRequired ? true : false}
+                    isInvalid={validation[field.key] ? true : false}
+                    errorMessage={validation[field.key]}
+                    onChange={(e) => {
+                      onFieldChange(field.key, e.target.value);
+                    }}
+                    endContent={
+                      <button
+                        className="focus:outline-none"
+                        type="button"
+                        onClick={toggleVisibility}
+                      >
+                        {passwordVisible ? (
+                          <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        ) : (
+                          <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        )}
+                      </button>
+                    }
+                    type={passwordVisible ? 'text' : 'password'}
+                    className="max-w-xs"
+                  />
+                </div>
               )}
               {field.type === 'image' && (
                 <>
@@ -212,50 +242,118 @@ export default function DetailRecord(props) {
                 </>
               )}
               {field.type === 'select' && (
-                <Select
-                  items={field.items}
-                  label={field.label}
-                  className="max-w-xs"
-                  selectionMode={
-                    field.selectionMode ? field.selectionMode : 'single'
-                  }
-                  defaultSelectedKeys={
-                    record && record[field.key] ? [record[field.key]] : null
-                  }
-                  isRequired={field.isRequired ? true : false}
-                  isInvalid={validation[field.key] ? true : false}
-                  errorMessage={validation[field.key]}
-                  onChange={(e) => {
-                    onFieldChange(field.key, e.target.value);
-                  }}
-                >
-                  {(item) => (
-                    <SelectItem key={item.value}>{item.label}</SelectItem>
+                <div className={styles.Group}>
+                  {field.label && field.labelPlacement === 'outside' && (
+                    <label>{field.label}</label>
                   )}
-                </Select>
+                  <Select
+                    items={field.items}
+                    label={
+                      field.labelPlacement === 'outside' ? '' : field.label
+                    }
+                    className="max-w-xs"
+                    selectionMode={
+                      field.selectionMode ? field.selectionMode : 'single'
+                    }
+                    defaultSelectedKeys={
+                      record && record[field.key] ? [record[field.key]] : null
+                    }
+                    isRequired={field.isRequired ? true : false}
+                    isInvalid={validation[field.key] ? true : false}
+                    errorMessage={validation[field.key]}
+                    onChange={(e) => {
+                      onFieldChange(field.key, e.target.value);
+                    }}
+                  >
+                    {(item) => (
+                      <SelectItem key={item.value} textValue={item.label}>
+                        <div className={styles.SelectItem}>
+                          <div className={styles.SelectItemLabel}>
+                            {item.label}
+                          </div>
+                          {item.description && (
+                            <div className={styles.SelectItemDescription}>
+                              {item.description}
+                            </div>
+                          )}
+                        </div>
+                      </SelectItem>
+                    )}
+                  </Select>
+                </div>
               )}
               {field.type === 'autocomplete' && (
                 //TODO VALIDATION MESSAGE NOT SHOWING
-                <Autocomplete
-                  defaultItems={field.items}
-                  label={field.label}
-                  placeholder={field.placeholder}
-                  className="max-w-xs"
-                  isRequired={field.isRequired ? true : false}
-                  isInvalid={validation[field.key] ? true : false}
-                  errorMessage={validation[field.key]}
-                  onSelectionChange={(value) => {
-                    onFieldChange(field.key, value);
-                  }}
-                  defaultSelectedKey={record && record[field.key]}
-                >
-                  {(item) => (
-                    <AutocompleteItem key={item.value}>
-                      {item.label}
-                    </AutocompleteItem>
+                <div className={styles.Group}>
+                  {field.label && field.labelPlacement === 'outside' && (
+                    <label>{field.label}</label>
                   )}
-                </Autocomplete>
+                  <Autocomplete
+                    defaultItems={field.items}
+                    label={
+                      field.labelPlacement === 'outside' ? '' : field.label
+                    }
+                    placeholder={field.placeholder}
+                    className="max-w-xs"
+                    isRequired={field.isRequired ? true : false}
+                    isInvalid={validation[field.key] ? true : false}
+                    errorMessage={validation[field.key]}
+                    onSelectionChange={(value) => {
+                      onFieldChange(field.key, value);
+                    }}
+                    defaultSelectedKey={record && record[field.key]}
+                  >
+                    {(item) => (
+                      <AutocompleteItem key={item.value}>
+                        {item.label}
+                      </AutocompleteItem>
+                    )}
+                  </Autocomplete>
+                </div>
               )}
+              {field.type === 'autocompleteWithSections' && (
+                //TODO VALIDATION MESSAGE NOT SHOWING
+                <div className={styles.Group}>
+                  {field.label && field.labelPlacement === 'outside' && (
+                    <label>{field.label}</label>
+                  )}
+                  <Autocomplete
+                    defaultItems={field.items}
+                    label={
+                      field.labelPlacement === 'outside' ? '' : field.label
+                    }
+                    placeholder={field.placeholder}
+                    className="max-w-xs"
+                    isRequired={field.isRequired ? true : false}
+                    isInvalid={validation[field.key] ? true : false}
+                    errorMessage={validation[field.key]}
+                    onSelectionChange={(value) => {
+                      onFieldChange(field.key, value);
+                    }}
+                    defaultSelectedKey={record && record[field.key]}
+                  >
+                    {field.items.sections.map((section, i) => (
+                      <AutocompleteSection
+                        showDivider
+                        title={section.title}
+                        key={i}
+                      >
+                        {section.items.map((item, ii) => (
+                          <AutocompleteItem key={item.key}>
+                            {item.label}
+                          </AutocompleteItem>
+                        ))}
+                      </AutocompleteSection>
+                    ))}
+                  </Autocomplete>
+                </div>
+              )}
+              {field.type === 'component' &&
+                field.render({
+                  record,
+                  validation,
+                  defaultValue: formatValue(field.key, field.type),
+                })}
             </div>
           );
         })}

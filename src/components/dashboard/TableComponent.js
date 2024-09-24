@@ -31,7 +31,12 @@ export default function TableComponent(props) {
   const router = useRouter();
   const renderCell = React.useCallback((record, columnKey) => {
     if (data.renderCell)
-      return data.renderCell(record, columnKey, data.showRecordDetail);
+      return data.renderCell(
+        record,
+        columnKey,
+        data.showRecordDetail,
+        data.showModalDelete
+      );
 
     const cellValue = record[columnKey];
     return cellValue;
@@ -62,19 +67,21 @@ export default function TableComponent(props) {
 
   return (
     <>
-      <div className="header">
-        <h1 className="text-2xl font-bold">{data.title}</h1>
-        {data.button && (
-          <Button
-            color="primary"
-            onClick={() => {
-              onNewRecord(data.button);
-            }}
-          >
-            {data.button.label}
-          </Button>
-        )}
-      </div>
+      {data.title && (
+        <div className="header">
+          <h1 className="text-2xl font-bold">{data.title}</h1>
+          {data.button && (
+            <Button
+              color="primary"
+              onClick={() => {
+                onNewRecord(data.button);
+              }}
+            >
+              {data.button.label}
+            </Button>
+          )}
+        </div>
+      )}
       {showSearch && (
         <div className="search">
           <Input

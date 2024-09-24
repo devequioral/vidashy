@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -11,8 +11,13 @@ import {
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
-
 import styles from '@/styles/MainNavigation.module.css';
+import { set } from 'zod';
+
+const listOrganizations = async () => {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list`;
+  return await fetch(url);
+};
 
 const ChevronDownIcon = () => (
   <svg
@@ -28,6 +33,62 @@ const ChevronDownIcon = () => (
     />
   </svg>
 );
+
+const Collapsible = (props) => {
+  const {
+    buttonLabel,
+    mainLink,
+    onClickMenu,
+    links,
+    defaultState = 'collapsed',
+  } = props;
+  const [collapsed, setCollapsed] = useState(defaultState);
+  const toggleCollapse = () => {
+    setCollapsed((c) => (c === 'collapsed' ? 'expanded' : 'collapsed'));
+  };
+  return (
+    <div className={`${styles.Collapsible}`}>
+      <div className={`${styles.CollapsibleHeader}`}>
+        <ButtonGroup variant="flat">
+          <Button
+            color="default"
+            variant="light"
+            className={`btn-menu ${styles.button}`}
+            onClick={() => onClickMenu(mainLink)}
+            startContent={
+              <Image
+                src={`/assets/images/theme-light/icon-organizations.svg`}
+                width={24}
+                height={24}
+                alt={buttonLabel}
+              />
+            }
+          >
+            {buttonLabel}
+          </Button>
+
+          <Button isIconOnly variant="light" onClick={toggleCollapse}>
+            <ChevronDownIcon />
+          </Button>
+        </ButtonGroup>
+      </div>
+      <div className={`${styles.CollapsibleBody} ${styles[collapsed]}`}>
+        <ul>
+          {links.map((link, i) => (
+            <li
+              key={i}
+              onClick={() => {
+                onClickMenu(link.url);
+              }}
+            >
+              {link.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
 export default function MainNavigation() {
   const { data: session } = useSession();
@@ -45,6 +106,27 @@ export default function MainNavigation() {
     if (option.has('apiaccess')) return onClickMenu('/dashboard/apiaccess');
     if (option.has('automations')) return onClickMenu('/dashboard/automations');
   };
+
+  const [organizationsLinks, setOrganizationsLinks] = useState([]);
+
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      const response = await listOrganizations();
+      if (response.ok) {
+        const resp_json = await response.json();
+        const links = [];
+        if (!resp_json.data.records) return;
+        resp_json.data.records.map((record, i) => {
+          links.push({
+            label: record.name,
+            url: `/dashboard/organizations/${record.id}`,
+          });
+        });
+        setOrganizationsLinks(links);
+      }
+    };
+    fetchOrganizations();
+  }, []);
 
   return (
     <div className={`${styles.MainNavigation}`}>
@@ -66,49 +148,88 @@ export default function MainNavigation() {
       </Button>
 
       {user && user?.role === 'admin' && (
-        <ButtonGroup variant="flat">
-          <Button
-            color="default"
-            variant="light"
-            className={`btn-menu ${styles.button}`}
-            onClick={() => onClickMenu('/dashboard/organizations')}
-            startContent={
-              <Image
-                src={`/assets/images/theme-light/icon-organizations.svg`}
-                width={24}
-                height={24}
-                alt="Organizations"
-              />
-            }
-          >
-            Organizations
-          </Button>
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <Button isIconOnly variant="light">
-                <ChevronDownIcon />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              aria-label="Sub Menu Organizations"
-              selectedKeys={selectedOption}
-              selectionMode="single"
-              onSelectionChange={onSelectOption}
-              className="max-w-[300px]"
-            >
-              <DropdownItem key="collections" description={`Collections`}>
-                Collections
-              </DropdownItem>
-              <DropdownItem key="apiaccess" description={`Api Access`}>
-                Api Access
-              </DropdownItem>
-              <DropdownItem key="automations" description={`Automations`}>
-                Automations
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </ButtonGroup>
+        <Collapsible
+          buttonLabel="Organizations"
+          mainLink="/dashboard/organizations"
+          onClickMenu={onClickMenu}
+          links={organizationsLinks}
+          defaultState={'expanded'}
+        />
+        // <div class={`${styles.Collapsible}`}>
+        //   <div class={`${styles.CollapsibleHeader}`}>
+        //     <ButtonGroup variant="flat">
+        //       <Button
+        //         color="default"
+        //         variant="light"
+        //         className={`btn-menu ${styles.button}`}
+        //         onClick={() => onClickMenu('/dashboard/organizations')}
+        //         startContent={
+        //           <Image
+        //             src={`/assets/images/theme-light/icon-organizations.svg`}
+        //             width={24}
+        //             height={24}
+        //             alt="Organizations"
+        //           />
+        //         }
+        //       >
+        //         Organizations
+        //       </Button>
+        //       {/* <Dropdown placement="bottom-end">
+        //     <DropdownTrigger>
+        //       <Button isIconOnly variant="light">
+        //        <ChevronDownIcon />
+        //       </Button>
+        //     </DropdownTrigger>
+        //     <DropdownMenu
+        //       disallowEmptySelection
+        //       aria-label="Sub Menu Organizations"
+        //       selectedKeys={selectedOption}
+        //       selectionMode="single"
+        //       onSelectionChange={onSelectOption}
+        //       className="max-w-[300px]"
+        //     >
+        //       <DropdownItem key="collections" description={`Collections`}>
+        //         Collections
+        //       </DropdownItem>
+        //       <DropdownItem key="apiaccess" description={`Api Access`}>
+        //         Api Access
+        //       </DropdownItem>
+        //       <DropdownItem key="automations" description={`Automations`}>
+        //         Automations
+        //       </DropdownItem>
+        //     </DropdownMenu>
+        //   </Dropdown> */}
+        //       <Button isIconOnly variant="light">
+        //         <ChevronDownIcon />
+        //       </Button>
+        //     </ButtonGroup>
+        //   </div>
+        //   <div class={`${styles.CollapsibleBody}`}>
+        //     <ul>
+        //       <li>Equioral</li>
+        //       <li>Electricbici</li>
+        //       <li>ArcticBunker</li>
+        //     </ul>
+        //   </div>
+        // </div>
+      )}
+      {user && user?.role === 'admin' && (
+        <Button
+          color="default"
+          variant="light"
+          className={`btn-menu ${styles.button}`}
+          onClick={() => onClickMenu('/dashboard/apiaccessv2')}
+          startContent={
+            <Image
+              src={`/assets/images/theme-light/icon-api.svg`}
+              width={24}
+              height={24}
+              alt="Api Access"
+            />
+          }
+        >
+          Api Access
+        </Button>
       )}
       {user && user?.role === 'admin' && (
         <Button

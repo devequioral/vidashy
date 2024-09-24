@@ -1,0 +1,30 @@
+.ContextualMenu{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    display: none;
+}
+
+.ContextualMenuContainer{
+    position: fixed;
+    width: auto;
+    padding: 20px;
+    background: #fff;
+    z-index: 50;
+    top: 100px;
+    left: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border: solid 1px #ccc;
+    filter: drop-shadow(0 0 0.1rem rgb(141, 140, 140));
+}
+
+.ContextualMenu.show{
+    display: block;
+}

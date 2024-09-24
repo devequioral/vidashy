@@ -1,6 +1,7 @@
 import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 import { sanitizeOBJ } from '@/utils/utils';
+import generateApiKey from 'generate-api-key';
 
 function generateUUID() {
   let d = new Date().getTime();
@@ -15,39 +16,28 @@ function generateUUID() {
   return uuid;
 }
 
-async function createRecord(record_request, organization_id, default_object) {
+async function createRecord(record_request) {
+  const apikey = generateApiKey({ method: 'bytes', length: 48 });
   const new_record = sanitizeOBJ({
-    ...record_request,
     id: generateUUID(),
-    organization_id,
-    objects: [default_object],
+    name: record_request.name,
+    description: record_request.description,
+    status: 'active',
+    organization_id: record_request.organization_id,
+    apikey,
+    collection_id: record_request.collectionId,
+    methods: record_request.permissions,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
+
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
-  const collectionDB = database.collection('collections');
+  const collectionDB = database.collection('apiaccessv2');
 
   try {
     const record = await collectionDB.insertOne(new_record);
     await client.close();
-    return { record };
-  } catch (e) {
-    return { record: {} };
-  }
-}
-
-async function createDB(record_request, organization_id, default_object) {
-  const new_record = {};
-  new_record[default_object.columns[0].name] = generateUUID();
-  new_record[default_object.columns[1].name] = '';
-  const nameNewDB = `DB_${organization_id}_${record_request.name}`;
-  const { client, database } = db.mongoConnect(nameNewDB);
-  const collectionDB = database.collection(default_object.name);
-
-  try {
-    const record = await collectionDB.insertOne(new_record);
-    await client.close();
-    return { record };
+    return { data: { records: [{ ...new_record }] } };
   } catch (e) {
     return { record: {} };
   }
@@ -63,18 +53,34 @@ export default async function handler(req, res) {
       return res.status(401).send({ message: 'User Not authorized' });
 
     const { record_request } = req.body;
-    const { organization_id } = req.query;
 
     const validation = {};
 
     if (!record_request.name || record_request.name === '') {
       validation.name = 'Field Required';
     }
-    if (!record_request.status || record_request.status === '') {
-      validation.status = 'Field Required';
+    if (!record_request.description || record_request.description === '') {
+      validation.description = 'Field Required';
     }
-    if (!organization_id || organization_id === '') {
+    if (
+      !record_request.organization_id ||
+      record_request.organization_id === ''
+    ) {
       validation.organization_id = 'Field Required';
+    }
+    if (!record_request.permissions || record_request.permissions === '') {
+      validation.permissions = 'Field Required';
+    }
+
+    if (!record_request.objectName || record_request.objectName === '') {
+      validation.objectName = 'Field Required';
+    }
+
+    if (
+      !record_request.collectionName ||
+      record_request.collectionName === ''
+    ) {
+      validation.collectionName = 'Field Required';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY
@@ -84,31 +90,15 @@ export default async function handler(req, res) {
         validation,
       });
     }
-    const default_object = {
-      id: generateUUID(),
-      name: 'Table01',
-      columns: [
-        { label: 'UID', name: '_uid', type: 'hidden', id: generateUUID() },
-        { label: 'Name', name: 'Name', type: 'text', id: generateUUID() },
-      ],
-    };
-    const record = await createRecord(
-      record_request,
-      organization_id,
-      default_object
-    );
-    const dbCreated = await createDB(
-      record_request,
-      organization_id,
-      default_object
-    );
 
-    if (!record || !dbCreated)
+    const records = await createRecord(record_request);
+
+    if (!records)
       return res
         .status(500)
         .send({ message: 'Record could not be processed ' });
 
-    res.status(200).json({ record });
+    res.status(200).json({ ...records });
   } catch (error) {
     console.error('Error getting token or session:', error);
   }

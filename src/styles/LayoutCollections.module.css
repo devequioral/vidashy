@@ -1,0 +1,31 @@
+.LayoutCollections{
+    background-color: rgb(138, 152, 255);
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.logo{
+    width: auto;
+    height: 30px;
+}
+
+.Navbar{
+    background-color: rgb(138, 152, 255);
+}
+
+.NavBrand{
+    display: flex;
+    flex-direction: row;
+    gap:20px;
+}
+
+.NameCollection{
+    font-size: 16px;
+    line-height: 100%;
+    font-weight: 600;
+}
+
+.BtnApiAccess{
+    color: #fff;
+}
