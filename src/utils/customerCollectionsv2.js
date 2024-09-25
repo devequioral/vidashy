@@ -371,7 +371,7 @@ async function uploadToAWS(bucket, file) {
 
     return false;
   } catch (error) {
-    console.log('ERROR AWS', error.message);
+    console.log('ERROR AWS', error.message, bucket.id);
     return false;
   }
 }
