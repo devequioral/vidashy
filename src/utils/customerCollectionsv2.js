@@ -241,6 +241,7 @@ async function updateRecord(request) {
   if (metadata === false) return { record: {} };
   const { organization, collection, collectionName, object, body, files } =
     request;
+
   let dataBaseName = `DB_${organization}_${collectionName}`;
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
@@ -262,6 +263,11 @@ async function updateRecord(request) {
     if (column.updatedAt === 'updatedAt') continue;
     if (column.type === 'text') {
       update_record[column.name] = sanitize(body[column.name]);
+    } else if (column.type === 'gallery') {
+      update_record[column.name] = await processGallery(
+        request,
+        body[column.name]
+      );
     }
   }
 
