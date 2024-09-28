@@ -45,7 +45,7 @@ export default function LayoutCollections({ collection, children }) {
           className="hide-md hide-lg hide-xl"
         />
         <NavbarBrand className={styles.NavBrand}>
-          <Link href="/dashboard/organizations">
+          <Link href="/dashboard">
             <Image
               src={`/assets/images/theme-light/symbol-dark.svg`}
               width={85}

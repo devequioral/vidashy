@@ -127,6 +127,7 @@ export default function MainScreenObject(props) {
                 ...record,
                 key: index,
                 date: record.createdAt,
+                type: 'collection',
               };
             })
           );

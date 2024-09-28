@@ -10,6 +10,12 @@ async function getCollection(id) {
   return await fetch(url);
 }
 
+async function saveAsRecentOpen(id) {
+  if (!id) return;
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/recentopen/save/?id=${id}`;
+  return await fetch(url);
+}
+
 function CollectionsScreen() {
   const router = useRouter();
   const [collection, setCollection] = useState();
@@ -27,6 +33,11 @@ function CollectionsScreen() {
     };
     fetchCollection();
   }, [router.query.id, refresh]);
+
+  useEffect(() => {
+    if (!router.query.id) return;
+    saveAsRecentOpen(router.query.id);
+  }, [router.query.id]);
 
   const onNewTable = () => {
     setRefresh((c) => c + 1);

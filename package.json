@@ -26,6 +26,7 @@
     "fs": "^0.0.1-security",
     "generate-api-key": "^1.0.2",
     "isomorphic-dompurify": "^2.3.0",
+    "md5": "^2.3.0",
     "mongodb": "6.3",
     "mongoose": "^8.0.3",
     "next": "14.0.4",
