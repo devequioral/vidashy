@@ -9,6 +9,10 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   Input,
   Select,
   SelectItem,
@@ -16,34 +20,173 @@ import {
 } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import ModalComponent from '@/components/dashboard/ModalComponent';
+import { DeleteIcon, EditIcon, MenuHorizontalIcon } from '@virtel/icons';
 
-async function saveNewOrganization(name) {
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/new`;
+async function deleteOrganization(id) {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/delete?id=${id}`;
+  return await fetch(url);
+}
+
+function ModalDeleteOrganization(props) {
+  const { show, organization, onClose } = props;
+  const [showModal, setShowModal] = useState(0);
+  const [allowDelete, setAllowDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [idOrganization, setIdOrganization] = useState('');
+  const [strConfirmation, setStrConfirmation] = useState('');
+  const [validation, setValidation] = useState();
+  const onDelete = async () => {
+    if (strConfirmation !== `Delete ${organization.name}`) {
+      setValidation({ confirmation: 'Invalid confirmation' });
+      return;
+    }
+    const resp = await deleteOrganization(idOrganization);
+    setDeleting(true);
+    setValidation(null);
+    if (resp.ok) {
+      location.reload();
+    } else {
+      const resp_json = await resp.json();
+      if (resp_json.validation) {
+        setValidation(resp_json.validation);
+      }
+    }
+    setDeleting(false);
+  };
+  useEffect(() => {
+    if (show > 0) setShowModal((c) => c + 1);
+  }, [show]);
+  useEffect(() => {
+    if (!organization) return;
+    if (organization.id) setIdOrganization(organization.id);
+  }, [organization, show]);
+  return (
+    <ModalComponent
+      show={showModal}
+      onSave={onDelete}
+      title={'Delete Organization'}
+      onCloseModal={() => {
+        setDeleting(false);
+        setValidation(null);
+        setStrConfirmation('');
+        setIdOrganization('');
+        setAllowDelete(false);
+        onClose();
+      }}
+      allowSave={allowDelete}
+      savingRecord={deleting}
+    >
+      <p className="text-small">
+        Please enter the words:{' '}
+        <b>{`Delete ${
+          organization && organization.name ? organization.name : ''
+        }`}</b>
+      </p>
+      <Input
+        type="text"
+        label={`Confirmation`}
+        color={validation && validation.confirmation ? 'danger' : 'default'}
+        autoFocus={true}
+        onChange={(e) => {
+          setStrConfirmation(e.target.value);
+          setAllowDelete(true);
+        }}
+      />
+      {validation && (
+        <p className="text-danger text-small">{validation.confirmation}</p>
+      )}
+    </ModalComponent>
+  );
+}
+
+function MoreActionsOrganization(props) {
+  const {
+    organization,
+    onSelectRenameOrganization,
+    onSelectDeleteOrganization,
+  } = props;
+  const items = [
+    {
+      key: 'rename',
+      label: 'Rename Organization',
+    },
+    {
+      key: 'delete',
+      label: 'Delete Organization',
+    },
+  ];
+  return (
+    <>
+      <Dropdown>
+        <DropdownTrigger>
+          <Button variant="flat" isIconOnly size="sm">
+            <MenuHorizontalIcon fill={'black'} size="12" />
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu aria-label="Dynamic Actions" items={items}>
+          <DropdownItem
+            key={'rename'}
+            color={'default'}
+            startContent={<EditIcon fill={'#000'} size={12} />}
+            onClick={() => onSelectRenameOrganization(organization)}
+          >
+            <div className="MoreActionsOrganizationItem">
+              Rename Organization
+            </div>
+          </DropdownItem>
+          <DropdownItem
+            key={'delete'}
+            color={'danger'}
+            className="text-danger"
+            startContent={<DeleteIcon fill={'#c00'} size={12} />}
+            onClick={() => onSelectDeleteOrganization(organization)}
+          >
+            <div className="MoreActionsOrganizationItem">
+              Delete Organization
+            </div>
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+      <style jsx>
+        {`
+          .MoreActionsOrganizationItem {
+            font-size: 12px;
+          }
+        `}
+      </style>
+    </>
+  );
+}
+
+async function saveOrganization(id, name) {
+  let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/`;
+  url += id ? 'update' : 'new';
+  const record_request = { id, name };
   return await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ record_request: { name } }),
+    body: JSON.stringify({ record_request }),
   });
 }
 
-function ModalNewOrganization(props) {
-  const { show } = props;
+function ModalSaveOrganization(props) {
+  const { show, organization, title, onClose } = props;
   const [showModal, setShowModal] = useState(0);
   const [allowSaveOrganization, setAllowSaveOrganization] = useState(false);
   const [savingOrganization, setSavingOrganization] = useState(false);
+  const [idOrganization, setIdOrganization] = useState('');
   const [nameNewOrganization, setNameNewOrganization] = useState('');
   const [validation, setValidation] = useState();
   const onSave = async () => {
-    const resp = await saveNewOrganization(nameNewOrganization);
+    const resp = await saveOrganization(idOrganization, nameNewOrganization);
     setSavingOrganization(true);
     setValidation(null);
     if (resp.ok) {
       location.reload();
     } else {
       const resp_json = await resp.json();
-      console.log(resp_json);
       if (resp_json.validation) {
         setValidation(resp_json.validation);
       }
@@ -53,16 +196,26 @@ function ModalNewOrganization(props) {
   useEffect(() => {
     if (show > 0) setShowModal((c) => c + 1);
   }, [show]);
+  useEffect(() => {
+    if (!organization) return;
+    if (organization.id) setIdOrganization(organization.id);
+    if (organization.name) {
+      setNameNewOrganization(organization.name);
+      setAllowSaveOrganization(true);
+    }
+  }, [organization, show]);
   return (
     <ModalComponent
       show={showModal}
       onSave={onSave}
-      title={'Create New Organization'}
+      title={title}
       onCloseModal={() => {
         setSavingOrganization(false);
         setValidation(null);
         setNameNewOrganization('');
+        setIdOrganization('');
         setAllowSaveOrganization(false);
+        onClose();
       }}
       allowSave={allowSaveOrganization}
       savingRecord={savingOrganization}
@@ -72,6 +225,7 @@ function ModalNewOrganization(props) {
         label="Name"
         placehodlder="Enter the name of new Organization"
         color={validation && validation.name ? 'danger' : 'default'}
+        defaultValue={nameNewOrganization}
         onChange={(e) => {
           setNameNewOrganization(e.target.value);
           setAllowSaveOrganization(true);
@@ -100,7 +254,13 @@ function ListOrganizations() {
   const [emptyOrganizations, setEmptyOrganizations] = useState(false);
   const [filterSelected, setFilterSelected] = useState('createdAt');
   const [filterOrdered, setFilterOrdered] = useState('descending');
-  const [showModalNewOrganization, setShowModalNewOrganization] = useState(0);
+  const [titleModalSaveOrganization, setTitleModalSaveOrganization] =
+    useState('');
+  const [showModalSaveOrganization, setShowModalSaveOrganization] = useState(0);
+  const [showModalDeleteOrganization, setShowModalDeleteOrganization] =
+    useState(0);
+  const [organizationToEdit, setOrganizationToEdit] = useState();
+  const [organizationToDelete, setOrganizationToDelete] = useState();
   const router = useRouter();
   const filter = [
     { key: 'createdAt', label: 'Creation Date' },
@@ -165,6 +325,17 @@ function ListOrganizations() {
     }
     setOrganizations(_organizations);
   }, [filterSelected, filterOrdered]);
+
+  const onSelectRenameOrganization = (organization) => {
+    setOrganizationToEdit(organization);
+    setTitleModalSaveOrganization('Rename Organization');
+    setShowModalSaveOrganization((c) => c + 1);
+  };
+
+  const onSelectDeleteOrganization = (organization) => {
+    setOrganizationToDelete(organization);
+    setShowModalDeleteOrganization((c) => c + 1);
+  };
   return (
     <>
       <Metaheader title="Organizations List | Vidashy" />
@@ -177,7 +348,10 @@ function ListOrganizations() {
                 <Button
                   color="primary"
                   size="sm"
-                  onClick={() => setShowModalNewOrganization((c) => c + 1)}
+                  onClick={() => {
+                    setShowModalSaveOrganization((c) => c + 1);
+                    setTitleModalSaveOrganization('Create a new Organization');
+                  }}
                 >
                   Create an Organization
                 </Button>
@@ -230,9 +404,11 @@ function ListOrganizations() {
                       <Button variant="flat" color="primary" size="sm">
                         create
                       </Button>
-                      <Button variant="link" size="sm">
-                        ...
-                      </Button>
+                      <MoreActionsOrganization
+                        organization={organization}
+                        onSelectRenameOrganization={onSelectRenameOrganization}
+                        onSelectDeleteOrganization={onSelectDeleteOrganization}
+                      />
                     </div>
                   </CardHeader>
                   <CardBody className={styles.CardBody}>
@@ -285,14 +461,28 @@ function ListOrganizations() {
               <p>Organizations will appear here after creating theme</p>
               <Button
                 color="primary"
-                onClick={() => setShowModalNewOrganization((c) => c + 1)}
+                onClick={() => setShowModalSaveOrganization((c) => c + 1)}
               >
                 Create a New Organization
               </Button>
             </div>
           )}
         </div>
-        <ModalNewOrganization show={showModalNewOrganization} />
+        <ModalSaveOrganization
+          show={showModalSaveOrganization}
+          organization={organizationToEdit}
+          title={titleModalSaveOrganization}
+          onClose={() => {
+            setOrganizationToEdit(null);
+          }}
+        />
+        <ModalDeleteOrganization
+          show={showModalDeleteOrganization}
+          organization={organizationToDelete}
+          onClose={() => {
+            setOrganizationToDelete(null);
+          }}
+        />
       </Layout>
     </>
   );

@@ -2,25 +2,20 @@ import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 import { sanitizeOBJ, generateUUID } from '@/utils/utils';
 
-async function updateRecord(record_request) {
-  const update_record = sanitizeOBJ({
-    name: record_request.name,
-    status: record_request.status,
-    updatedAt: new Date().toISOString(),
-  });
-
-  const filter = { id: record_request.id };
+async function deleteRecord(id) {
+  const filter = sanitizeOBJ({ id });
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
   const collectionDB = database.collection('organizations');
 
   try {
-    const record = await collectionDB.updateOne(filter, {
-      $set: update_record,
-    });
+    const result = await collectionDB.deleteOne(filter);
     await client.close();
-    return { record };
+    if (result.deletedCount === 1) {
+      return true;
+    }
+    return false;
   } catch (e) {
-    return { record: {} };
+    return false;
   }
 }
 
@@ -33,15 +28,12 @@ export default async function handler(req, res) {
     if (token.role !== 'admin')
       return res.status(401).send({ message: 'User Not authorized' });
 
-    const { record_request } = req.body;
+    const { id } = req.query;
 
     const validation = {};
 
-    if (!record_request.name || record_request.name === '') {
-      validation.name = 'Field Required';
-    }
-    if (!record_request.status || record_request.status === '') {
-      record_request.status = 'active';
+    if (!id || id === '') {
+      validation.id = 'Field Required';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY
@@ -52,12 +44,10 @@ export default async function handler(req, res) {
       });
     }
 
-    const record = await updateRecord(record_request);
+    const record = await deleteRecord(id);
 
     if (!record)
-      return res
-        .status(500)
-        .send({ message: 'Record could not be processed ' });
+      return res.status(500).send({ message: 'Record could not be deleted ' });
 
     res.status(200).json({ record });
   } catch (error) {
