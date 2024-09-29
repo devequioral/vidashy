@@ -1,18 +1,6 @@
 import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
-import { sanitizeOBJ } from '@/utils/utils';
-
-function generateUUID(length) {
-  let d = new Date().getTime();
-  const uuid = Array(length + 1)
-    .join('x')
-    .replace(/[x]/g, (c) => {
-      const r = (d + Math.random() * 16) % 16 | 0;
-      d = Math.floor(d / 16);
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-    });
-  return uuid.slice(0, length);
-}
+import { sanitizeOBJ, generateUUID } from '@/utils/utils';
 
 async function createRecord(record_request) {
   const new_record = sanitizeOBJ({
@@ -51,7 +39,7 @@ export default async function handler(req, res) {
       validation.name = 'Field Required';
     }
     if (!record_request.status || record_request.status === '') {
-      validation.status = 'Field Required';
+      record_request.status = 'active';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY

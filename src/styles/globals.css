@@ -32,6 +32,11 @@ a{
   }
 }
 
+.Title{
+  font-size: 1.5em;
+  font-weight: 800;
+}
+
 
 @tailwind base;
 @tailwind components;

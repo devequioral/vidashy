@@ -7,7 +7,6 @@ import DetailRecord from '@/components/dashboard/DetailRecord';
 import MediaUpload from '@/components/dashboard/MediaUpload';
 import { toast } from 'react-toastify';
 import { Button } from '@nextui-org/react';
-import GridComponent from './GridComponent/GridComponent';
 
 async function getRecords(
   urlGetRecords,
@@ -290,24 +289,6 @@ export default function MainScreenObject(props) {
             </Button>
           )}
         </div>
-        <div className="right">
-          <Button
-            size={'sm'}
-            onClick={() => {
-              setViewMode('table');
-            }}
-          >
-            Table
-          </Button>
-          <Button
-            size={'sm'}
-            onClick={() => {
-              setViewMode('grid');
-            }}
-          >
-            Grid
-          </Button>
-        </div>
       </div>
       {viewMode === 'table' && (
         <TableComponent
@@ -332,7 +313,6 @@ export default function MainScreenObject(props) {
           }}
         />
       )}
-      {viewMode === 'grid' && <GridComponent records={listRecords} />}
       <ModalComponent
         show={showModalProductDetail}
         onSave={saveRecord}
