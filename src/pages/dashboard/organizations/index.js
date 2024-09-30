@@ -22,6 +22,7 @@ import {
 import { useRouter } from 'next/router';
 import ModalComponent from '@/components/dashboard/ModalComponent';
 import { DeleteIcon, EditIcon, MenuHorizontalIcon } from '@virtel/icons';
+import { AppContext } from '@/contexts/AppContext';
 
 async function deleteOrganization(id) {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/delete?id=${id}`;
@@ -229,7 +230,7 @@ async function listRecords(
 }
 
 function ListOrganizations() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { state, dispatch } = useContext(AppContext);
   const [organizations, setOrganizations] = useState([]);
   const [emptyOrganizations, setEmptyOrganizations] = useState(false);
   const [filterSelected, setFilterSelected] = useState('createdAt');
@@ -319,7 +320,7 @@ function ListOrganizations() {
   return (
     <>
       <Metaheader title="Organizations List | Vidashy" />
-      <Layout theme={theme} toogleTheme={toggleTheme}>
+      <Layout theme={state.theme}>
         <div className={styles.ListOrganizations}>
           {!emptyOrganizations && (
             <div className={styles.Header}>

@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import GridComponent from '../../components/dashboard/GridComponent/GridComponent';
 import styles from '@/styles/DashBoardScreen.module.css';
 import { Button, Skeleton } from '@nextui-org/react';
@@ -8,6 +8,7 @@ import { HamburguerIcon } from '@virtel/icons';
 import { GridIcon } from '../../components/Icons/GridIcon';
 import LightTable from '../../components/dashboard/LigthTable/LightTable';
 import { useRouter } from 'next/router';
+import { AppContext } from '@/contexts/AppContext';
 
 async function getListRecentCollectionsOpens() {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/recentopen/list`;
@@ -20,6 +21,7 @@ async function getListRecentCollectionsOpens() {
 // };
 
 function DashBoardScreen() {
+  const { state, dispatch } = useContext(AppContext);
   const [collections, setCollections] = useState([]);
   const [emptySpace, setEmptySpace] = useState(false);
   const [view, setView] = useState('grid');
@@ -51,7 +53,7 @@ function DashBoardScreen() {
   return (
     <>
       <Metaheader />
-      <Layout theme={`light`}>
+      <Layout theme={state.theme}>
         <div className={styles.DashBoardScreen}>
           <div className={styles.Header}>
             <h1>Home</h1>

@@ -1,6 +1,5 @@
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
-import { ThemeContext } from '@/contexts/ThemeContext';
 import React, { useContext } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
 import automationsModel from '@/models/automationsModel';
@@ -8,6 +7,7 @@ import MainScreenObject from '@/components/dashboard/MainScreenObject';
 import { Chip } from '@nextui-org/react';
 import Image from 'next/image';
 import { formatDate, capitalizeFirstLetter, shortUUID } from '@/utils/utils';
+import { AppContext } from '@/contexts/AppContext';
 
 async function getOrganizations() {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list?pageSize=1000`;
@@ -16,7 +16,7 @@ async function getOrganizations() {
 }
 
 function ListAutomations() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { state, dispatch } = useContext(AppContext);
   const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/list`;
   const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/new`;
   const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/automations/update`;
@@ -110,9 +110,9 @@ function ListAutomations() {
   return (
     <>
       <Metaheader title="Automations List | Vidashy" />
-      <Layout theme={theme} toogleTheme={toggleTheme}>
+      <Layout theme={state.theme}>
         <BreadCrumbs
-          theme={theme}
+          theme={state.theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },

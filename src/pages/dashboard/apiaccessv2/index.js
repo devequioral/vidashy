@@ -1,6 +1,5 @@
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
-import { ThemeContext } from '@/contexts/ThemeContext';
 import React, { useContext, useEffect, useState } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
 import apiAccessModel from '@/models/apiAccessModelv2';
@@ -17,6 +16,7 @@ import {
 } from '@nextui-org/react';
 import Image from 'next/image';
 import { formatDate, capitalizeFirstLetter, shortUUID } from '@/utils/utils';
+import { AppContext } from '@/contexts/AppContext';
 
 async function getOrganizations() {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list?pageSize=1000`;
@@ -262,7 +262,7 @@ function AccessComponent(props) {
 }
 
 function ListApiAccess() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { state, dispatch } = useContext(AppContext);
   const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccessv2/list`;
   const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccessv2/new`;
   const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccessv2/update`;
@@ -447,9 +447,9 @@ function ListApiAccess() {
   return (
     <>
       <Metaheader title="ApiAccess List | Vidashy" />
-      <Layout theme={theme} toogleTheme={toggleTheme}>
+      <Layout theme={state.theme}>
         <BreadCrumbs
-          theme={theme}
+          theme={state.theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },
