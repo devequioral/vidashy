@@ -1,19 +1,6 @@
 import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
-import { sanitizeOBJ } from '@/utils/utils';
-
-function generateUUID() {
-  let d = new Date().getTime();
-  const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    // eslint-disable-next-line no-bitwise
-    const r = (d + Math.random() * 16) % 16 | 0;
-    // eslint-disable-next-line no-bitwise
-    d = Math.floor(d / 16);
-    // eslint-disable-next-line no-bitwise
-    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-  });
-  return uuid;
-}
+import { sanitizeOBJ, generateUUID } from '@/utils/utils';
 
 async function createRecord(record_request, organization_id, default_object) {
   const new_record = sanitizeOBJ({

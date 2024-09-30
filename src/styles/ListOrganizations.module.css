@@ -56,11 +56,28 @@
 .CardTitle{
     font-size: 16px;
     font-weight: 600;
+    display: flex;
+    flex-direction: row;
+    gap:20px;
+    align-items: center;
 }
 
 .SubCard{
     width: 30%;
     cursor: pointer;
+    position: relative;
+}
+
+.SubCardHeader{
+    position: absolute;
+    z-index: 2;
+    top: 5px;
+    right: 5px;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .SubCardBody{

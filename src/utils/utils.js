@@ -1,16 +1,15 @@
 import dompurify from 'isomorphic-dompurify';
 
-function generateUUID() {
+function generateUUID(length = '32') {
   let d = new Date().getTime();
-  const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    // eslint-disable-next-line no-bitwise
-    const r = (d + Math.random() * 16) % 16 | 0;
-    // eslint-disable-next-line no-bitwise
-    d = Math.floor(d / 16);
-    // eslint-disable-next-line no-bitwise
-    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-  });
-  return uuid;
+  const uuid = Array(length + 1)
+    .join('x')
+    .replace(/[x]/g, (c) => {
+      const r = (d + Math.random() * 16) % 16 | 0;
+      d = Math.floor(d / 16);
+      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  return uuid.slice(0, length);
 }
 
 //create function to sanitize object from xss

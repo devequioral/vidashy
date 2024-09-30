@@ -37,6 +37,10 @@ a{
   font-weight: 800;
 }
 
+.text-12px{
+  font-size: 12px;
+}
+
 
 @tailwind base;
 @tailwind components;

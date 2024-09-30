@@ -17,6 +17,7 @@ import {
   Select,
   SelectItem,
   Skeleton,
+  Snippet,
 } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import ModalComponent from '@/components/dashboard/ModalComponent';
@@ -105,16 +106,6 @@ function MoreActionsOrganization(props) {
     onSelectRenameOrganization,
     onSelectDeleteOrganization,
   } = props;
-  const items = [
-    {
-      key: 'rename',
-      label: 'Rename Organization',
-    },
-    {
-      key: 'delete',
-      label: 'Delete Organization',
-    },
-  ];
   return (
     <>
       <Dropdown>
@@ -123,16 +114,14 @@ function MoreActionsOrganization(props) {
             <MenuHorizontalIcon fill={'black'} size="12" />
           </Button>
         </DropdownTrigger>
-        <DropdownMenu aria-label="Dynamic Actions" items={items}>
+        <DropdownMenu aria-label="Organizaion Actions">
           <DropdownItem
             key={'rename'}
             color={'default'}
             startContent={<EditIcon fill={'#000'} size={12} />}
             onClick={() => onSelectRenameOrganization(organization)}
           >
-            <div className="MoreActionsOrganizationItem">
-              Rename Organization
-            </div>
+            <div className="text-12px">Rename Organization</div>
           </DropdownItem>
           <DropdownItem
             key={'delete'}
@@ -141,19 +130,10 @@ function MoreActionsOrganization(props) {
             startContent={<DeleteIcon fill={'#c00'} size={12} />}
             onClick={() => onSelectDeleteOrganization(organization)}
           >
-            <div className="MoreActionsOrganizationItem">
-              Delete Organization
-            </div>
+            <div className="text-12px">Delete Organization</div>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <style jsx>
-        {`
-          .MoreActionsOrganizationItem {
-            font-size: 12px;
-          }
-        `}
-      </style>
     </>
   );
 }
@@ -399,7 +379,12 @@ function ListOrganizations() {
               {organizations.map((organization) => (
                 <Card className={styles.Card} key={organization.id}>
                   <CardHeader className={styles.CardHeader}>
-                    <div className={styles.CardTitle}>{organization.name}</div>
+                    <div className={styles.CardTitle}>
+                      <span>{organization.name}</span>
+                      <Snippet size="sm" symbol="">
+                        {organization.id}
+                      </Snippet>
+                    </div>
                     <div className={styles.CardActions}>
                       <Button variant="flat" color="primary" size="sm">
                         create
@@ -415,6 +400,42 @@ function ListOrganizations() {
                     {organization.collections &&
                       organization.collections.map((collection) => (
                         <Card className={styles.SubCard} key={collection.id}>
+                          <div className={styles.SubCardHeader}>
+                            <Dropdown>
+                              <DropdownTrigger>
+                                <Button variant="flat" isIconOnly size="sm">
+                                  <MenuHorizontalIcon
+                                    fill={'black'}
+                                    size="12"
+                                  />
+                                </Button>
+                              </DropdownTrigger>
+                              <DropdownMenu aria-label="Collection Actions">
+                                <DropdownItem key={'id'} color={'default'}>
+                                  <Snippet
+                                    symbol=""
+                                    size="sm"
+                                    codeString={collection.id}
+                                  >
+                                    {`${collection.id.substring(0, 12)}...`}
+                                  </Snippet>
+                                </DropdownItem>
+                                <DropdownItem
+                                  key={'delete'}
+                                  color={'danger'}
+                                  className="text-danger"
+                                  startContent={
+                                    <DeleteIcon fill={'#c00'} size={12} />
+                                  }
+                                  onClick={() => {}}
+                                >
+                                  <div className="text-12px">
+                                    Delete Collection
+                                  </div>
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </div>
                           <CardBody
                             className={styles.SubCardBody}
                             onClick={() => onSelectCollection(collection)}
@@ -444,6 +465,11 @@ function ListOrganizations() {
                     <Button
                       variant="link"
                       className={styles.BtnViewOrganization}
+                      onClick={() => {
+                        router.push(
+                          `/dashboard/organizations/${organization.id}`
+                        );
+                      }}
                     >
                       View Organization -&gt;
                     </Button>
