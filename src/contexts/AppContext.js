@@ -4,9 +4,21 @@ const AppContext = createContext(null);
 
 const useAppContext = () => useContext(AppContext);
 
+const getTheme = () => {
+  try {
+    return localStorage.getItem('ArcticBunker_theme') || 'light';
+  } catch (e) {
+    return 'light';
+  }
+};
+
+const saveTheme = (theme) => {
+  localStorage.setItem('ArcticBunker_theme', theme);
+};
+
 let initialState = {
   device: 'Desktop',
-  theme: 'light',
+  theme: getTheme(),
 };
 
 let reducer = (state, action) => {
@@ -19,6 +31,7 @@ let reducer = (state, action) => {
     }
     case 'SET_THEME':
       {
+        saveTheme(action.theme);
         return {
           ...state,
           theme: action.theme,

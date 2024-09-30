@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
-import { ThemeContext } from '@/contexts/ThemeContext';
+import { AppContext } from '@/contexts/AppContext';
 import React, { useContext, useEffect, useState } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
 import collectionsModel from '@/models/collectionsModel';
@@ -17,7 +17,7 @@ const getOrganization = async (id) => {
 
 function ListCollections() {
   const router = useRouter();
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { state, dispatch } = useContext(AppContext);
   const [urlRecords, setUrlRecords] = useState();
   const [organization, setCurrentOrganization] = useState({ name: '' });
 
@@ -110,9 +110,9 @@ function ListCollections() {
   return (
     <>
       <Metaheader title="Collections List | Vidashy" />
-      <Layout theme={theme} toogleTheme={toggleTheme}>
+      <Layout theme={state.theme}>
         <BreadCrumbs
-          theme={theme}
+          theme={state.theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },

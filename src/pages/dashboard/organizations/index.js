@@ -1,6 +1,5 @@
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
-import { ThemeContext } from '@/contexts/ThemeContext';
 import React, { useContext, useEffect, useState } from 'react';
 import styles from '@/styles/ListOrganizations.module.css';
 import {

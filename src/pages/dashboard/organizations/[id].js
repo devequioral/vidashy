@@ -1,15 +1,15 @@
 import React, { useContext } from 'react';
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
-import { ThemeContext } from '@/contexts/ThemeContext';
+import { AppContext } from '@/contexts/AppContext';
 import styles from '@/styles/Organizations.module.css';
 
 export default function OrganizationScreen() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { state, dispatch } = useContext(AppContext);
   return (
     <>
       <Metaheader title="Organization | Vidashy" />
-      <Layout theme={theme} toogleTheme={toggleTheme}>
+      <Layout theme={state.theme}>
         <div className={styles.Organizations}></div>
       </Layout>
     </>
