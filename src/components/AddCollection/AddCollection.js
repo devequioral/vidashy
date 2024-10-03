@@ -6,7 +6,7 @@ export default function AddCollection() {
   const [showModal, setShowModal] = useState(0);
   const [allowSave, setAllowSave] = useState(false);
   const [saving, setSaving] = useState(false);
-  const onSave = () => {};
+  const onSave = () => {}; //ON
   return (
     <>
       <ModalComponent
