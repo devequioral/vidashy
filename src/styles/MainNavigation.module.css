@@ -1,10 +1,11 @@
 .MainNavigation{
+    position: sticky;
+    top: 85px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    position: relative;
-    height: 100%;
+    height: calc(100vh - 85px);
 }
 
 .button{
@@ -51,7 +52,7 @@
 }
 .BtnCreateCollection{
     position: absolute;
-    bottom: 0;
+    bottom: 10px;
     left:50%;
     transform: translate(-50%, 0px);
     width: 100%;

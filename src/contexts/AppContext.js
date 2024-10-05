@@ -19,6 +19,7 @@ const saveTheme = (theme) => {
 let initialState = {
   device: 'Desktop',
   theme: getTheme(),
+  createCollectionAttempt: 0,
 };
 
 let reducer = (state, action) => {
@@ -29,12 +30,18 @@ let reducer = (state, action) => {
         device: action.device,
       };
     }
-    case 'SET_THEME':
+    case 'SET_THEME': {
+      saveTheme(action.theme);
+      return {
+        ...state,
+        theme: action.theme,
+      };
+    }
+    case 'CREATE_COLLECTION_ATTEMPT':
       {
-        saveTheme(action.theme);
         return {
           ...state,
-          theme: action.theme,
+          createCollectionAttempt: action.createCollectionAttempt,
         };
       }
 

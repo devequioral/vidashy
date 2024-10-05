@@ -1,11 +1,12 @@
 import { Button, ButtonGroup } from '@nextui-org/react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import styles from '@/styles/MainNavigation.module.css';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { AddIcon } from '@virtel/icons';
+import { AppContext } from '@/contexts/AppContext';
 
 const listOrganizations = async () => {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list`;
@@ -84,6 +85,7 @@ const Collapsible = (props) => {
 };
 
 export default function MainNavigation() {
+  const { state, dispatch } = useContext(AppContext);
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -207,7 +209,12 @@ export default function MainNavigation() {
           variant="solid"
           size="sm"
           className={`${styles.BtnCreateCollection}`}
-          onClick={() => {}}
+          onClick={() => {
+            dispatch({
+              type: 'CREATE_COLLECTION_ATTEMPT',
+              createCollectionAttempt: state.createCollectionAttempt + 1,
+            });
+          }}
           startContent={<AddIcon fill={'#fff'} size={16} />}
         >
           Create

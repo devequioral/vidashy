@@ -386,7 +386,18 @@ function ListOrganizations() {
                       </Snippet>
                     </div>
                     <div className={styles.CardActions}>
-                      <Button variant="flat" color="primary" size="sm">
+                      <Button
+                        variant="flat"
+                        color="primary"
+                        size="sm"
+                        onClick={() => {
+                          dispatch({
+                            type: 'CREATE_COLLECTION_ATTEMPT',
+                            createCollectionAttempt:
+                              state.createCollectionAttempt + 1,
+                          });
+                        }}
+                      >
                         create
                       </Button>
                       <MoreActionsOrganization
