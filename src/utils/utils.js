@@ -1,6 +1,6 @@
 import dompurify from 'isomorphic-dompurify';
 
-function generateUUID(length = '32') {
+function generateUUID(length = 32) {
   let d = new Date().getTime();
   const uuid = Array(length + 1)
     .join('x')

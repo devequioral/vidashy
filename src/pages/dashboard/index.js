@@ -32,7 +32,6 @@ function DashBoardScreen() {
       const resp_json = await resp.json();
       const records = resp_json.data.records;
       const _collections = [];
-      console.log(records);
       records.map((record, i) => {
         _collections.push({
           name: record.collection_name,

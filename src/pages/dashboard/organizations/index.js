@@ -396,6 +396,10 @@ function ListOrganizations() {
                             createCollectionAttempt:
                               state.createCollectionAttempt + 1,
                           });
+                          dispatch({
+                            type: 'SET_ORGANIZATION_SELECTED',
+                            organizationSelected: organization.id,
+                          });
                         }}
                       >
                         create

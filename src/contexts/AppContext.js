@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useEffect, useReducer } from 'react';
 
 const AppContext = createContext(null);
 
@@ -20,6 +20,9 @@ let initialState = {
   device: 'Desktop',
   theme: getTheme(),
   createCollectionAttempt: 0,
+  organizations: [],
+  organizationSelected: 0,
+  refreshOrganizations: 0,
 };
 
 let reducer = (state, action) => {
@@ -37,11 +40,29 @@ let reducer = (state, action) => {
         theme: action.theme,
       };
     }
-    case 'CREATE_COLLECTION_ATTEMPT':
+    case 'CREATE_COLLECTION_ATTEMPT': {
+      return {
+        ...state,
+        createCollectionAttempt: action.createCollectionAttempt,
+      };
+    }
+    case 'SET_ORGANIZATION_SELECTED': {
+      return {
+        ...state,
+        organizationSelected: action.organizationSelected,
+      };
+    }
+    case 'SET_ORGANIZATIONS': {
+      return {
+        ...state,
+        organizations: action.organizations,
+      };
+    }
+    case 'REFRESH_ORGANIZATIONS':
       {
         return {
           ...state,
-          createCollectionAttempt: action.createCollectionAttempt,
+          refreshOrganizations: action.refreshOrganizations,
         };
       }
 
@@ -49,9 +70,37 @@ let reducer = (state, action) => {
   }
 };
 
+async function listOrganizations() {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list?page=1&pagesize=50`;
+  return await fetch(url);
+}
+
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const value = { state, dispatch };
+  const fetchOrganizations = async () => {
+    const resp = await listOrganizations();
+    if (resp.ok) {
+      const resp_json = await resp.json();
+      const { data } = resp_json;
+      if (data && data.records && data.records.length > 0) {
+        const _organizations = [];
+        data.records.map((org) => {
+          _organizations.push({
+            name: org.name,
+            id: org.id,
+          });
+        });
+        dispatch({
+          type: 'SET_ORGANIZATIONS',
+          organizations: _organizations,
+        });
+      }
+    }
+  };
+  useEffect(() => {
+    fetchOrganizations();
+  }, [state.refreshOrganizations]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

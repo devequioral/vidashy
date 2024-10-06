@@ -7,11 +7,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { AddIcon } from '@virtel/icons';
 import { AppContext } from '@/contexts/AppContext';
-
-const listOrganizations = async () => {
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list`;
-  return await fetch(url);
-};
+import Link from 'next/link';
 
 const ChevronDownIcon = () => (
   <svg
@@ -69,13 +65,8 @@ const Collapsible = (props) => {
       <div className={`${styles.CollapsibleBody} ${styles[collapsed]}`}>
         <ul>
           {links.map((link, i) => (
-            <li
-              key={i}
-              onClick={() => {
-                onClickMenu(link.url);
-              }}
-            >
-              {link.label}
+            <li key={i}>
+              <Link href={link.url}>{link.label}</Link>
             </li>
           ))}
         </ul>
@@ -90,38 +81,24 @@ export default function MainNavigation() {
   const user = session?.user;
 
   const router = useRouter();
-  const [selectedOption, setSelectedOption] = React.useState('');
   const onClickMenu = (path) => {
     router.push(path);
-  };
-
-  const onSelectOption = (option) => {
-    setSelectedOption(option);
-    if (option.has('collections')) return onClickMenu('/dashboard/collections');
-    if (option.has('apiaccess')) return onClickMenu('/dashboard/apiaccess');
-    if (option.has('automations')) return onClickMenu('/dashboard/automations');
   };
 
   const [organizationsLinks, setOrganizationsLinks] = useState([]);
 
   useEffect(() => {
-    const fetchOrganizations = async () => {
-      const response = await listOrganizations();
-      if (response.ok) {
-        const resp_json = await response.json();
-        const links = [];
-        if (!resp_json.data.records) return;
-        resp_json.data.records.map((record, i) => {
-          links.push({
-            label: record.name,
-            url: `/dashboard/organizations/${record.id}`,
-          });
+    if (state.organizations && state.organizations.length > 0) {
+      const links = [];
+      state.organizations.map((org, i) => {
+        links.push({
+          label: org.name,
+          url: `/dashboard/organizations/${org.id}`,
         });
-        setOrganizationsLinks(links);
-      }
-    };
-    fetchOrganizations();
-  }, []);
+      });
+      setOrganizationsLinks(links);
+    }
+  }, [state.organizations]);
 
   return (
     <div className={`${styles.MainNavigation}`}>
