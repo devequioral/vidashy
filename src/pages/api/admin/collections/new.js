@@ -1,25 +1,13 @@
 import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
-import { sanitizeOBJ } from '@/utils/utils';
+import { sanitizeOBJ, generateUUID } from '@/utils/utils';
 
-function generateUUID() {
-  let d = new Date().getTime();
-  const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    // eslint-disable-next-line no-bitwise
-    const r = (d + Math.random() * 16) % 16 | 0;
-    // eslint-disable-next-line no-bitwise
-    d = Math.floor(d / 16);
-    // eslint-disable-next-line no-bitwise
-    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-  });
-  return uuid;
-}
-
-async function createRecord(record_request, organization_id, default_object) {
+async function createRecord(record_request, default_object) {
+  const id = generateUUID();
+  console.log('ID********', id);
   const new_record = sanitizeOBJ({
     ...record_request,
-    id: generateUUID(),
-    organization_id,
+    id,
     objects: [default_object],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -36,11 +24,11 @@ async function createRecord(record_request, organization_id, default_object) {
   }
 }
 
-async function createDB(record_request, organization_id, default_object) {
+async function createDB(record_request, default_object) {
   const new_record = {};
   new_record[default_object.columns[0].name] = generateUUID();
   new_record[default_object.columns[1].name] = '';
-  const nameNewDB = `DB_${organization_id}_${record_request.name}`;
+  const nameNewDB = `DB_${record_request.organization_id}_${record_request.name}`;
   const { client, database } = db.mongoConnect(nameNewDB);
   const collectionDB = database.collection(default_object.name);
 
@@ -63,7 +51,6 @@ export default async function handler(req, res) {
       return res.status(401).send({ message: 'User Not authorized' });
 
     const { record_request } = req.body;
-    const { organization_id } = req.query;
 
     const validation = {};
 
@@ -71,9 +58,12 @@ export default async function handler(req, res) {
       validation.name = 'Field Required';
     }
     if (!record_request.status || record_request.status === '') {
-      validation.status = 'Field Required';
+      record_request.status = 'active';
     }
-    if (!organization_id || organization_id === '') {
+    if (
+      !record_request.organization_id ||
+      record_request.organization_id === ''
+    ) {
       validation.organization_id = 'Field Required';
     }
 
@@ -92,16 +82,8 @@ export default async function handler(req, res) {
         { label: 'Name', name: 'Name', type: 'text', id: generateUUID() },
       ],
     };
-    const record = await createRecord(
-      record_request,
-      organization_id,
-      default_object
-    );
-    const dbCreated = await createDB(
-      record_request,
-      organization_id,
-      default_object
-    );
+    const record = await createRecord(record_request, default_object);
+    const dbCreated = await createDB(record_request, default_object);
 
     if (!record || !dbCreated)
       return res

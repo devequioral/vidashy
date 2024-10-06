@@ -1,9 +1,9 @@
 import '@/styles/grid.css';
 import '@/styles/globals.css';
 
+import { AppProvider } from '@/contexts/AppContext';
 import { SessionProvider, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { ThemeProvider } from '@/contexts/ThemeContext';
 import { NextUIProvider } from '@nextui-org/react';
 
 import { Montserrat } from 'next/font/google';
@@ -44,18 +44,18 @@ export default function App({
       <SessionProvider session={session}>
         {Component.auth ? (
           <Auth adminOnly={Component.auth.adminOnly}>
-            <NextUIProvider>
-              <ThemeProvider>
+            <AppProvider>
+              <NextUIProvider>
                 <Component {...pageProps} />
-              </ThemeProvider>
-            </NextUIProvider>
+              </NextUIProvider>
+            </AppProvider>
           </Auth>
         ) : (
-          <NextUIProvider>
-            <ThemeProvider>
+          <AppProvider>
+            <NextUIProvider>
               <Component {...pageProps} />
-            </ThemeProvider>
-          </NextUIProvider>
+            </NextUIProvider>
+          </AppProvider>
         )}
       </SessionProvider>
     </>

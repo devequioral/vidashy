@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
-import { ThemeContext } from '@/contexts/ThemeContext';
+import { AppContext } from '@/contexts/AppContext';
 import React, { useContext } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
 import apiAccessModel from '@/models/apiAccessModel';
@@ -16,7 +16,7 @@ async function getOrganizations() {
 }
 
 function ListApiAccess() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { state, dispatch } = useContext(AppContext);
   const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/list`;
   const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/new`;
   const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccess/update`;
@@ -110,9 +110,9 @@ function ListApiAccess() {
   return (
     <>
       <Metaheader title="ApiAccess List | Vidashy" />
-      <Layout theme={theme} toogleTheme={toggleTheme}>
+      <Layout theme={state.theme}>
         <BreadCrumbs
-          theme={theme}
+          theme={state.theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },

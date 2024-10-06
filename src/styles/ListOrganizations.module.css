@@ -1,0 +1,159 @@
+.ListOrganizations{
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.Header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.Filter{
+    display: flex;
+    flex-direction: row;
+    gap:20px;
+    margin: 20px 0;
+}
+
+.FilterSelect{
+    width: 200px;
+}
+
+.FilterOrder{
+    width: 200px;
+}
+
+.Cards{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.CardHeader{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.CardBody{
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap:20px;
+}
+
+.CardActions{
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+}
+
+.CardTitle{
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    flex-direction: row;
+    gap:20px;
+    align-items: center;
+}
+
+.SubCard{
+    width: 30%;
+    cursor: pointer;
+    position: relative;
+}
+
+.SubCardHeader{
+    position: absolute;
+    z-index: 2;
+    top: 5px;
+    right: 5px;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.SubCardBody{
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+}
+
+.CardIcon{
+    background-color: rgb(138, 152, 255);
+    color: #fff;
+    font-size: 16px;
+    line-height: 100%;
+    font-weight: 600;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.SubCardRight{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+
+.SubCardName{
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.SubCardType{
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.BtnViewOrganization{
+    font-size: 12px;
+}
+
+.Skeleton{
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    margin: 40px 0;
+}
+
+.EmptySpace{
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap:20px;
+    height: 50vh;
+}
+
+.EmptySpace h3{
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.EmptySpace p{
+    font-size: 0.9em;
+    font-weight: 400;
+}
+
+.NoCollections{
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.NoCollections p{
+    font-size: 12px;
+    font-weight: 400;
+}

@@ -1,23 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  ButtonGroup,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-} from '@nextui-org/react';
+import { Button, ButtonGroup } from '@nextui-org/react';
+import React, { useContext, useEffect, useState } from 'react';
 
+import styles from '@/styles/MainNavigation.module.css';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
-import styles from '@/styles/MainNavigation.module.css';
-import { set } from 'zod';
-
-const listOrganizations = async () => {
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/list`;
-  return await fetch(url);
-};
+import { AddIcon } from '@virtel/icons';
+import { AppContext } from '@/contexts/AppContext';
+import Link from 'next/link';
 
 const ChevronDownIcon = () => (
   <svg
@@ -75,13 +65,8 @@ const Collapsible = (props) => {
       <div className={`${styles.CollapsibleBody} ${styles[collapsed]}`}>
         <ul>
           {links.map((link, i) => (
-            <li
-              key={i}
-              onClick={() => {
-                onClickMenu(link.url);
-              }}
-            >
-              {link.label}
+            <li key={i}>
+              <Link href={link.url}>{link.label}</Link>
             </li>
           ))}
         </ul>
@@ -91,42 +76,29 @@ const Collapsible = (props) => {
 };
 
 export default function MainNavigation() {
+  const { state, dispatch } = useContext(AppContext);
   const { data: session } = useSession();
   const user = session?.user;
 
   const router = useRouter();
-  const [selectedOption, setSelectedOption] = React.useState('');
   const onClickMenu = (path) => {
     router.push(path);
-  };
-
-  const onSelectOption = (option) => {
-    setSelectedOption(option);
-    if (option.has('collections')) return onClickMenu('/dashboard/collections');
-    if (option.has('apiaccess')) return onClickMenu('/dashboard/apiaccess');
-    if (option.has('automations')) return onClickMenu('/dashboard/automations');
   };
 
   const [organizationsLinks, setOrganizationsLinks] = useState([]);
 
   useEffect(() => {
-    const fetchOrganizations = async () => {
-      const response = await listOrganizations();
-      if (response.ok) {
-        const resp_json = await response.json();
-        const links = [];
-        if (!resp_json.data.records) return;
-        resp_json.data.records.map((record, i) => {
-          links.push({
-            label: record.name,
-            url: `/dashboard/organizations/${record.id}`,
-          });
+    if (state.organizations && state.organizations.length > 0) {
+      const links = [];
+      state.organizations.map((org, i) => {
+        links.push({
+          label: org.name,
+          url: `/dashboard/organizations/${org.id}`,
         });
-        setOrganizationsLinks(links);
-      }
-    };
-    fetchOrganizations();
-  }, []);
+      });
+      setOrganizationsLinks(links);
+    }
+  }, [state.organizations]);
 
   return (
     <div className={`${styles.MainNavigation}`}>
@@ -155,63 +127,6 @@ export default function MainNavigation() {
           links={organizationsLinks}
           defaultState={'expanded'}
         />
-        // <div class={`${styles.Collapsible}`}>
-        //   <div class={`${styles.CollapsibleHeader}`}>
-        //     <ButtonGroup variant="flat">
-        //       <Button
-        //         color="default"
-        //         variant="light"
-        //         className={`btn-menu ${styles.button}`}
-        //         onClick={() => onClickMenu('/dashboard/organizations')}
-        //         startContent={
-        //           <Image
-        //             src={`/assets/images/theme-light/icon-organizations.svg`}
-        //             width={24}
-        //             height={24}
-        //             alt="Organizations"
-        //           />
-        //         }
-        //       >
-        //         Organizations
-        //       </Button>
-        //       {/* <Dropdown placement="bottom-end">
-        //     <DropdownTrigger>
-        //       <Button isIconOnly variant="light">
-        //        <ChevronDownIcon />
-        //       </Button>
-        //     </DropdownTrigger>
-        //     <DropdownMenu
-        //       disallowEmptySelection
-        //       aria-label="Sub Menu Organizations"
-        //       selectedKeys={selectedOption}
-        //       selectionMode="single"
-        //       onSelectionChange={onSelectOption}
-        //       className="max-w-[300px]"
-        //     >
-        //       <DropdownItem key="collections" description={`Collections`}>
-        //         Collections
-        //       </DropdownItem>
-        //       <DropdownItem key="apiaccess" description={`Api Access`}>
-        //         Api Access
-        //       </DropdownItem>
-        //       <DropdownItem key="automations" description={`Automations`}>
-        //         Automations
-        //       </DropdownItem>
-        //     </DropdownMenu>
-        //   </Dropdown> */}
-        //       <Button isIconOnly variant="light">
-        //         <ChevronDownIcon />
-        //       </Button>
-        //     </ButtonGroup>
-        //   </div>
-        //   <div class={`${styles.CollapsibleBody}`}>
-        //     <ul>
-        //       <li>Equioral</li>
-        //       <li>Electricbici</li>
-        //       <li>ArcticBunker</li>
-        //     </ul>
-        //   </div>
-        // </div>
       )}
       {user && user?.role === 'admin' && (
         <Button
@@ -265,6 +180,23 @@ export default function MainNavigation() {
       >
         Exit
       </Button>
+      {user && user?.role === 'admin' && (
+        <Button
+          color="primary"
+          variant="solid"
+          size="sm"
+          className={`${styles.BtnCreateCollection}`}
+          onClick={() => {
+            dispatch({
+              type: 'CREATE_COLLECTION_ATTEMPT',
+              createCollectionAttempt: state.createCollectionAttempt + 1,
+            });
+          }}
+          startContent={<AddIcon fill={'#fff'} size={16} />}
+        >
+          Create
+        </Button>
+      )}
     </div>
   );
 }

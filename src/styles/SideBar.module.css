@@ -22,5 +22,5 @@ Theme Light
 
 .SideBar.light{
     background-color: var(--color-white);
-    border-right: solid 1px var(--color-gray);
+    border-right: solid 1px #dbdbdb;
 }

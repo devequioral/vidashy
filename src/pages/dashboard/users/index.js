@@ -1,6 +1,5 @@
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
-import { ThemeContext } from '@/contexts/ThemeContext';
 import React, { useContext, useEffect } from 'react';
 import BreadCrumbs from '@/components/dashboard/BreadCrumbs';
 import userModel from '@/models/userModel';
@@ -8,9 +7,10 @@ import MainScreenObject from '@/components/dashboard/MainScreenObject';
 import { Chip } from '@nextui-org/react';
 import Image from 'next/image';
 import { formatDate, capitalizeFirstLetter, shortUUID } from '@/utils/utils';
+import { AppContext } from '@/contexts/AppContext';
 
 function ListUsers() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { state, dispatch } = useContext(AppContext);
   const urlGetRecords = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/list`;
   const urlNewRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/new`;
   const urlUpdateRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/update`;
@@ -81,9 +81,9 @@ function ListUsers() {
   return (
     <>
       <Metaheader title="Users List | Vidashy" />
-      <Layout theme={theme} toogleTheme={toggleTheme}>
+      <Layout theme={state.theme}>
         <BreadCrumbs
-          theme={theme}
+          theme={state.theme}
           data={{
             links: [
               { href: '/dashboard', title: 'Home' },
