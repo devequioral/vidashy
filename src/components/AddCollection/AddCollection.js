@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import ModalComponent from '@/components/dashboard/ModalComponent';
 import { Input, Autocomplete, AutocompleteItem } from '@nextui-org/react';
 import { AppContext } from '@/contexts/AppContext';
+import { useRouter } from 'next/router';
 
 async function saveCollection(name, organization_id) {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/new`;
@@ -19,6 +20,7 @@ async function saveCollection(name, organization_id) {
 }
 
 export default function AddCollection() {
+  const router = useRouter();
   const { state, dispatch } = useContext(AppContext);
   const [showModal, setShowModal] = useState(0);
   const [allowSave, setAllowSave] = useState(false);
@@ -29,7 +31,9 @@ export default function AddCollection() {
     const resp = await saveCollection(nameCollection, organization);
     if (resp.ok) {
       const resp_json = await resp.json();
-      console.log(resp_json);
+      if (resp_json.new_collection_id) {
+        router.push(`/dashboard/collections/${resp_json.new_collection_id}`);
+      }
     }
   };
   const onSelectOrganization = (id) => {
