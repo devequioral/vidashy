@@ -4,7 +4,6 @@ import { sanitizeOBJ, generateUUID } from '@/utils/utils';
 
 async function createRecord(record_request, default_object) {
   const id = generateUUID();
-  console.log('ID********', id);
   const new_record = sanitizeOBJ({
     ...record_request,
     id,
