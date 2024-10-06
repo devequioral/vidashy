@@ -107,7 +107,7 @@ function DashBoardScreen() {
           )}
           {emptySpace && (
             <div className={styles.EmptySpace}>
-              <h3>Don't Have Collections Yet</h3>
+              <h3>Don&apos;t Have Collections Yet</h3>
               <p>Collections will appear here after creating theme</p>
               <Button color="primary">Create a New Collection</Button>
             </div>

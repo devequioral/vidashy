@@ -498,7 +498,7 @@ function ListOrganizations() {
           )}
           {emptyOrganizations && organizations.length === 0 && (
             <div className={styles.EmptySpace}>
-              <h3>Don't Have Organizations Yet</h3>
+              <h3>Don&apos;t Have Organizations Yet</h3>
               <p>Organizations will appear here after creating theme</p>
               <Button
                 color="primary"
