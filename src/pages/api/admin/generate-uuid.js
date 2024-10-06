@@ -1,16 +1,5 @@
 import { getToken } from 'next-auth/jwt';
-
-function generateUUID(length) {
-  let d = new Date().getTime();
-  const uuid = Array(length + 1)
-    .join('x')
-    .replace(/[x]/g, (c) => {
-      const r = (d + Math.random() * 16) % 16 | 0;
-      d = Math.floor(d / 16);
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-    });
-  return uuid.slice(0, length);
-}
+import { generateUUID } from '@/utils/utils';
 
 export default async function handler(req, res) {
   const token = await getToken({ req });
@@ -22,6 +11,6 @@ export default async function handler(req, res) {
 
   const { length } = req.query;
 
-  const uuid = generateUUID(Number.parseInt(length) || 20);
+  const uuid = generateUUID(Number.parseInt(length) || 32);
   res.status(200).json({ uuid });
 }
