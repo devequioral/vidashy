@@ -28,6 +28,7 @@ export default function AddCollection() {
   const [organization, setOrganization] = useState(0);
   const [nameCollection, setNameCollection] = useState('');
   const onSave = async () => {
+    setSaving(true);
     const resp = await saveCollection(nameCollection, organization);
     if (resp.ok) {
       const resp_json = await resp.json();
@@ -35,6 +36,7 @@ export default function AddCollection() {
         router.push(`/dashboard/collections/${resp_json.new_collection_id}`);
       }
     }
+    setSaving(false);
   };
   const onSelectOrganization = (id) => {
     setOrganization(id);
