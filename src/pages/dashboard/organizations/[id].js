@@ -227,19 +227,20 @@ export default function OrganizationScreen() {
             {!isLoading &&
               (!organization.collections ||
                 organization.collections.length === 0) && (
-                <div className={styles.NoCollections}>
-                  <p>Not Collections Yet</p>
+                <div className={styles.EmptySpace}>
+                  <h3>Don&apos;t Have Collections Yet</h3>
+                  <p>Collections will appear here after creating theme</p>
                   <Button
-                    size="sm"
-                    onClick={() => {
+                    color="primary"
+                    onClick={() =>
                       dispatch({
                         type: 'CREATE_COLLECTION_ATTEMPT',
                         createCollectionAttempt:
                           state.createCollectionAttempt + 1,
-                      });
-                    }}
+                      })
+                    }
                   >
-                    Create Collection
+                    Create a New Collection
                   </Button>
                 </div>
               )}
