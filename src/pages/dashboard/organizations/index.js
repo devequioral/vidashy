@@ -1,3 +1,4 @@
+import CollectionCard from '@/components/Collections/CollectionCard';
 import Layout from '@/components/Layout';
 import Metaheader from '@/components/Metaheader';
 import ModalDeleteOrganization from '@/components/Organization/ModalDeleteOrganization';
@@ -11,18 +12,12 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Select,
   SelectItem,
   Skeleton,
   Snippet,
 } from '@nextui-org/react';
-import { DeleteIcon, MenuHorizontalIcon } from '@virtel/icons';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
 
 function Header({ organization, onClose, showModal }) {
@@ -159,7 +154,6 @@ function ListOrganizations() {
     useState(0);
   const [organizationToEdit, setOrganizationToEdit] = useState();
   const [organizationToDelete, setOrganizationToDelete] = useState();
-  const router = useRouter();
 
   const fetchOrganizations = async () => {
     const resp = await listRecords();
@@ -170,16 +164,7 @@ function ListOrganizations() {
       setEmptyOrganizations(true);
     }
   };
-  const getInitials = (name) => {
-    if (!name || name.length < 2) {
-      return 'Un';
-    }
-    return name.substring(0, 2);
-  };
 
-  const onSelectCollection = (collection) => {
-    router.push(`/dashboard/collections/${collection.id}`);
-  };
   useEffect(() => {
     fetchOrganizations();
   }, []);
@@ -190,7 +175,6 @@ function ListOrganizations() {
 
   const onSelectRenameOrganization = (organization) => {
     setOrganizationToEdit(organization);
-    //setTitleModalSaveOrganization('Rename Organization');
     setShowModalSaveOrganization((c) => c + 1);
   };
 
@@ -252,61 +236,12 @@ function ListOrganizations() {
                   </CardHeader>
                   <CardBody className={styles.CardBody}>
                     {organization.collections &&
-                      organization.collections.map((collection) => (
-                        <Card className={styles.SubCard} key={collection.id}>
-                          <div className={styles.SubCardHeader}>
-                            <Dropdown>
-                              <DropdownTrigger>
-                                <Button variant="flat" isIconOnly size="sm">
-                                  <MenuHorizontalIcon
-                                    fill={'black'}
-                                    size="12"
-                                  />
-                                </Button>
-                              </DropdownTrigger>
-                              <DropdownMenu aria-label="Collection Actions">
-                                <DropdownItem key={'id'} color={'default'}>
-                                  <Snippet
-                                    symbol=""
-                                    size="sm"
-                                    codeString={collection.id}
-                                  >
-                                    {`${collection.id.substring(0, 12)}...`}
-                                  </Snippet>
-                                </DropdownItem>
-                                <DropdownItem
-                                  key={'delete'}
-                                  color={'danger'}
-                                  className="text-danger"
-                                  startContent={
-                                    <DeleteIcon fill={'#c00'} size={12} />
-                                  }
-                                  onClick={() => {}}
-                                >
-                                  <div className="text-12px">
-                                    Delete Collection
-                                  </div>
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </Dropdown>
-                          </div>
-                          <CardBody
-                            className={styles.SubCardBody}
-                            onClick={() => onSelectCollection(collection)}
-                          >
-                            <div className={styles.SubCardLeft}>
-                              <div className={styles.CardIcon}>
-                                {getInitials(collection.name)}
-                              </div>
-                            </div>
-                            <div className={styles.SubCardRight}>
-                              <div className={styles.SubCardName}>
-                                {collection.name}
-                              </div>
-                              <div className={styles.SubCardType}>Base</div>
-                            </div>
-                          </CardBody>
-                        </Card>
+                      organization.collections.map((collection, i) => (
+                        <CollectionCard
+                          organization={organization}
+                          collection={collection}
+                          key={i}
+                        />
                       ))}
                     {(!organization.collections ||
                       organization.collections.length === 0) && (

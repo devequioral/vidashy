@@ -269,7 +269,7 @@ function MainTable({
 }
 
 async function getData(
-  collectionName,
+  collectionId,
   organizationId,
   objectName,
   page = 1,
@@ -282,7 +282,7 @@ async function getData(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      collectionName,
+      collectionId,
       organizationId,
       objectName,
       page,
@@ -292,7 +292,7 @@ async function getData(
 }
 
 async function upsertRecord(
-  collectionName,
+  collectionId,
   organizationId,
   objectName,
   _uid,
@@ -306,7 +306,7 @@ async function upsertRecord(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      collectionName,
+      collectionId,
       organizationId,
       objectName,
       _uid,
@@ -367,13 +367,13 @@ export default function CollectionObject({
   }, [object]);
 
   useEffect(() => {
-    if (!collectionName) return;
+    if (!collectionId) return;
     if (!organizationId) return;
     if (!object) return;
-    const fetchObject = async (collectionName, organizationId, objectName) => {
+    const fetchObject = async (collectionId, organizationId, objectName) => {
       setData([]);
       setIsLoading(true);
-      const resp = await getData(collectionName, organizationId, objectName);
+      const resp = await getData(collectionId, organizationId, objectName);
       if (resp.ok) {
         const resp_json = await resp.json();
         if (resp_json && resp_json.data) {
@@ -382,8 +382,8 @@ export default function CollectionObject({
         }
       }
     };
-    fetchObject(collectionName, organizationId, object.name);
-  }, [collectionName, organizationId, object, refresh]);
+    fetchObject(collectionId, organizationId, object.name);
+  }, [collectionId, organizationId, object, refresh]);
 
   function debounce(func, wait) {
     let timeout;
@@ -397,7 +397,7 @@ export default function CollectionObject({
 
   const upsertRecordDebounced = debounce(async (_uid, columnKey, new_value) => {
     const resp = await upsertRecord(
-      collectionName,
+      collectionId,
       organizationId,
       object.name,
       _uid,

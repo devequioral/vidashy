@@ -4,9 +4,12 @@ import { Input, Autocomplete, AutocompleteItem } from '@nextui-org/react';
 import { AppContext } from '@/contexts/AppContext';
 import { useRouter } from 'next/router';
 
-async function saveCollection(name, organization_id) {
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/new`;
+async function saveCollection(id, name, organization_id) {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/collections/${
+    id ? 'update' : 'new'
+  }`;
   const record_request = {
+    id,
     name,
     organization_id,
   };
@@ -23,17 +26,24 @@ export default function AddCollection() {
   const router = useRouter();
   const { state, dispatch } = useContext(AppContext);
   const [showModal, setShowModal] = useState(0);
+  const [title, setTitle] = useState('Create New Collection');
   const [allowSave, setAllowSave] = useState(false);
   const [saving, setSaving] = useState(false);
   const [organization, setOrganization] = useState(0);
   const [nameCollection, setNameCollection] = useState('');
   const onSave = async () => {
     setSaving(true);
-    const resp = await saveCollection(nameCollection, organization);
+    const resp = await saveCollection(
+      state.collectionSelected.id,
+      nameCollection,
+      organization
+    );
     if (resp.ok) {
       const resp_json = await resp.json();
       if (resp_json.new_collection_id) {
         router.push(`/dashboard/collections/${resp_json.new_collection_id}`);
+      } else {
+        document.location.reload();
       }
     }
     setSaving(false);
@@ -47,12 +57,21 @@ export default function AddCollection() {
     setShowModal((c) => c + 1);
   }, [state.createCollectionAttempt]);
 
+  useEffect(() => {
+    if (state.collectionSelected.id === 0) {
+      setTitle('Create New Collection');
+    } else {
+      setNameCollection(state.collectionSelected.name);
+      setTitle('Rename Collection');
+    }
+  }, [state.collectionSelected.id]);
+
   return (
     <>
       <ModalComponent
         show={showModal}
         onSave={onSave}
-        title={'Create New Collection'}
+        title={title}
         onCloseModal={() => {
           setAllowSave(false);
           setSaving(false);
@@ -60,6 +79,10 @@ export default function AddCollection() {
           dispatch({
             type: 'SET_ORGANIZATION_SELECTED',
             organizationSelected: 0,
+          });
+          dispatch({
+            type: 'SET_COLLECTION_SELECTED',
+            collectionSelected: { id: 0, name: '' },
           });
         }}
         allowSave={allowSave}
@@ -80,7 +103,8 @@ export default function AddCollection() {
         <Input
           type="text"
           label="Name"
-          placehodlder="Enter the name of new Collection"
+          placehodlder="Enter the name of Collection"
+          defaultValue={nameCollection}
           onChange={(e) => {
             setNameCollection(e.target.value);
             setAllowSave(true);

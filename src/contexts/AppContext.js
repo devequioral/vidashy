@@ -22,6 +22,10 @@ let initialState = {
   createCollectionAttempt: 0,
   organizations: [],
   organizationSelected: 0,
+  collectionSelected: {
+    id: 0,
+    name: '',
+  },
   refreshOrganizations: 0,
 };
 
@@ -50,6 +54,12 @@ let reducer = (state, action) => {
       return {
         ...state,
         organizationSelected: action.organizationSelected,
+      };
+    }
+    case 'SET_COLLECTION_SELECTED': {
+      return {
+        ...state,
+        collectionSelected: action.collectionSelected,
       };
     }
     case 'SET_ORGANIZATIONS': {

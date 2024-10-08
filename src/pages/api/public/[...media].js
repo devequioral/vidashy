@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   if (collectionName === false)
     return res.status(500).json({ error: 'Collection Not Found' });
 
-  let dataBaseName = sanitize(`DB_${organization}_${collectionName}`);
+  let dataBaseName = sanitize(`DB_${organization}_${collection}`);
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
 
