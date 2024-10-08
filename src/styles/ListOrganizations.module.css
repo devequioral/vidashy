@@ -113,8 +113,13 @@
     font-weight: 400;
 }
 
-.BtnViewOrganization{
+.LinkViewOrganization{
     font-size: 12px;
+    padding: 0 20px;
+}
+
+.LinkViewOrganization:hover{
+    text-decoration: underline;
 }
 
 .Skeleton{
