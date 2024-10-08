@@ -6,7 +6,13 @@ import ModalSaveOrganization from '@/components/Organization/ModalSaveOrganizati
 import MoreActionsOrganization from '@/components/Organization/MoreActionsOrganization';
 import { AppContext } from '@/contexts/AppContext';
 import styles from '@/styles/Organization.module.css';
-import { Button, Skeleton, Snippet } from '@nextui-org/react';
+import {
+  Button,
+  Select,
+  SelectItem,
+  Skeleton,
+  Snippet,
+} from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -78,6 +84,80 @@ function Header({ organization, isLoading }) {
   );
 }
 
+function Filter({ collections, onChange }) {
+  const [filterSelected, setFilterSelected] = useState('createdAt');
+  const [filterOrdered, setFilterOrdered] = useState('descending');
+  useEffect(() => {
+    if (collections.length === 0) return;
+    const _collections = [...collections];
+    if (filterSelected === 'name') {
+      if (filterOrdered === 'descending')
+        _collections.sort((a, b) =>
+          a.name > b.name ? -1 : a.name < b.name ? 1 : 0
+        );
+      else
+        _collections.sort((a, b) =>
+          a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+        );
+    } else {
+      if (filterOrdered === 'descending')
+        _collections.sort(
+          (a, b) => new Date(b[filterSelected]) - new Date(a[filterSelected])
+        );
+      else
+        _collections.sort(
+          (a, b) => new Date(a[filterSelected]) - new Date(b[filterSelected])
+        );
+    }
+    onChange(_collections);
+  }, [filterSelected, filterOrdered]);
+  const onFilterSelect = (selected) => {
+    setFilterSelected(selected);
+  };
+  const onFilterOrder = (selected) => {
+    setFilterOrdered(selected);
+  };
+  const filter = [
+    { key: 'createdAt', label: 'Creation Date' },
+    { key: 'updatedAt', label: 'Last Update' },
+    { key: 'name', label: 'Alphabetical' },
+  ];
+  const filterOrder = [
+    { key: 'descending', label: 'Descending' },
+    { key: 'ascending', label: 'Ascending' },
+  ];
+  return (
+    <div className={styles.Filter}>
+      <div className={styles.FilterSelect}>
+        <Select
+          label="Filter By"
+          size="sm"
+          defaultSelectedKeys={[filterSelected]}
+        >
+          {filter.map((f) => (
+            <SelectItem key={f.key} onClick={() => onFilterSelect(f.key)}>
+              {f.label}
+            </SelectItem>
+          ))}
+        </Select>
+      </div>
+      <div className={styles.FilterOrder}>
+        <Select
+          label="Order By"
+          size="sm"
+          defaultSelectedKeys={[filterOrdered]}
+        >
+          {filterOrder.map((f) => (
+            <SelectItem key={f.key} onClick={() => onFilterOrder(f.key)}>
+              {f.label}
+            </SelectItem>
+          ))}
+        </Select>
+      </div>
+    </div>
+  );
+}
+
 async function getOrganization(id) {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/organizations/get_extended?id=${id}`;
   return await fetch(url);
@@ -113,6 +193,12 @@ export default function OrganizationScreen() {
 
   const onCreateCollection = () => {};
 
+  const onChangeFilter = (_collections) => {
+    const _organization = { ...organization };
+    _organization.collections = _collections;
+    setOrganization(_organization);
+  };
+
   return (
     <>
       <Metaheader title={`Organization ${organization.name} | Vidashy`} />
@@ -123,6 +209,12 @@ export default function OrganizationScreen() {
             onCreate={onCreateCollection}
             isLoading={isLoading}
           />
+          {organization.collections && (
+            <Filter
+              collections={organization.collections}
+              onChange={onChangeFilter}
+            />
+          )}
           <div className={styles.Collections}>
             {organization.collections &&
               organization.collections.map((collection, i) => (

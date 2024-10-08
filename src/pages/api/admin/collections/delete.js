@@ -19,6 +19,25 @@ async function deleteRecord(id) {
   }
 }
 
+async function deleteRecentOpen(collection_id, organization_id) {
+  const filter = sanitizeOBJ({ collection_id, organization_id });
+  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
+  const collectionDB = database.collection('recent_collections_open');
+
+  try {
+    const result = await collectionDB.deleteMany(filter);
+    console.log(result.deletedCount, filter);
+    await client.close();
+    if (result.deletedCount > 0) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.log('deleteRecentOpen', e.message);
+    return false;
+  }
+}
+
 async function deleteDB(id, organization_id) {
   const nameNewDB = `DB_${organization_id}_${id}`;
   const { client, database } = db.mongoConnect(nameNewDB);
@@ -33,7 +52,7 @@ async function deleteDB(id, organization_id) {
     await client.close();
     return true;
   } catch (e) {
-    console.log(e.message);
+    console.log('deleteDB', e.message);
     return false;
   }
 }
@@ -73,12 +92,8 @@ export default async function handler(req, res) {
         .status(500)
         .send({ message: 'Record could not be deleted 01' });
 
-    const deletedb = await deleteDB(id, organization_id);
-
-    if (!deletedb)
-      return res
-        .status(500)
-        .send({ message: 'Record could not be deleted 02' });
+    await deleteDB(id, organization_id);
+    await deleteRecentOpen(id, organization_id);
 
     res.status(200).json({ success: true });
   } catch (error) {

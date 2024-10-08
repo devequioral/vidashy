@@ -2,6 +2,7 @@
     width: 30%;
     cursor: pointer;
     position: relative;
+    height: fit-content;
 }
 
 .SubCardHeader{
