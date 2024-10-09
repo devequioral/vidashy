@@ -26,7 +26,6 @@ async function deleteRecentOpen(collection_id, organization_id) {
 
   try {
     const result = await collectionDB.deleteMany(filter);
-    console.log(result.deletedCount, filter);
     await client.close();
     if (result.deletedCount > 0) {
       return true;

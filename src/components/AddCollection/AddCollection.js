@@ -84,6 +84,10 @@ export default function AddCollection() {
             type: 'SET_COLLECTION_SELECTED',
             collectionSelected: { id: 0, name: '' },
           });
+          dispatch({
+            type: 'CREATE_COLLECTION_ATTEMPT',
+            createCollectionAttempt: 0,
+          });
         }}
         allowSave={allowSave}
         savingRecord={saving}
