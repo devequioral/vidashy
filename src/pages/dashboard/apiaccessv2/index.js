@@ -72,35 +72,33 @@ function ModalApiKeyViewOnly({ show, apikey, onClose }) {
 }
 
 function AccessComponent(props) {
-  const { record, validation, key, items, clear, defaultValue } = {
+  const { record, validation, key, options, clear, defaultValue, onChange } = {
     ...props,
   };
   const [showAutocomplete, setShowAutocomplete] = useState(false);
-  const [access, setAccess] = useState(items);
+  const [access, setAccess] = useState({ sections: [] });
   const [changes, setChanges] = useState(0);
-  const onFieldChange = (value) => {
-    items.sections.map((section) => {
+  const _onFieldChange = (value) => {
+    const _access = { ...access };
+    _access.sections.map((section) => {
       section.items.map((item) => {
         if (item.key === value) item.selected = true;
       });
     });
-    setAccess((c) => {
-      return { ...c, ...items };
-    });
+    setAccess(_access);
     setChanges((c) => c + 1);
     setShowAutocomplete(false);
   };
   const removeAccess = (value) => {
-    items.sections.map((section) => {
+    const _access = { ...access };
+    _access.sections.map((section) => {
       section.items.map((item) => {
         if (item.key === value) {
           item.selected = false;
         }
       });
     });
-    setAccess((c) => {
-      return { ...c, ...items };
-    });
+    setAccess(_access);
     setChanges((c) => c + 1);
   };
   useEffect(() => {
@@ -113,7 +111,7 @@ function AccessComponent(props) {
         }
       });
     });
-    record.access = recordAccess;
+    onChange(recordAccess);
   }, [changes]);
 
   useEffect(() => {
@@ -138,21 +136,21 @@ function AccessComponent(props) {
 
   useEffect(() => {
     if (!defaultValue || defaultValue.length == 0) return;
-    items.sections.map((section) => {
+    if (!options) return;
+    const _access = { ...options };
+    _access.sections.map((section) => {
       section.items.map((item) => {
-        if (defaultValue.indexOf(item.key) >= 0) item.selected = true;
+        item.selected = defaultValue.indexOf(item.key) >= 0;
       });
     });
-    setAccess((c) => {
-      return { ...c, ...items };
-    });
-  }, [defaultValue]);
+    setAccess(_access);
+  }, [options, defaultValue]);
 
   return (
     <div className="AccessComponent">
       <div className="AccessComponentSelections">
         <h4>Access</h4>
-        <h5>The Api Key have access to following Collections</h5>
+        <h5>With this API you will acces to:</h5>
         {access.sections.map(
           (section, i) =>
             verifyItemsIs(section.items, true) && (
@@ -188,7 +186,7 @@ function AccessComponent(props) {
           isInvalid={validation[key] ? true : false}
           errorMessage={validation[key]}
           onSelectionChange={(value, b) => {
-            onFieldChange(value);
+            _onFieldChange(value);
           }}
           defaultSelectedKey={record && record[key]}
           menuTrigger="focus"
@@ -219,7 +217,7 @@ function AccessComponent(props) {
         size={'sm'}
         onClick={() => setShowAutocomplete(true)}
       >
-        Add Collection
+        Add Scope
       </Button>
 
       <style jsx>
@@ -269,7 +267,7 @@ function ListApiAccess() {
   const urlDeleteRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccessv2/delete?id={record_id}`;
   const [organizations, setOrganizations] = useState([]);
   const [collections, setCollections] = useState([]);
-  const [accessOptions, setAccessOptions] = useState([]);
+  const [accessOptions, setAccessOptions] = useState({});
   const [showModalApiKeyViewOnly, setShowModalApiKeyViewOnly] = useState(0);
   const [lastApiKey, setLastApiKey] = useState('');
   const [clearAccessComponent, setClearAccessComponent] = useState(0);
@@ -523,7 +521,7 @@ function ListApiAccess() {
                 key: 'access',
                 render: (props) => (
                   <AccessComponent
-                    items={accessOptions}
+                    options={accessOptions}
                     clear={clearAccessComponent}
                     {...props}
                   />

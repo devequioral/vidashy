@@ -320,6 +320,7 @@ export default function MainScreenObject(props) {
         onCloseModal={() => {
           onRecordChange(false);
           setValidation({});
+          setRecordModal(model);
         }}
         allowSave={recordChange}
         savingRecord={savingRecord}
