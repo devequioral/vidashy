@@ -76,6 +76,8 @@ function AccessComponent(props) {
     ...props,
   };
   const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [showBtnAccessScope, setShowBtnAccessScope] = useState(false);
+  const [optionsDefault, setOptionsDefault] = useState(options);
   const [access, setAccess] = useState({ sections: [] });
   const [changes, setChanges] = useState(0);
   const _onFieldChange = (value) => {
@@ -135,16 +137,51 @@ function AccessComponent(props) {
   };
 
   useEffect(() => {
-    if (!defaultValue || defaultValue.length == 0) return;
-    if (!options) return;
-    const _access = { ...options };
+    if (!optionsDefault) return;
+
+    const _access = { sections: [] };
+
+    optionsDefault.sections.map((section) => {
+      const _section = {
+        title: section.title,
+        key: section.key,
+        items: [],
+      };
+      section.items.map((item) => {
+        _section.items.push({
+          key: item.key,
+          label: item.label,
+          selected: item.selected,
+        });
+      });
+      _access.sections.push(_section);
+    });
+
     _access.sections.map((section) => {
       section.items.map((item) => {
-        item.selected = defaultValue.indexOf(item.key) >= 0;
+        if (defaultValue && defaultValue.length > 0)
+          item.selected = defaultValue.indexOf(item.key) >= 0;
+        else item.selected = false;
       });
     });
     setAccess(_access);
-  }, [options, defaultValue]);
+  }, []);
+
+  useEffect(() => {
+    if (!access || !access.sections.length === 0) {
+      setShowBtnAccessScope(false);
+      return;
+    }
+    let found = false;
+    access.sections.map((section) => {
+      section.items.map((item) => {
+        if (item.selected === false) {
+          found = true;
+        }
+      });
+    });
+    setShowBtnAccessScope(found);
+  }, [access]);
 
   return (
     <div className="AccessComponent">
@@ -212,13 +249,15 @@ function AccessComponent(props) {
       {validation.access && (
         <div className={'text-tiny text-danger mb-5'}>{validation.access}</div>
       )}
-      <Button
-        color={'primary'}
-        size={'sm'}
-        onClick={() => setShowAutocomplete(true)}
-      >
-        Add Scope
-      </Button>
+      {showBtnAccessScope && (
+        <Button
+          color={'primary'}
+          size={'sm'}
+          onClick={() => setShowAutocomplete(true)}
+        >
+          Add Scope
+        </Button>
+      )}
 
       <style jsx>
         {`
