@@ -15,11 +15,6 @@ async function getListRecentCollectionsOpens() {
   return await fetch(url);
 }
 
-// const randomDate = () => {
-//   const days = Number.parseInt(Math.random() * 10);
-//   return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-// };
-
 function DashBoardScreen() {
   const { state, dispatch } = useContext(AppContext);
   const [collections, setCollections] = useState([]);
@@ -109,7 +104,17 @@ function DashBoardScreen() {
             <div className={styles.EmptySpace}>
               <h3>Don&apos;t Have Collections Yet</h3>
               <p>Collections will appear here after creating theme</p>
-              <Button color="primary">Create a New Collection</Button>
+              <Button
+                color="primary"
+                onClick={() =>
+                  dispatch({
+                    type: 'CREATE_COLLECTION_ATTEMPT',
+                    createCollectionAttempt: state.createCollectionAttempt + 1,
+                  })
+                }
+              >
+                Create a New Collection
+              </Button>
             </div>
           )}
         </div>

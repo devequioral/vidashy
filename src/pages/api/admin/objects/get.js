@@ -2,13 +2,13 @@ import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 
 async function getRecord(
-  collectionName,
+  collectionId,
   organizationId,
   objectName,
   page = 1,
   pageSize = 20
 ) {
-  const dbName = `DB_${organizationId}_${collectionName}`;
+  const dbName = `DB_${organizationId}_${collectionId}`;
 
   const { client, database } = db.mongoConnect(dbName);
 
@@ -43,11 +43,11 @@ export default async function handler(req, res) {
     if (token.role !== 'admin')
       return res.status(401).send({ message: 'User Not authorized' });
 
-    const { collectionName, organizationId, objectName, page, pageSize } =
+    const { collectionId, organizationId, objectName, page, pageSize } =
       req.body;
 
     const data = await getRecord(
-      collectionName,
+      collectionId,
       organizationId,
       objectName,
       page,

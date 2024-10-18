@@ -72,35 +72,35 @@ function ModalApiKeyViewOnly({ show, apikey, onClose }) {
 }
 
 function AccessComponent(props) {
-  const { record, validation, key, items, clear, defaultValue } = {
+  const { record, validation, key, options, clear, defaultValue, onChange } = {
     ...props,
   };
   const [showAutocomplete, setShowAutocomplete] = useState(false);
-  const [access, setAccess] = useState(items);
+  const [showBtnAccessScope, setShowBtnAccessScope] = useState(false);
+  const [optionsDefault, setOptionsDefault] = useState(options);
+  const [access, setAccess] = useState({ sections: [] });
   const [changes, setChanges] = useState(0);
-  const onFieldChange = (value) => {
-    items.sections.map((section) => {
+  const _onFieldChange = (value) => {
+    const _access = { ...access };
+    _access.sections.map((section) => {
       section.items.map((item) => {
         if (item.key === value) item.selected = true;
       });
     });
-    setAccess((c) => {
-      return { ...c, ...items };
-    });
+    setAccess(_access);
     setChanges((c) => c + 1);
     setShowAutocomplete(false);
   };
   const removeAccess = (value) => {
-    items.sections.map((section) => {
+    const _access = { ...access };
+    _access.sections.map((section) => {
       section.items.map((item) => {
         if (item.key === value) {
           item.selected = false;
         }
       });
     });
-    setAccess((c) => {
-      return { ...c, ...items };
-    });
+    setAccess(_access);
     setChanges((c) => c + 1);
   };
   useEffect(() => {
@@ -113,7 +113,7 @@ function AccessComponent(props) {
         }
       });
     });
-    record.access = recordAccess;
+    onChange(recordAccess);
   }, [changes]);
 
   useEffect(() => {
@@ -137,22 +137,57 @@ function AccessComponent(props) {
   };
 
   useEffect(() => {
-    if (!defaultValue || defaultValue.length == 0) return;
-    items.sections.map((section) => {
+    if (!optionsDefault) return;
+
+    const _access = { sections: [] };
+
+    optionsDefault.sections.map((section) => {
+      const _section = {
+        title: section.title,
+        key: section.key,
+        items: [],
+      };
       section.items.map((item) => {
-        if (defaultValue.indexOf(item.key) >= 0) item.selected = true;
+        _section.items.push({
+          key: item.key,
+          label: item.label,
+          selected: item.selected,
+        });
+      });
+      _access.sections.push(_section);
+    });
+
+    _access.sections.map((section) => {
+      section.items.map((item) => {
+        if (defaultValue && defaultValue.length > 0)
+          item.selected = defaultValue.indexOf(item.key) >= 0;
+        else item.selected = false;
       });
     });
-    setAccess((c) => {
-      return { ...c, ...items };
+    setAccess(_access);
+  }, []);
+
+  useEffect(() => {
+    if (!access || !access.sections.length === 0) {
+      setShowBtnAccessScope(false);
+      return;
+    }
+    let found = false;
+    access.sections.map((section) => {
+      section.items.map((item) => {
+        if (item.selected === false) {
+          found = true;
+        }
+      });
     });
-  }, [defaultValue]);
+    setShowBtnAccessScope(found);
+  }, [access]);
 
   return (
     <div className="AccessComponent">
       <div className="AccessComponentSelections">
         <h4>Access</h4>
-        <h5>The Api Key have access to following Collections</h5>
+        <h5>With this API you will acces to:</h5>
         {access.sections.map(
           (section, i) =>
             verifyItemsIs(section.items, true) && (
@@ -188,7 +223,7 @@ function AccessComponent(props) {
           isInvalid={validation[key] ? true : false}
           errorMessage={validation[key]}
           onSelectionChange={(value, b) => {
-            onFieldChange(value);
+            _onFieldChange(value);
           }}
           defaultSelectedKey={record && record[key]}
           menuTrigger="focus"
@@ -214,13 +249,15 @@ function AccessComponent(props) {
       {validation.access && (
         <div className={'text-tiny text-danger mb-5'}>{validation.access}</div>
       )}
-      <Button
-        color={'primary'}
-        size={'sm'}
-        onClick={() => setShowAutocomplete(true)}
-      >
-        Add Collection
-      </Button>
+      {showBtnAccessScope && (
+        <Button
+          color={'primary'}
+          size={'sm'}
+          onClick={() => setShowAutocomplete(true)}
+        >
+          Add Scope
+        </Button>
+      )}
 
       <style jsx>
         {`
@@ -269,7 +306,7 @@ function ListApiAccess() {
   const urlDeleteRecord = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/apiaccessv2/delete?id={record_id}`;
   const [organizations, setOrganizations] = useState([]);
   const [collections, setCollections] = useState([]);
-  const [accessOptions, setAccessOptions] = useState([]);
+  const [accessOptions, setAccessOptions] = useState({});
   const [showModalApiKeyViewOnly, setShowModalApiKeyViewOnly] = useState(0);
   const [lastApiKey, setLastApiKey] = useState('');
   const [clearAccessComponent, setClearAccessComponent] = useState(0);
@@ -523,7 +560,7 @@ function ListApiAccess() {
                 key: 'access',
                 render: (props) => (
                   <AccessComponent
-                    items={accessOptions}
+                    options={accessOptions}
                     clear={clearAccessComponent}
                     {...props}
                   />

@@ -2,22 +2,9 @@ import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 import { sanitizeOBJ } from '@/utils/utils';
 
-function generateUUID() {
-  let d = new Date().getTime();
-  const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    // eslint-disable-next-line no-bitwise
-    const r = (d + Math.random() * 16) % 16 | 0;
-    // eslint-disable-next-line no-bitwise
-    d = Math.floor(d / 16);
-    // eslint-disable-next-line no-bitwise
-    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-  });
-  return uuid;
-}
-
 async function updateRecord(record_request) {
   const update_record = sanitizeOBJ({
-    ...record_request,
+    name: record_request.name,
     updatedAt: new Date().toISOString(),
   });
 
@@ -49,17 +36,11 @@ export default async function handler(req, res) {
 
     const validation = {};
 
+    if (!record_request.id || record_request.id === '') {
+      validation.id = 'Field Required';
+    }
     if (!record_request.name || record_request.name === '') {
       validation.name = 'Field Required';
-    }
-    if (!record_request.status || record_request.status === '') {
-      validation.status = 'Field Required';
-    }
-    if (
-      !record_request.organization_id ||
-      record_request.organization_id === ''
-    ) {
-      validation.organization_id = 'Field Required';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY

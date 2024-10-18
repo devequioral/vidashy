@@ -3,11 +3,11 @@ import db from '@/utils/db';
 import { sanitizeOBJ, generateUUID } from '@/utils/utils';
 import objectModel from '@/models/objectModel';
 
-async function createDB(collectionName, organizationId, objectName) {
+async function createDB(collectionId, organizationId, objectName) {
   const new_record = {};
   new_record[objectModel.columns[0].name] = generateUUID();
   new_record[objectModel.columns[1].name] = '';
-  const nameNewDB = `DB_${organizationId}_${collectionName}`;
+  const nameNewDB = `DB_${organizationId}_${collectionId}`;
   const { client, database } = db.mongoConnect(nameNewDB);
   const collectionDB = database.collection(objectName);
 
@@ -65,7 +65,7 @@ async function createObject(id, collectionName, organizationId, objectName) {
     const record = await collectionDB.updateOne(filter, {
       $set: update_record,
     });
-    if (record) createDB(collectionName, organizationId, objectName);
+    if (record) createDB(id, organizationId, objectName);
     await client.close();
     return true;
   } catch (e) {

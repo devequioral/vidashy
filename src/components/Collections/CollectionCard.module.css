@@ -1,0 +1,51 @@
+.SubCard{
+    width: 30%;
+    cursor: pointer;
+    position: relative;
+    height: fit-content;
+}
+
+.SubCardHeader{
+    position: absolute;
+    z-index: 2;
+    top: 5px;
+    right: 5px;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.SubCardBody{
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+}
+
+.CardIcon{
+    background-color: rgb(138, 152, 255);
+    color: #fff;
+    font-size: 16px;
+    line-height: 100%;
+    font-weight: 600;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.SubCardRight{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+
+.SubCardName{
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.SubCardType{
+    font-size: 12px;
+    font-weight: 400;
+}

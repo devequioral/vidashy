@@ -3,7 +3,7 @@ import db from '@/utils/db';
 import { sanitizeOBJ, generateUUID } from '@/utils/utils';
 
 async function createRecord(record_request, default_object) {
-  const id = generateUUID();
+  const id = generateUUID(12);
   const new_record = sanitizeOBJ({
     ...record_request,
     id,
@@ -17,17 +17,17 @@ async function createRecord(record_request, default_object) {
   try {
     const record = await collectionDB.insertOne(new_record);
     await client.close();
-    return { record };
+    return id;
   } catch (e) {
-    return { record: {} };
+    return false;
   }
 }
 
-async function createDB(record_request, default_object) {
+async function createDB(id, record_request, default_object) {
   const new_record = {};
   new_record[default_object.columns[0].name] = generateUUID();
   new_record[default_object.columns[1].name] = '';
-  const nameNewDB = `DB_${record_request.organization_id}_${record_request.name}`;
+  const nameNewDB = `DB_${record_request.organization_id}_${id}`;
   const { client, database } = db.mongoConnect(nameNewDB);
   const collectionDB = database.collection(default_object.name);
 
@@ -81,15 +81,28 @@ export default async function handler(req, res) {
         { label: 'Name', name: 'Name', type: 'text', id: generateUUID() },
       ],
     };
-    const record = await createRecord(record_request, default_object);
-    const dbCreated = await createDB(record_request, default_object);
+    const new_collection_id = await createRecord(
+      record_request,
+      default_object
+    );
 
-    if (!record || !dbCreated)
+    if (!new_collection_id)
       return res
         .status(500)
         .send({ message: 'Record could not be processed ' });
 
-    res.status(200).json({ record });
+    const dbCreated = await createDB(
+      new_collection_id,
+      record_request,
+      default_object
+    );
+
+    if (!dbCreated)
+      return res
+        .status(500)
+        .send({ message: 'Record could not be processed ' });
+
+    res.status(200).json({ new_collection_id });
   } catch (error) {
     console.error('Error getting token or session:', error);
   }

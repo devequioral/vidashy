@@ -63,13 +63,14 @@ async function verifyRequest(request) {
     .collection('apiaccessv2')
     .findOne(sanitizeOBJ(apikey_consult));
   await client.close();
-
   if (!apiaccessDB) return { response: { error: 'Unauthorized' } };
-
   const { organization, collection, method } = { ...request };
   const { scope, access } = apiaccessDB;
 
-  if (scope === 'READ_ONLY' && method !== 'GET') {
+  if (
+    method === 'GET' &&
+    ['READ_ONLY', 'MANAGE_RECORDS'].indexOf(scope) === -1
+  ) {
     return { response: { error: 'Bad Method Request' } };
   }
 

@@ -3,7 +3,7 @@ import db from '@/utils/db';
 import { sanitizeOBJ } from '@/utils/utils';
 
 async function updateRecord(
-  collectionName,
+  collectionId,
   organizationId,
   objectName,
   _uid,
@@ -15,7 +15,7 @@ async function updateRecord(
   const update_record = sanitizeOBJ({
     ...record_request,
   });
-  const dbName = `DB_${organizationId}_${collectionName}`;
+  const dbName = `DB_${organizationId}_${collectionId}`;
 
   const filter = { _uid };
   const { client, database } = db.mongoConnect(dbName);
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
       return res.status(401).send({ message: 'User Not authorized' });
 
     const {
-      collectionName,
+      collectionId,
       organizationId,
       objectName,
       _uid,
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     } = req.body;
 
     const record = await updateRecord(
-      collectionName,
+      collectionId,
       organizationId,
       objectName,
       _uid,

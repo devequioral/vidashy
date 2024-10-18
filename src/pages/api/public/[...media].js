@@ -5,12 +5,15 @@ import { getCollectionName } from '@/utils/API_V2';
 export default async function handler(req, res) {
   const [media, organization, collection, id] = [...req.query.media];
 
-  const collectionName = await getCollectionName({ organization, collection });
+  const collectionName = await getCollectionName({
+    organization,
+    collection,
+  });
 
   if (collectionName === false)
     return res.status(500).json({ error: 'Collection Not Found' });
 
-  let dataBaseName = sanitize(`DB_${organization}_${collectionName}`);
+  let dataBaseName = sanitize(`DB_${organization}_${collection}`);
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
 

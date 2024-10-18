@@ -353,6 +353,9 @@ export default function DetailRecord(props) {
                   record,
                   validation,
                   defaultValue: formatValue(field.key, field.type),
+                  onChange: (value) => {
+                    onFieldChange(field.key, value);
+                  },
                 })}
             </div>
           );

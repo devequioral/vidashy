@@ -2,18 +2,21 @@ import { getToken } from 'next-auth/jwt';
 import db from '@/utils/db';
 import { sanitizeOBJ, generateUUID } from '@/utils/utils';
 
-async function getCollections(organization_id) {
+async function deleteRecord(id) {
+  const filter = sanitizeOBJ({ id });
   const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
-
-  let query = { organization_id };
-
   const collectionDB = database.collection('collections');
 
-  const collections = await collectionDB.find(query).toArray();
-
-  await client.close();
-
-  return collections;
+  try {
+    const result = await collectionDB.deleteOne(filter);
+    await client.close();
+    if (result.deletedCount === 1) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
 }
 
 async function deleteRecentOpen(collection_id, organization_id) {
@@ -80,7 +83,7 @@ async function deleteApiAccess(collection_id, organization_id) {
   }
 }
 
-async function deleteDBCollection(id, organization_id) {
+async function deleteDB(id, organization_id) {
   const nameNewDB = `DB_${organization_id}_${id}`;
   const { client, database } = db.mongoConnect(nameNewDB);
 
@@ -99,42 +102,6 @@ async function deleteDBCollection(id, organization_id) {
   }
 }
 
-async function deleteCollections(organization_id) {
-  const collections = await getCollections(organization_id);
-  if (!collections || collections.length === 0) return false;
-  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
-  const collectionDB = database.collection('collections');
-  try {
-    for (var i = 0; i < collections.length; i++) {
-      await deleteDBCollection(collections[i].id, organization_id);
-      await deleteRecentOpen(collections[i].id, organization_id);
-      await deleteApiAccess(collections[i].id, organization_id);
-      const filter = sanitizeOBJ({ id: collections[i].id, organization_id });
-      await collectionDB.deleteOne(filter);
-    }
-    await client.close();
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
-
-async function deleteOrganization(id) {
-  const filter = sanitizeOBJ({ id });
-  const { client, database } = db.mongoConnect(process.env.MAIN_DB_NAME);
-  const collectionDB = database.collection('organizations');
-  try {
-    const result = await collectionDB.deleteOne(filter);
-    await client.close();
-    if (result.deletedCount === 1) {
-      return true;
-    }
-    return false;
-  } catch (e) {
-    return false;
-  }
-}
-
 export default async function handler(req, res) {
   try {
     const token = await getToken({ req });
@@ -144,12 +111,15 @@ export default async function handler(req, res) {
     if (token.role !== 'admin')
       return res.status(401).send({ message: 'User Not authorized' });
 
-    const { id } = req.query;
+    const { id, organization_id } = req.query;
 
     const validation = {};
 
     if (!id || id === '') {
       validation.id = 'Field Required';
+    }
+    if (!organization_id || organization_id === '') {
+      validation.organization_id = 'Field Required';
     }
 
     //EVALUATE IF VALIDATION IS NOT EMPTY
@@ -160,16 +130,18 @@ export default async function handler(req, res) {
       });
     }
 
-    await deleteCollections(id);
+    const deleteRec = await deleteRecord(id);
 
-    const response = await deleteOrganization(id);
-
-    if (!response)
+    if (!deleteRec)
       return res
         .status(500)
-        .send({ message: 'Organization could not be deleted ' });
+        .send({ message: 'Record could not be deleted 01' });
 
-    res.status(200).json({ response });
+    await deleteDB(id, organization_id);
+    await deleteRecentOpen(id, organization_id);
+    await deleteApiAccess(id, organization_id);
+
+    res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error getting token or session:', error);
   }

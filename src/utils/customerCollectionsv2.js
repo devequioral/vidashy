@@ -31,8 +31,7 @@ async function _getMetadataCollection(request) {
 }
 
 async function getRecords(request) {
-  const { organization, collectionName, object, params } = request;
-
+  const { organization, collection, collectionName, object, params } = request;
   // const page = params.page ? parseInt(params.page) : 1;
   // const pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
   let page = 1;
@@ -159,7 +158,7 @@ async function getRecords(request) {
     sortDB[item.field] = item.value;
   });
 
-  let dataBaseName = sanitize(`DB_${organization}_${collectionName}`);
+  let dataBaseName = sanitize(`DB_${organization}_${collection}`);
 
   const skip = (page - 1) * pageSize;
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
@@ -191,7 +190,7 @@ async function createRecord(request) {
 
   const { organization, collection, collectionName, object, body, files } =
     request;
-  let dataBaseName = `DB_${organization}_${collectionName}`;
+  let dataBaseName = `DB_${organization}_${collection}`;
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
 
@@ -242,7 +241,7 @@ async function updateRecord(request) {
   const { organization, collection, collectionName, object, body, files } =
     request;
 
-  let dataBaseName = `DB_${organization}_${collectionName}`;
+  let dataBaseName = `DB_${organization}_${collection}`;
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
 
@@ -298,8 +297,8 @@ async function updateRecord(request) {
 
 //DELETE RECORD FUNCTION
 async function deleteRecord(request) {
-  const { params, organization, collectionName, object } = request;
-  let dataBaseName = `DB_${organization}_${collectionName}`;
+  const { params, organization, collection, collectionName, object } = request;
+  let dataBaseName = `DB_${organization}_${collection}`;
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
 
@@ -431,8 +430,8 @@ async function saveMediaInDB(
   id,
   url
 ) {
-  const { organization, collectionName } = request;
-  let dataBaseName = `DB_${organization}_${collectionName}`;
+  const { organization, collectionName, collection } = request;
+  let dataBaseName = `DB_${organization}_${collection}`;
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
 
