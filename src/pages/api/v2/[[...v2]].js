@@ -23,11 +23,9 @@ export default async function handler(req, res) {
 
   //VERIFY IF THE REQUEST IS AUTHORIZED
   const verify = await verifyRequest(request);
-
   if (verify !== true) return res.status(500).json(verify.response);
 
   request.collectionName = await getCollectionName(request);
-
   if (request.collectionName === false)
     return res.status(500).json({ error: 'Collection Not Found' });
 

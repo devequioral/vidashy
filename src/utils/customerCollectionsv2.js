@@ -32,7 +32,6 @@ async function _getMetadataCollection(request) {
 
 async function getRecords(request) {
   const { organization, collection, collectionName, object, params } = request;
-
   // const page = params.page ? parseInt(params.page) : 1;
   // const pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
   let page = 1;
