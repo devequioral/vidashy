@@ -63,6 +63,7 @@ async function verifyRequest(request) {
     .collection('apiaccessv2')
     .findOne(sanitizeOBJ(apikey_consult));
   await client.close();
+
   if (!apiaccessDB) return { response: { error: 'Unauthorized' } };
   const { organization, collection, method } = { ...request };
   const { scope, access } = apiaccessDB;

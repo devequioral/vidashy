@@ -23,6 +23,8 @@ export default async function handler(req, res) {
 
   const records = await collectionDB.find(query).toArray();
 
+  console.log(records);
+
   await client.close();
 
   if (records.length > 0) {
