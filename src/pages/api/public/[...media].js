@@ -5,21 +5,15 @@ import { getCollectionName } from '@/utils/API_V2';
 export default async function handler(req, res) {
   const [media, organization, collection, id] = [...req.query.media];
 
-  //TEMPORAL PATCH FOR EQUIORAL
-  const collectionTemp =
-    collection === '9021b05d09464efb8035d1cef9eacb90'
-      ? '9e543ba9d9e2'
-      : collection;
-
   const collectionName = await getCollectionName({
     organization,
-    collection: collectionTemp,
+    collection,
   });
 
   if (collectionName === false)
     return res.status(500).json({ error: 'Collection Not Found' });
 
-  let dataBaseName = sanitize(`DB_${organization}_${collectionTemp}`);
+  let dataBaseName = sanitize(`DB_${organization}_${collection}`);
 
   const { client, database } = db.mongoConnect(sanitize(dataBaseName));
 
