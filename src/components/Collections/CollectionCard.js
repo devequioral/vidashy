@@ -106,7 +106,7 @@ export default function CollectionCard({ organization, collection }) {
           </div>
           <div className={styles.SubCardRight}>
             <div className={styles.SubCardName}>{collection.name}</div>
-            <div className={styles.SubCardType}>Base</div>
+            <div className={styles.SubCardType}>Collection</div>
           </div>
         </CardBody>
       </Card>

@@ -36,7 +36,6 @@ async function getRecords(request) {
   // const pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
   let page = 1;
   let pageSize = 10;
-
   let query = {};
 
   let options = params.options;
@@ -178,6 +177,21 @@ async function getRecords(request) {
     .toArray();
 
   await client.close();
+
+  if (
+    options.fields &&
+    options.fields.length > 0 &&
+    records &&
+    records.length > 0
+  ) {
+    records.map((record) => {
+      for (const field in record) {
+        if (options.fields.indexOf(field) === -1) {
+          delete record[field];
+        }
+      }
+    });
+  }
 
   return { records, total, page, totalPages };
 }
