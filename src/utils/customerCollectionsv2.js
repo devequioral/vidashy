@@ -179,6 +179,7 @@ async function getRecords(request) {
   await client.close();
 
   if (
+    options &&
     options.fields &&
     options.fields.length > 0 &&
     records &&
