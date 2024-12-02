@@ -177,8 +177,9 @@ async function getRecords(request) {
     .toArray();
 
   await client.close();
-
+  //Fix Options
   if (
+    options &&
     options.fields &&
     options.fields.length > 0 &&
     records &&
